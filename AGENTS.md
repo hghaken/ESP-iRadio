@@ -457,7 +457,14 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
   counted only while `WiFi.status()` is connected, reset on a successful stream connect and on every
   `connectWifi()`; failures inside a paging window must not count or the detector fires after every
   window) and after 3 in a row does `WiFi.disconnect(true,false)` + reconnect to the remembered AP;
-  log `[wifi] associated but unreachable, reconnecting`. Seen working the same
+  log `[wifi] associated but unreachable, reconnecting`. Since 2026-10-11 a stall also counts:
+  a connection that stalls before it delivered 64 KB increments `streamFailures`, which is now
+  cleared only after 64 KB on one connection (not on connect). Seen that day: after 12 min of
+  normal play the data stopped with no WiFi event (still associated at -45 dBm, 25-100 % ping
+  loss, 0.3-0.8 KB/s); every reconnect succeeded and stalled after a few KB, so the old check
+  (connect failures only) never fired and the radio played silence. A restart fixed it; the new
+  rule re-associates WiFi after three such stalls. Root cause (access point or ESP32 WiFi
+  driver) unknown. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up

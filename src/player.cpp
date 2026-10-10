@@ -375,6 +375,8 @@ static void netTask(void*) {
   bool streaming = false;
   bool fresh = false;  // first connection for this station (vs. a reconnect after a stall)
   uint32_t lastData = 0, retryAt = 0;
+  uint32_t connBytes = 0;                       // received on the current connection
+  const uint32_t HEALTHY_BYTES = 64 * 1024;     // a connection that delivered this much works
   int retries = 0;
 
   uint32_t statAt = 0, statIn = 0, statPulled = 0, statSilence = 0, totalIn = 0;
@@ -435,7 +437,10 @@ static void netTask(void*) {
         streaming = true;
         lastData = millis();
         retries = 0;
-        streamFailures = 0;
+        connBytes = 0;
+        // streamFailures is cleared once this connection has delivered real data (below), not
+        // here: on 2026-10-11 every connect succeeded but stalled after a few KB (WiFi still
+        // "connected" at -45 dBm, pings lost), so a reset here kept the zombie check silent.
         if (fresh) setState(PlayState::Buffering);
         else setState(decoderActive ? PlayState::Playing : PlayState::Buffering);  // clears an earlier error
         fresh = false;
@@ -456,6 +461,8 @@ static void netTask(void*) {
       if (n > 0) {
         lastData = millis();
         totalIn += n;
+        connBytes += n;
+        if (connBytes >= HEALTHY_BYTES) streamFailures = 0;  // this connection really works
         size_t written = 0;
         while (written < n) {
           written += netBuf->writeArray(chunk + written, n - written);
@@ -474,8 +481,12 @@ static void netTask(void*) {
       } else if (millis() - lastData > STALL_TIMEOUT_MS) {
         // Reconnect without touching the decoder or buffers: whatever is buffered
         // keeps playing and the new connection's burst refills the buffer.
-        Log.printf("[player] stream stalled, reconnecting (buffer %d KB)\n", netBuf->available() / 1024);
+        Log.printf("[player] stream stalled, reconnecting (buffer %d KB, %u KB on this connection)\n",
+                   netBuf->available() / 1024, (unsigned)(connBytes / 1024));
         reconnectCount = reconnectCount + 1;
+        // A connection that stalls before delivering real data counts as a failure: three in a
+        // row make loop() re-associate WiFi (the "zombie" check in main.cpp).
+        if (connBytes < HEALTHY_BYTES && WiFi.status() == WL_CONNECTED) streamFailures = streamFailures + 1;
         url->end();
         streaming = false;
         retryAt = millis() + 200;
