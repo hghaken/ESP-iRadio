@@ -118,7 +118,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 const $=id=>document.getElementById(id);let first=true;
 function rangeFill(el){el.style.setProperty('--p',(el.value-el.min)/(el.max-el.min)*100+'%')}
 document.addEventListener('input',e=>{if(e.target.type=='range')rangeFill(e.target)});
-function post(u,b){return fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:b}).then(r=>r.text()).then(t=>{if(t&&t!='ok')alert(t);refresh()})}
+function post(u,b){return fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:b}).then(r=>r.text()).then(t=>{if(t&&t!='ok')alert(t);refresh()}).catch(()=>alert('The radio did not answer, so nothing was done. While no Bluetooth device is connected it turns WiFi off for up to 30 s to search; try again in a moment.'))}
 function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
  $('station').textContent=s.stationName||'No station';$('title').textContent=s.title||' ';
  $('state').textContent=s.state+(s.codec?' '+s.codec:'')+(s.muted?' - muted':'');$('bt').textContent='BT '+(s.bt?'connected':s.btEnabled?'not connected':'off');
@@ -136,7 +136,7 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
   ['Memory','internal '+Math.round(s.heap/1024)+' kB free (min '+Math.round(d.minHeap/1024)+'), PSRAM '+Math.round(s.psram/1024)+' kB (min '+Math.round(d.psramMin/1024)+')'],
   ['Battery',(s.batteryMv?(s.batteryMv/1000).toFixed(2)+' V, '+s.batteryPct+'%':'no reading')+' (pin '+d.batRawMv+' mV), '+(s.usbMv?'USB '+(s.usbMv/1000).toFixed(2)+' V':'no USB')+' (pin '+d.pwrRawMv+' mV)'],
   ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)'):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)],
-  ['Firmware','built '+d.build+', running from slot '+d.partition],
+  ['Firmware',(d.version||'')+', built '+d.build+', running from slot '+d.partition],
   ['SD card',d.sd||'-'],
   ['Uptime',Math.floor(s.uptime/3600)+' h '+Math.floor(s.uptime%3600/60)+' min, last reset: '+({1:'power on',3:'software',4:'crash',5:'watchdog',6:'watchdog',7:'watchdog',8:'deep sleep',9:'voltage dip (brownout)'}[d.resetReason]||('code '+d.resetReason))+(d.brownouts?', '+d.brownouts+'x brownout in a row':'')]];
  $('diag').innerHTML=rows.map(r=>'<tr><td class="mut" style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top">'+r[0]+'</td><td style="padding:3px 0">'+r[1]+'</td></tr>').join('');
@@ -291,7 +291,8 @@ static void handleStatus() {
   const esp_partition_t* part = esp_ota_get_running_partition();
   // __DATE__/__TIME__ come from this translation unit, so this line stays in the
   // build when only the A2DP library patch changes and Diagnostics must show a new time.
-  j += ",\"partition\":\"" + String(part ? part->label : "?") + "\",\"build\":\"" + String(buildStamp) + "\"}";
+  j += ",\"partition\":\"" + String(part ? part->label : "?") + "\",\"build\":\"" + String(buildStamp) +
+       "\",\"version\":\"" + String(firmwareVersion) + "\"}";
   j += ",\"bt\":" + String(p.btConnected ? "true" : "false");
   j += ",\"btEnabled\":" + String(p.btEnabled ? "true" : "false");
   j += ",\"flip\":" + String(settings.displayFlip ? "true" : "false");

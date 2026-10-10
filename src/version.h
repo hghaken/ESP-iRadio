@@ -1,4 +1,9 @@
-// Build stamp of the running firmware, e.g. "Oct  9 2026 00:15:02".
+// Firmware version and build stamp of the running firmware.
 #pragma once
 
-extern const char* const buildStamp;
+// Raised by hand with every firmware change (v1.01, v1.02, ...): shown bottom left on the
+// display and under Diagnostics. The build stamp below changes on every build anyway.
+#define FIRMWARE_VERSION "v1.04"
+
+extern const char* const buildStamp;  // e.g. "2026-10-11 09:15"
+extern const char* const firmwareVersion;

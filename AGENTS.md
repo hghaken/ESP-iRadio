@@ -21,7 +21,7 @@ USB voltage, SD card section. The 1.69" IPS display (ST7789, 280x240) shows a st
 station, artist and song (scrolling when too long, Title Case), a status line "BT good  buf NN s
 AAC", IP + WiFi dBm and battery, updated live without flicker; 180-degree flip; brightness,
 night mode and idle dimming. SD card support (log, measurements, settings backup, logos, firmware
-copies) is built in but off (`SD_ENABLED 0`) until the ordered microSD breakout is wired. Calibrated battery measurement (~14 h on the 2500 mAh cell), power guard against brownout
+copies) is built in but off (`SD_ENABLED 0`) until the ordered microSD breakout is wired. Calibrated battery measurement (~14 h measured on the former 2500 mAh cell; a 5000 mAh cell since 2026-10-11, expected ~28 h), power guard against brownout
 loops. Station list up to 60 entries (NVS blob); about 25 public Dutch stations verified and in
 use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbps AAC is fine,
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
@@ -48,7 +48,12 @@ Public repository: GitHub hghaken/ESP-iRadio (branch `master`, GPL-3.0). Host na
 Hardware:
 - Olimex ESP32-DevKit-LiPo with ESP32-WROVER module (rev D), p/n 0000099739, GTIN 4260696351831.
   Chip ESP32-D0WD-V3 rev 3.1, 4 MB flash, 4 MB PSRAM.
-- Li-Po battery 3.7 V 2500 mAh (JST-PH, LP785060), charged by the board's on-board charger.
+- Li-Po battery 3.7 V 5000 mAh (JST-PH) since 2026-10-11; before that 2500 mAh (LP785060), which
+  ran ~14 h. Charged by the board's on-board charger (BL4054B, ~455 mA set by Rprog 2.2k on the
+  Olimex schematic): an empty 5000 mAh cell needs ~11-12 h on USB, so the power bank keeps it topped
+  up rather than filling it quickly. The percentage is derived from the voltage, so the larger cell
+  needs no firmware change; `BAT_CAL_PERMILLE` was calibrated on the old cell - check it against a
+  multimeter once.
 - Display since 2026-10-10 evening: 1.69" IPS module ZJY169S0800TG01, ST7789V2, 240x280 (used
   as 280x240), 4-wire SPI, pins GND VCC SCL SDA RES DC CS BLK, no SD slot, rounded corners.
   The final display (user's decision 2026-10-10). Earlier, now removed from the code (see git
@@ -69,6 +74,7 @@ Hardware:
   `sdkconfig.idf` (resolved config, generated, committed for review), `CMakeLists.txt` and
   `src/CMakeLists.txt` (only read by `idf`), `scripts/build_idf.ps1` (builds it, see Commands).
   Plan, status and test plan: `docs/framework-build.md`.
+- `scripts/flash_usb.ps1` - USB update of the app only (app0 + otadata), see Commands.
 - `scripts/patch_a2dp_reconnect.py` - reapplies five patches onto the git-ignored ESP32-A2DP
   copy (cancel a stuck page; do not page when auto-reconnect is off; publish the RSSI delta; start
   the media stream right after connecting instead of on the next 10 s heartbeat; diag log lines
@@ -136,7 +142,9 @@ Hardware:
   counted in the Bluetooth task and acted on in `playerLoop()` after 0.6 s. The JBL Charge 5 sends
   PLAY (0x44) for one press and FORWARD (0x4B) for two; three presses arrive as FORWARD + PLAY,
   so a FORWARD waits 0.9 s (`TRIPLE_MS`) and FORWARD + PLAY counts as previous. BACKWARD (0x4C,
-  e.g. a swipe on the Sony) is previous at once. Every button press also calls `displayWake()` (a dimmed screen comes back). Volume keys stay on the speaker. Pitfall:
+  a swipe back on the Sony) is previous at once. Verified on the WH-1000XM6 too (2026-10-11): a
+  double tap sends PLAY (0x44) or PAUSE (0x46) alternately (both toggle mute), swipe forward
+  FORWARD (0x4B), swipe back BACKWARD (0x4C). Every button press also calls `displayWake()` (a dimmed screen comes back). Volume keys stay on the speaker. Pitfall:
   `esp_avrc_tg_init()` is asynchronous, so the patch's `esp_avrc_tg_get_psth_cmd_filter()` right
   after it fails with 259 (ESP_ERR_INVALID_STATE) and leaves the supported command set empty
   (every button refused); the filter is set in the target CONNECTION_STATE event instead
@@ -150,7 +158,7 @@ Hardware:
   a `GFXcanvas16` (131 KB, PSRAM) and pushed in one go when anything changed (checked every
   250 ms): no flicker. Top to bottom: dark red header bar "ESP iRadio" + Bluetooth state
   (`BT: on / searching / off`, FreeSans Bold 9 pt, white), station (FreeSans Bold 12 pt, white),
-  artist (FreeSans 12 pt, yellow), song (FreeSans 12 pt, cyan), each a `ScrollLine` strip: text
+  artist (FreeSans 12 pt, yellow), song (FreeSans 12 pt, cyan) on a dark blue bar (`COL_BAR`, rows 70-141, centred between the station line and the status line), each a `ScrollLine` strip: text
   wider than its area scrolls (2 s pause, ~25 px/s to the end, 2 s pause, back) and only that
   strip (~18 KB) is pushed every 40 ms; scrolling can be switched off (NVS `scroll`,
   `/api/scroll`). A 64x64 station logo from the SD card sits left of station and artist (those
@@ -214,7 +222,9 @@ Hardware:
   they stream and are slow next to Bluetooth. Web section "SD card". The card in the radio
   since 2026-10-10: 128 GB SDXC, formatted FAT32 by the radio (43 s, 123.7 GB). Costs: env
   `idf` 74.8% flash with SD enabled (72.8% with `SD_ENABLED 0`), env `radio` 86.1%.
-- `src/version.*` - build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` ("v1.01" on 2026-10-11),
+  shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
+  by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
   `__DATE__` inside web.cpp only changed when web.cpp recompiled).
 - `src/web.*` - web page + JSON API (`/api/status` incl. a `diag` object, `/api/play`, `/api/stop`,
@@ -309,8 +319,14 @@ Run from the project root:
   upload, wait until `/api/status` shows the new build, then `on=1` (that opens a paging window at
   once, so the API is silent for up to 30 s; the headphones reconnect in ~1 s and audio follows).
   A curl timeout on an otherwise healthy radio: just run the upload again.
-- Flash over USB (ask the user first; every USB flash is a hard reset): `pio run -e usb -t upload`
-  (COM7). Only for the first install of the OTA partition table or when OTA is broken.
+- **When the radio is connected to the PC (COM7 present), always update over USB, not WiFi**
+  (user's instruction 2026-10-11): `.\scripts\flash_usb.ps1` (default: the idf build;
+  `-Bin .pio\build\radio\firmware.bin` for the prebuilt one). It stops a `pio device monitor`
+  that holds COM7, writes the app to app0 (0x10000), erases otadata (0xe000) so app0 boots, and
+  resets; settings and pairings in NVS stay. Verified 2026-10-11 (1.5 MB in 13 s), after a WiFi
+  upload had timed out because the radio kept opening paging windows with no device paired.
+- Full flash over USB (bootloader + partition table + app; ask the user first): `pio run -e usb -t
+  upload` (COM7). Only for the first install of the OTA partition table.
 - Live log without USB: web page, section "Log", "Show live log", or
   `curl "http://radio.local/api/log?since=0&max=65536"` (everything kept since boot, up to 64 KB).
   Since 2026-10-09 a USB power bank sits in the board's USB connector, so COM7 is only there
@@ -362,6 +378,8 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
 - WiFi credentials are entered via the web page and stored in NVS; they are never hard-coded, printed,
   returned by the API, or committed. Any future compile-time secrets go in git-ignored `secrets.h`.
 - Commit messages: short, imperative. Push to `origin master` after each working step.
+- Every firmware change raises `FIRMWARE_VERSION` in `src/version.h` by 0.01 (v1.01 -> v1.02).
+  Documentation-only commits do not.
 - Source files use CRLF line endings (git warns "LF will be replaced by CRLF"). Scripted edits that
   match text across line breaks must normalize CRLF to LF first and write back with the original
   endings. Write such edit scripts to a file (not a shell heredoc): heredocs in some agent shells
@@ -369,9 +387,10 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
   Note that the GFX fonts are ASCII only: `toAscii()` in `display.cpp` strips accents before drawing.
 
 ## Pitfalls (learned the hard way, 2026-10-06 .. 10-10)
-- Ask the user before: flashing over USB, erasing flash, changing partition tables, or anything that may
-  wipe stored settings (NVS). OTA updates: after every code change build and upload at once, without
-  asking (user's standing instruction, 2026-10-09; an update stops playback for ~1 min and restarts).
+- Ask the user before: erasing flash, changing partition tables, a full USB flash, or anything that may
+  wipe stored settings (NVS). Updates: after every code change build and update at once, without
+  asking (user's standing instruction, 2026-10-09): over USB with `scripts/flash_usb.ps1` when the
+  radio is on COM7 (2026-10-11), over WiFi otherwise.
 - **Internal RAM is the scarce resource.** The ESP32 has ~180 KB internal heap after static data;
   Bluedroid needs ~70-90 KB and WiFi/lwIP ~45-60 KB of it. `main.cpp` calls
   `heap_caps_malloc_extmem_enable(256)` first thing in `setup()` so every `malloc()` above 256 bytes
@@ -463,8 +482,13 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
   normal play the data stopped with no WiFi event (still associated at -45 dBm, 25-100 % ping
   loss, 0.3-0.8 KB/s); every reconnect succeeded and stalled after a few KB, so the old check
   (connect failures only) never fired and the radio played silence. A restart fixed it; the new
-  rule re-associates WiFi after three such stalls. Root cause (access point or ESP32 WiFi
-  driver) unknown. Seen working the same
+  rule re-associates WiFi after such stalls (threshold 2 since v1.03: with 3 the 20 s buffer
+  often ran dry first). A 20-minute watch the same evening: the collapse came back every 5-10 min
+  (a connection runs 0.4-2.8 MB, stalls, every reconnect then gets 2-17 KB); re-association
+  brought 17-19 KB/s and a full buffer within ~20 s. Not correlated with backlight changes. It
+  started the evening the JBL Charge 5 (plus AVRCP) was in use; the headphones did not show it
+  the day before. Root cause (Bluetooth airtime with the speaker, access point or ESP32 WiFi
+  driver) still unknown: A/B with the headphones pending. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up
@@ -698,7 +722,7 @@ ADC range (11 dB): a real 5 V supply would read too low (the reading flattens ab
 ("4.1V 88% USB", re-read every 30 s) and in `/api/status` (`batteryMv`, `batteryPct`, `usb`, `usbMv`, raw pin values under `diag`);
 Diagnostics shows "Battery 4.09 V, 88% (pin ...), USB 4.54 V (pin ...)".
 Power setup since 2026-10-09: a 10,000 mAh USB power bank on the board's USB connector; it charges
-the Li-Po and feeds the radio (estimate 40-50 h together with the Li-Po). The Li-Po bridges a power
+the Li-Po and feeds the radio (estimate 50-60 h together with the 5000 mAh Li-Po). The Li-Po bridges a power
 bank swap or auto-off (many banks switch off below ~50-100 mA; the radio draws 150-200 mA).
 Hardware prerequisite (Olimex user manual, p. 8): the three SMT jumpers **BAT_PWR_E1, PWR_SENS_E1 and
 BAT_SENS_E1 are open as shipped** - "Close them (solder the pads together) to enable both functions,
@@ -706,7 +730,8 @@ on pins GPI35 and GPI39". All three are soldered since 2026-10-06; `docs/olimex-
 shows where they are (bottom view, generated from the KiCad Rev.D layout). With open jumpers (or no
 battery) the pins float (~0.3 V) and the firmware reports "no reading". While charging over USB the
 reading is the charger voltage (~4.0-4.2 V), not the resting state of charge. First full run on
-battery: the whole night + day (~14 h) until the cell was empty.
+battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with the 5000 mAh cell
+(2026-10-11) about twice that is expected, not measured yet.
 
 ## Open points
 - Planned: line + speaker output with PCM5102A + PAM8403 (ordered; see `docs/speaker-output.md`):
@@ -720,7 +745,8 @@ battery: the whole night + day (~14 h) until the cell was empty.
   does not want music files on it. Since the ST7789 replaced the Robot LCD there is no card
   reader: `SD_ENABLED 0` in `config.h` until the planned microSD breakout (CS GPIO4) is wired. Possible next: song history ("wat was dat liedje?"),
   `stations.txt` import from the card.
-- Repeat the battery run with the power guard in place and read `/api/status` `diag` (underruns,
+- Repeat the battery run (now with the 5000 mAh cell; the SD measurement files will show the
+  discharge curve once the card reader is in) with the power guard in place and read `/api/status` `diag` (underruns,
   reconnects, min heap) before the battery runs out.
 - Optional: more NAS relays for 128 kbps stations that sometimes stall (Qmusic, Radio 10); see the
   relay notes under "Stations".

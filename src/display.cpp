@@ -13,6 +13,8 @@
 #include "player.h"
 #include "sdcard.h"
 #include "settings.h"
+#include "version.h"
+#include "weblog.h"
 
 // 1.69" IPS module (ZJY169S0800TG01, ST7789V2, 240 x 280) used in landscape as 280 x 240.
 // Layout, top to bottom: header bar ("ESP iRadio", Bluetooth state), station, artist, song
@@ -45,13 +47,18 @@ static const int STATUS_Y = 162, NET_Y = 190, POWER_Y = 216, INFO_MARGIN = 20;
 struct Strip {
   int top, bottom, baseline;  // rows of the strip and the text baseline
   const GFXfont* font;
-  uint16_t color;
+  uint16_t color, bg;
 };
 
+// Artist and song sit on a dark blue bar, centred between the station line (ends at row 64) and
+// the status line (text from row ~149): bar rows 70..141, strips 74..105 and 106..137.
+static const uint16_t COL_BAR = 0x010C;  // #002060-ish: yellow and cyan keep a >10:1 contrast
+static const int BAR_TOP = 70, BAR_BOTTOM = 142;
+
 static const Strip STRIPS[3] = {
-    {32, 64, 56, &FreeSansBold12pt7b, COL_STATION},  // station
-    {64, 96, 88, &FreeSans12pt7b, COL_ARTIST},       // artist (or the whole title)
-    {98, 130, 122, &FreeSans12pt7b, COL_SONG},       // song
+    {32, 64, 56, &FreeSansBold12pt7b, COL_STATION, COL_BG},  // station
+    {74, 106, 98, &FreeSans12pt7b, COL_ARTIST, COL_BAR},     // artist (or the whole title)
+    {106, 138, 130, &FreeSans12pt7b, COL_SONG, COL_BAR},     // song
 };
 
 static Adafruit_ST7789* tft = nullptr;
@@ -156,6 +163,11 @@ static int dutyFor(int percent) {
 // Called every tick (40 ms): a change fades in ~1 s.
 static void backlightTick() {
   int p = targetPercent();
+  static int loggedTarget = -1;
+  if (p != loggedTarget) {  // for correlating with stream or WiFi trouble in the log
+    Log.printf("[display] backlight %d%% -> %d%%%s\n", loggedTarget, p, nightNow() ? " (night mode)" : "");
+    loggedTarget = p;
+  }
   int target = dutyFor(p);
   if (blDuty < 0) blDuty = target;
   int diff = target - blDuty;
@@ -268,7 +280,7 @@ static void setLine(ScrollLine& L, const String& text) {
 }
 
 static void drawLine(const ScrollLine& L) {
-  canvas->fillRect(0, L.s.top, W, L.s.bottom - L.s.top, COL_BG);
+  canvas->fillRect(0, L.s.top, W, L.s.bottom - L.s.top, L.s.bg);
   if (!L.text.isEmpty()) {
     canvas->setFont(L.s.font);
     canvas->setTextColor(L.s.color);
@@ -279,7 +291,7 @@ static void drawLine(const ScrollLine& L) {
   // GFX has no clipping: text scrolled to the left ran over the logo column. Clear that
   // column and put the logo back (rows outside this strip get the same pixels again).
   if (logoShown && L.s.top < LOGO_Y + LOGO_SIZE) {
-    canvas->fillRect(0, L.s.top, L.left, L.s.bottom - L.s.top, COL_BG);
+    canvas->fillRect(0, L.s.top, L.left, L.s.bottom - L.s.top, L.s.bg);
     canvas->drawRGBBitmap(LOGO_X, LOGO_Y, logoPix, LOGO_SIZE, LOGO_SIZE);
   }
 }
@@ -321,6 +333,9 @@ static void drawScreen(const Screen& s) {
   canvas->setCursor(W - MARGIN - textWidth(btText), HEADER_BASELINE);
   canvas->print(btText);
 
+  // Bar behind artist and song (the strips repaint their own rows in the same colour).
+  canvas->fillRect(0, BAR_TOP, W, BAR_BOTTOM - BAR_TOP, COL_BAR);
+
   // Station logo (SD card) and the text areas next to it.
   logoShown = s.logo && logoPix && sdCopyLogo(logoPix, LOGO_SIZE);
   int textLeft = LOGO_X + LOGO_SIZE + LOGO_GAP;
@@ -345,6 +360,9 @@ static void drawScreen(const Screen& s) {
   drawLeft(s.status, STATUS_Y, s.error ? COL_ERROR : COL_STATUS);
   drawLeft(s.net, NET_Y, COL_INFO);
   if (s.power.length()) drawRight(s.power, POWER_Y, COL_INFO);
+  canvas->setTextColor(COL_INFO);
+  canvas->setCursor(INFO_MARGIN, POWER_Y);
+  canvas->print(firmwareVersion);  // bottom left, opposite the battery
 
   push(s.flip);
 }

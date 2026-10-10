@@ -32,7 +32,8 @@ configuration (up to 60 stations), diagnostics and firmware updates.
   point at least 12 dB stronger and moves there. The "Search" list shows every mesh point (channel,
   BSSID) with a "Switch to this access point" button. Opening the page does not scan
   for networks unless "Search networks when the page opens" is on. Setup mode always scans.
-- Battery: ~14 h on a 2500 mAh Li-Po; level shown on the display and the web page.
+- Battery: 5000 mAh Li-Po (~28 h expected; a 2500 mAh cell ran ~14 h); level shown on the display
+  and the web page.
 - Stations: plain `http://` AAC-LC or MP3 streams (no TLS). About 25 Dutch stations (NPO, Radio 10,
   Veronica, Qmusic, Arrow) are verified; the URLs and the rules for finding working ones are in
   AGENTS.md under "Stations". Stations that are too heavy, HE-AAC only or https-only (Joe, NPO

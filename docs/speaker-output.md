@@ -59,7 +59,7 @@ GPIO13/14 are briefly undefined during start-up; at worst that gives a tick from
 ## Current and playing time
 DAC ~15 mA. PAM8403 idle ~10 mA, at room volume on average 50-150 mA, peaks ~0.5 A at 3.7 V.
 When listening through the speaker, expect a third to a half less playing time than with the
-headphones (~14 h). Line output only (amplifier off): hardly any difference.
+headphones (~14 h on the former 2500 mAh cell, ~28 h expected on the 5000 mAh cell). Line output only (amplifier off): hardly any difference.
 
 ## Firmware plan
 - Output choice in `PcmSink`: the same 44.1 kHz 16-bit stereo PCM goes to (a) the Bluetooth buffer or

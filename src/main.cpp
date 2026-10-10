@@ -418,7 +418,9 @@ void loop() {
   // reach anything (errno 118, host unreachable) several times in a row. Seen
   // 2026-10-09 right after an A2DP link drop; the old retry never fired because
   // status() stayed WL_CONNECTED. Force a fresh association then.
-  bool zombie = wifiUp && playerStreamFailures() >= 3;
+  // Two failures (connects that fail, or connections that stall before 64 KB) are enough: with
+  // three the 20 s buffer often ran dry before WiFi was re-associated (2026-10-11).
+  bool zombie = wifiUp && playerStreamFailures() >= 2;
   if (!setupMode && wifiOffAt == 0 && millis() - wifiLogAt > 10000) {
     wifiLogAt = millis();
     Log.printf("[wifi] status %d, ip %s, rssi %d, stream failures %d\n", (int)WiFi.status(),

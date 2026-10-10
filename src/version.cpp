@@ -6,3 +6,4 @@
 #include "build_stamp.h"
 
 const char* const buildStamp = BUILD_STAMP;
+const char* const firmwareVersion = FIRMWARE_VERSION;
