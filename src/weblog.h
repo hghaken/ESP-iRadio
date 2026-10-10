@@ -20,6 +20,9 @@ void weblogBegin();  // call right after Serial.begin()
 uint32_t weblogRead(uint32_t from, char* out, size_t maxBytes, size_t* len, bool* skipped,
                     bool* restarted);
 uint32_t weblogEnd();  // current end position
+// Stops copying Log output to the serial port (the web log keeps it); used while the port
+// carries a firmware update (src/serialupdate.*).
+void weblogSerialMute(bool mute);
 
 // Print target that writes to Serial and to the log buffer.
 class LogTee : public Print {

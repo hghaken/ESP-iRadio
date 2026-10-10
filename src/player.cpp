@@ -6,6 +6,7 @@
 #include <WiFi.h>
 #include <esp_a2dp_api.h>
 #include <esp_avrc_api.h>
+#include <esp_coexist.h>
 #include <esp_bt.h>
 #include <esp_gap_bt_api.h>
 
@@ -780,10 +781,85 @@ static void handleButtons() {
   }
 }
 
+// Bluedroid internals (not in the public headers, present in both builds).
+extern "C" uint8_t BTM_GetRole(uint8_t* remote_bd_addr, uint8_t* p_role);
+extern "C" void BTM_SetDefaultLinkPolicy(uint16_t settings);
+extern "C" uint8_t L2CA_SetDesireRole(uint8_t new_role);
+static const uint16_t POLICY_SNIFF = 0x0004, POLICY_SWITCH = 0x0001;  // HCI link policy bits
+static const uint8_t L2CAP_DISALLOW_SWITCH = 0x40, L2CAP_ALLOW_SWITCH = 0x80;
+
+// Role switch (2026-10-11): the JBL Charge 5 took the master role right after the radio paged it,
+// and WiFi then collapsed every 5-10 min; the headphones did not. With settings.btLead the radio
+// creates connections with "role switch not allowed" (L2CA_SetDesireRole; Bluedroid resets it to
+// "allowed" when the last stream closes, so it is set again before every page) and the default
+// link policy leaves out master/slave switch, so the controller refuses a later request.
+static void applyLinkPolicy() {
+  BTM_SetDefaultLinkPolicy(settings.btLead ? POLICY_SNIFF : (POLICY_SNIFF | POLICY_SWITCH));
+  L2CA_SetDesireRole(settings.btLead ? L2CAP_DISALLOW_SWITCH : L2CAP_ALLOW_SWITCH);
+}
+
+// Called by the library once the stack is up, before the first page (sixth patch).
+void radio_bt_stack_ready() {
+  applyLinkPolicy();
+  Log.printf("[bt] link policy: %s\n", settings.btLead ? "radio stays master (no role switch)" : "role switch allowed");
+}
+
+void playerApplyLinkPolicy() {
+  if (btStackStarted) applyLinkPolicy();
+}
+static volatile int btRole = -1;   // 0 = the radio is master, 1 = the peer is master, -1 unknown
+static uint32_t roleCheckAt = 0;   // next check; a role switch happens right after connecting
+
+// Measures which side leads the link (WiFi trouble with the JBL, 2026-10-11): logged when it
+// changes, shown under Diagnostics. Read-only Bluedroid call from the loop task.
+static void checkRole() {
+  if (!roleCheckAt || (int32_t)(millis() - roleCheckAt) < 0) return;
+  roleCheckAt = millis() + 60000;
+  esp_bd_addr_t* peer = a2dp ? a2dp->get_last_peer_address() : nullptr;
+  if (!peer || !btLinkUp()) {
+    btRole = -1;
+    return;
+  }
+  uint8_t addr[6], role = 0xFF;
+  memcpy(addr, *peer, 6);
+  int r = BTM_GetRole(addr, &role) == 0 ? role : -1;
+  if (r != btRole) Log.printf("[bt] link role: %s\n", r == 0 ? "radio is master" : r == 1 ? "peer is master" : "unknown");
+  btRole = r;
+}
+
+static volatile bool coexWanted = false;  // web toggle, not stored
+static bool coexActive = false;           // PREFER_WIFI currently set
+
+void playerSetCoexWifi(bool wanted) {
+  coexWanted = wanted;
+  Log.printf("[coex] WiFi priority while streaming: %s\n", wanted ? "wanted" : "off");
+}
+bool playerCoexWifiWanted() { return coexWanted; }
+bool playerCoexWifiActive() { return coexActive; }
+
+// PREFER_WIFI only while streaming: with BALANCE paging works; PREFER_BT before start-up once
+// stopped every connection, so the preference is never touched at boot or while paging.
+static void updateCoex() {
+  if (!a2dp || (!coexWanted && !coexActive)) return;  // setup mode / nothing to do
+  bool want = coexWanted && btLinkUp() && playerBtAudioActive();
+  if (want == coexActive) return;
+  esp_err_t err = esp_coex_preference_set(want ? ESP_COEX_PREFER_WIFI : ESP_COEX_PREFER_BALANCE);
+  coexActive = want && err == ESP_OK;
+  Log.printf("[coex] preference %s -> %d\n", want ? "WIFI" : "BALANCE", (int)err);
+}
+
 void playerLoop() {
   handleButtons();
+  checkRole();
+  updateCoex();
+  static uint32_t lastPolicy = 0;
+  if (btStackStarted && settings.btLead && !btLinkUp() && millis() - lastPolicy > 2000) {
+    lastPolicy = millis();  // before every page: Bluedroid allows the switch again after a stream
+    L2CA_SetDesireRole(L2CAP_DISALLOW_SWITCH);
+  }
   if (!recordPending) return;
   recordPending = false;
+  roleCheckAt = millis() + 5000;  // after a possible role switch
   uint8_t bda[6];
   memcpy(bda, recordBda, 6);
   String name;
@@ -1062,6 +1138,7 @@ PlayerStatus playerStatus() {
   s.btConnected = btLinkUp();
   s.btEnabled = btEnabled;
   s.muted = muted;
+  s.btRole = btRole;
   s.btBonds = btStackStarted ? esp_bt_gap_get_bond_device_num() : -1;
   s.bufferPercent = netBuf->available() * 100 / NET_BUFFER_BYTES;
   s.sampleRate = useMp3 ? mp3->audioInfo().sample_rate : aac->audioInfo().sample_rate;

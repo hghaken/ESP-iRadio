@@ -74,8 +74,12 @@ Hardware:
   `sdkconfig.idf` (resolved config, generated, committed for review), `CMakeLists.txt` and
   `src/CMakeLists.txt` (only read by `idf`), `scripts/build_idf.ps1` (builds it, see Commands).
   Plan, status and test plan: `docs/framework-build.md`.
-- `scripts/flash_usb.ps1` - USB update of the app only (app0 + otadata), see Commands.
-- `scripts/patch_a2dp_reconnect.py` - reapplies five patches onto the git-ignored ESP32-A2DP
+- `scripts/flash_usb.ps1` - USB update (through the firmware with progress bar, esptool fallback),
+  see Commands. `scripts/usb_update.py` is its firmware path.
+- `scripts/patch_idf_bitpool.py` - env idf only: sets Bluedroid's SBC source max bitpool
+  (`BTA_AV_CO_SBC_MAX_BITPOOL` in the framework-espidf package) to 35 before each build (v1.08,
+  did not cure the JBL stalls; set it back to 53 when the investigation closes).
+- `scripts/patch_a2dp_reconnect.py` - reapplies six patches onto the git-ignored ESP32-A2DP
   copy (cancel a stuck page; do not page when auto-reconnect is off; publish the RSSI delta; start
   the media stream right after connecting instead of on the next 10 s heartbeat; diag log lines
   with the ACL status and disconnect reason; AVRCP target init + `radio_avrc_tg_cb` for the
@@ -222,6 +226,12 @@ Hardware:
   they stream and are slow next to Bluetooth. Web section "SD card". The card in the radio
   since 2026-10-10: 128 GB SDXC, formatted FAT32 by the radio (43 s, 123.7 GB). Costs: env
   `idf` 74.8% flash with SD enabled (72.8% with `SD_ENABLED 0`), env `radio` 86.1%.
+- `src/serialupdate.*` - firmware update over USB by the running firmware (protocol in the
+  header): `IRADIO-UPDATE <size> <md5>` at 115200, `#R 921600`, then 1 KB chunks stop-and-wait
+  (`#K <bytes>` after each flash write, so nothing arrives while the flash cache is off and the
+  UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
+  lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
+  before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
 - `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` ("v1.01" on 2026-10-11),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
@@ -321,10 +331,15 @@ Run from the project root:
   A curl timeout on an otherwise healthy radio: just run the upload again.
 - **When the radio is connected to the PC (COM7 present), always update over USB, not WiFi**
   (user's instruction 2026-10-11): `.\scripts\flash_usb.ps1` (default: the idf build;
-  `-Bin .pio\build\radio\firmware.bin` for the prebuilt one). It stops a `pio device monitor`
-  that holds COM7, writes the app to app0 (0x10000), erases otadata (0xe000) so app0 boots, and
-  resets; settings and pairings in NVS stay. Verified 2026-10-11 (1.5 MB in 13 s), after a WiFi
-  upload had timed out because the radio kept opening paging windows with no device paired.
+  `-Bin .pio\build\radio\firmware.bin` for the prebuilt one; `-Rom` forces esptool). It stops a
+  `pio device monitor` that holds COM7, then asks the running firmware to take the image
+  (`scripts/usb_update.py`, `src/serialupdate.*`, since v1.06): the firmware writes the other OTA
+  slot like a WiFi update and the display shows the progress bar ("via USB"); 1.5 MB in ~39 s.
+  When the firmware does not answer (older than v1.06, crashed, boot loop) it falls back to
+  esptool: app to app0 (0x10000), otadata (0xe000) erased so app0 boots, reset (1.5 MB in 13 s,
+  no progress on the display: the ROM loader runs then). Settings and pairings in NVS stay
+  either way. A WiFi upload had timed out because the radio kept opening paging windows with no
+  device paired.
 - Full flash over USB (bootloader + partition table + app; ask the user first): `pio run -e usb -t
   upload` (COM7). Only for the first install of the OTA partition table.
 - Live log without USB: web page, section "Log", "Show live log", or
@@ -371,6 +386,13 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
 - Battery: shown bottom right on the display and under Diagnostics. Empty cell -> "Battery empty - charge it"
   and deep sleep; charging an empty cell on USB -> "Charging battery, please wait" until 3.55 V. Use a real
   charger (>= 1 A) for an empty battery, not a PC port.
+
+## Working with several agents
+More than one AI agent may work on this project (Claude Code, Grok CLI, ...). Open
+investigations have a shared working file in `docs/` that every agent reads first and appends to;
+it has a **radio lock** line: only the agent named there flashes, restarts or tests the radio.
+Current: `docs/wifi-stall-investigation.md` (WiFi stalls next to the JBL Charge 5). Run `git pull`
+before editing and commit small steps, so agents do not overwrite each other.
 
 ## Conventions
 - Everything in the repository is English: web page, display texts, messages, docs and code
@@ -488,7 +510,22 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
   brought 17-19 KB/s and a full buffer within ~20 s. Not correlated with backlight changes. It
   started the evening the JBL Charge 5 (plus AVRCP) was in use; the headphones did not show it
   the day before. Root cause (Bluetooth airtime with the speaker, access point or ESP32 WiFi
-  driver) still unknown: A/B with the headphones pending. Seen working the same
+  driver) narrowed down by an A/B test on 2026-10-11: 20 min with the WH-1000XM6 (same firmware
+  v1.04, same access point, night mode on) gave 0 stalls, 0 WiFi re-associations, average
+  12.4 KB/s; the JBL Charge 5 collapsed every 5-10 min. So it comes with the speaker. Suspects:
+  more Bluetooth airtime (higher SBC bitpool / packet types) or a role switch (JBL becoming
+  master). Tried the same night, each with a 10-minute watch, none helped (6-9 stalls, average
+  input ~10.4 KB/s): v1.07 radio stays master (`btLead`, role measured: the JBL took master
+  before, the radio keeps it now), JBL 3 m away and the radio moved, v1.08 SBC bitpool 35
+  instead of 53 (`scripts/patch_idf_bitpool.py`, env idf only), v1.09 `ESP_COEX_PREFER_WIFI`
+  while streaming (web test toggle `/api/coex`, not stored, BALANCE otherwise): fewer full
+  collapses but average input 9.7 KB/s. Reading (with Grok CLI, see
+  `docs/wifi-stall-investigation.md`): next to the JBL the WiFi path is throughput-limited below
+  the 12 KB/s the stream needs (5760-byte TCP window / RTT above ~480 ms), not just stalling now
+  and then. Not a larger TCP window first (it stalled on 2026-10-09 and makes a deaf spell worse).
+  Next: v1.10 with one log line of the sink's A2DP MTU (JBL vs WH-1000XM6); practical workaround
+  a 64 kbps AAC relay mount for the speaker. The stall recovery covers it meanwhile; with the
+  headphones it does not happen. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up

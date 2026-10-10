@@ -58,14 +58,18 @@ void weblogBegin() {
   origVprintf = esp_log_set_vprintf(logVprintf);
 }
 
+static volatile bool serialMuted = false;
+
+void weblogSerialMute(bool mute) { serialMuted = mute; }
+
 size_t LogTee::write(uint8_t c) {
   append((const char*)&c, 1);
-  return Serial.write(c);
+  return serialMuted ? 1 : Serial.write(c);
 }
 
 size_t LogTee::write(const uint8_t* data, size_t len) {
   append((const char*)data, len);
-  return Serial.write(data, len);
+  return serialMuted ? len : Serial.write(data, len);
 }
 
 uint32_t weblogEnd() { return total; }

@@ -1,7 +1,7 @@
 # Reapplies the A2DP source reconnect fix to the gitignored ESP32-A2DP 1.8.3 copy.
 # pio pkg install restores the upstream file; the next build puts this back.
-# Five patches, all in BluetoothA2DPSource.cpp (reconnect, RSSI, media start, diag lines,
-# AVRCP target); the first two changes:
+# Six patches, all in BluetoothA2DPSource.cpp (reconnect, RSSI, media start, diag lines,
+# AVRCP target, stack-ready hook); the first two changes:
 # - a connect attempt that is still open after two heartbeats (20 s) is cancelled
 #   with esp_a2d_source_disconnect before any new page
 # - the unconnected heartbeat does not page when auto-reconnect is off
@@ -171,6 +171,22 @@ NEW_AVRC = """    // initialize AVRCP controller
 """
 
 
+# Sixth patch: a hook into the radio once the stack is up and before the first page
+# (radio_bt_stack_ready() in src/player.cpp: link policy / role switch setting).
+READY_MARKER = "radio_bt_stack_ready"
+OLD_READY = """      ESP_LOGW(BT_AV_TAG, "avrc tg init %d %d %d %d, cmds %08x %08x (diag)", e1, e2, e3, e4,
+               (unsigned)cmd_set.bits[0], (unsigned)cmd_set.bits[1]);
+    }
+"""
+NEW_READY = """      ESP_LOGW(BT_AV_TAG, "avrc tg init %d %d %d %d, cmds %08x %08x (diag)", e1, e2, e3, e4,
+               (unsigned)cmd_set.bits[0], (unsigned)cmd_set.bits[1]);
+    }
+    // Patched: the radio's own Bluetooth setup, before the first page (src/player.cpp).
+    void radio_bt_stack_ready();
+    radio_bt_stack_ready();
+"""
+
+
 def lf(text):
     return text.replace("\r\n", "\n")
 
@@ -230,6 +246,12 @@ def patch(path):
         text = replace_once(text, OLD_AVRC, NEW_AVRC, path)
         changed = True
         print("A2DP AVRCP target patch applied to %s" % path)
+    if READY_MARKER in text:
+        print("A2DP stack-ready hook already in %s" % path)
+    else:
+        text = replace_once(text, OLD_READY, NEW_READY, path)
+        changed = True
+        print("A2DP stack-ready hook applied to %s" % path)
     if changed:
         out = text.replace("\n", "\r\n") if crlf else text
         path.write_bytes(out.encode("utf-8"))

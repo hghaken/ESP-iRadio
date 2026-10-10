@@ -25,6 +25,7 @@ struct Settings {
   int nightLevel = 10;      // 0..100, 0 = off (NVS `ngtl`)
   int idleMinutes = 0;      // dim after this many minutes without a new title/station/BT change, 0 = never (NVS `idlm`)
   int idleLevel = 0;        // 0..100, 0 = off (NVS `idll`)
+  bool btLead = true;       // the radio stays master of the Bluetooth link: no role switch (NVS `btlead`)
   bool btEnabled = true; // Bluetooth on: connect to the headphones (web toggle). Off: no paging,
                          // no paging windows, link dropped.
   int btIdentity = 0;    // >0: locally administered base MAC (last octet + this value).

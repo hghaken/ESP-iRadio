@@ -27,7 +27,8 @@ struct PlayerStatus {
   int bitrateKbps = 0;     // stream bitrate (icy-br), 0 if unknown
   int btRssiDelta = 127;
   int btBonds = -1;        // Bluetooth bonds stored on the radio (-1 = stack not running)
-  bool muted = false;      // play/pause on the speaker or headphones (or the web page)   // Bluetooth link RSSI relative to the golden range (dB); 127 = unknown
+  bool muted = false;      // play/pause on the speaker or headphones (or the web page)
+  int btRole = -1;         // link role: 0 = the radio is master, 1 = the peer is master, -1 unknown   // Bluetooth link RSSI relative to the golden range (dB); 127 = unknown
 };
 
 // Starts Bluetooth (non-blocking) and the audio tasks.
@@ -100,4 +101,12 @@ void playerLoop();                    // call from loop(): stores a device that 
 // does the same. A station change unmutes.
 void playerSetMuted(bool on);
 bool playerMuted();
+// Coexistence test (H4, docs/wifi-stall-investigation.md): when wanted, WiFi gets priority
+// (ESP_COEX_PREFER_WIFI) only while the A2DP link is up and audio is pulled; BALANCE otherwise
+// (paging needs Bluetooth). Not stored: a restart is back to BALANCE.
+void playerSetCoexWifi(bool wanted);
+bool playerCoexWifiWanted();
+bool playerCoexWifiActive();
+// settings.btLead changed: apply the link policy (takes effect for the next connection).
+void playerApplyLinkPolicy();
 const char* playStateName(PlayState s);

@@ -63,6 +63,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 <div class="row"><input type="text" id="btname" placeholder="e.g. JBL Charge 5"><button onclick="btPair()">Pair new device</button></div>
 <div class="mut">First put the device in pairing mode (JBL: hold the Bluetooth button until the light flashes quickly; Sony: power button ~7 s). The radio restarts, searches, connects to the first device whose name starts like this, and remembers it. The other devices stay paired.</div>
 <div class="mut" style="margin-top:8px">Devices found: <span id="devs">-</span></div>
+<div class="row"><label><input type="checkbox" id="coexwifi" onchange="post('/api/coex','wifi='+(this.checked?'1':'0'))"> Test: WiFi priority while streaming (until the next restart)</label><span class="mut" id="coexstat"></span></div>
+<div class="row"><label><input type="checkbox" id="btlead" onchange="post('/api/btlead','on='+(this.checked?'1':'0'))"> Radio leads the Bluetooth link (no role switch; keeps WiFi steady next to some speakers)</label></div>
 <div class="row"><label><input type="checkbox" id="bten" onchange="post('/api/btenable','on='+(this.checked?'1':'0'))"> Bluetooth on (connect to the chosen device)</label></div>
 <div class="mut" style="margin-top:8px">Not connecting? Try again turns WiFi off for 30 seconds and calls the chosen device. Nothing is erased.</div>
 <div class="row"><button class="sec" onclick="if(confirm('WiFi goes off for 30 seconds. The radio tries the chosen device again. Nothing is erased. The page will be gone for a moment. Continue?'))post('/api/btretry','')">Try again</button></div>
@@ -135,16 +137,16 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
   ['WiFi',s.wifi.mode=='ap'?'setup mode':s.wifi.rssi+' dBm, access point '+d.bssid+', channel '+d.channel+(s.wifi.roam<0?', threshold '+s.wifi.roam+' dBm':'')],
   ['Memory','internal '+Math.round(s.heap/1024)+' kB free (min '+Math.round(d.minHeap/1024)+'), PSRAM '+Math.round(s.psram/1024)+' kB (min '+Math.round(d.psramMin/1024)+')'],
   ['Battery',(s.batteryMv?(s.batteryMv/1000).toFixed(2)+' V, '+s.batteryPct+'%':'no reading')+' (pin '+d.batRawMv+' mV), '+(s.usbMv?'USB '+(s.usbMv/1000).toFixed(2)+' V':'no USB')+' (pin '+d.pwrRawMv+' mV)'],
-  ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)'):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)],
+  ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)')+(d.btRole==0?', radio leads the link':d.btRole==1?', the device leads the link':''):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)],
   ['Firmware',(d.version||'')+', built '+d.build+', running from slot '+d.partition],
   ['SD card',d.sd||'-'],
   ['Uptime',Math.floor(s.uptime/3600)+' h '+Math.floor(s.uptime%3600/60)+' min, last reset: '+({1:'power on',3:'software',4:'crash',5:'watchdog',6:'watchdog',7:'watchdog',8:'deep sleep',9:'voltage dip (brownout)'}[d.resetReason]||('code '+d.resetReason))+(d.brownouts?', '+d.brownouts+'x brownout in a row':'')]];
  $('diag').innerHTML=rows.map(r=>'<tr><td class="mut" style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top">'+r[0]+'</td><td style="padding:3px 0">'+r[1]+'</td></tr>').join('');
  if(s.backlight)$('blnow').textContent='Now '+s.backlight.now+'%. ';$('sys').textContent=(s.batteryMv?'Battery '+(s.batteryMv/1000).toFixed(2)+' V ('+s.batteryPct+'%)':'Battery: no reading (jumper open?)')+(s.usb?', USB power present':'')+'. Uptime '+Math.floor(s.uptime/60)+' min, heap '+Math.round(s.heap/1024)+' kB free (min '+Math.round(s.minHeap/1024)+' kB), PSRAM '+Math.round(s.psram/1024)+' kB free';
  if(first){first=false;stList=s.stations;lastSt=s.station>=0?s.station:s.last;setTimeout(sdRefresh,300);const sel=$('sel');sel.innerHTML='';s.stations.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;sel.appendChild(o)});
-  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
+  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
  {const c=s.station>=0?s.station:s.last;if(c!=selShown&&document.activeElement!==$('sel'))$('sel').value=c;selShown=c}
- if(s.btDevices)btRender(s.btDevices,!!s.btAuto);document.querySelectorAll('input[type=range]').forEach(rangeFill);considerAutoScan(s);
+ if(s.btDevices)btRender(s.btDevices,!!s.btAuto);if(document.activeElement!==$('coexwifi'))$('coexwifi').checked=!!s.coexWanted;$('coexstat').textContent=s.coexWanted?(s.coexActive?'active':'waiting for streaming'):'';document.querySelectorAll('input[type=range]').forEach(rangeFill);considerAutoScan(s);
 })}
 function load(){first=true;fetch('/api/stations').then(r=>r.text()).then(t=>$('stations').value=t);refresh()}
 let autoScanDone=false;
@@ -280,7 +282,7 @@ static void handleStatus() {
   j += ",\"silenceKBps\":" + String(p.silenceKBps) + ",\"bufferKB\":" + String(p.bufferKB);
   j += ",\"bufferMaxKB\":" + String(NET_BUFFER_BYTES / 1024) + ",\"pcmKB\":" + String(p.pcmBufferKB);
   j += ",\"underruns\":" + String(p.underruns) + ",\"reconnects\":" + String(p.reconnects);
-  j += ",\"bitrateKbps\":" + String(p.bitrateKbps) + ",\"btRssiDelta\":" + String(p.btRssiDelta) + ",\"btBonds\":" + String(p.btBonds);
+  j += ",\"bitrateKbps\":" + String(p.bitrateKbps) + ",\"btRssiDelta\":" + String(p.btRssiDelta) + ",\"btBonds\":" + String(p.btBonds) + ",\"btRole\":" + String(p.btRole);
   j += ",\"bssid\":\"" + (ap ? String("") : WiFi.BSSIDstr()) + "\",\"channel\":" + String(ap ? 0 : WiFi.channel());
   j += ",\"batRawMv\":" + String(b.rawBatMv) + ",\"pwrRawMv\":" + String(b.rawPwrMv);
   j += ",\"minHeap\":" + String(ESP.getMinFreeHeap()) + ",\"psramMin\":" + String(ESP.getMinFreePsram());
@@ -295,6 +297,9 @@ static void handleStatus() {
        "\",\"version\":\"" + String(firmwareVersion) + "\"}";
   j += ",\"bt\":" + String(p.btConnected ? "true" : "false");
   j += ",\"btEnabled\":" + String(p.btEnabled ? "true" : "false");
+  j += ",\"btLead\":" + String(settings.btLead ? "true" : "false");
+  j += ",\"coexWanted\":" + String(playerCoexWifiWanted() ? "true" : "false") + ",\"coexActive\":" +
+       String(playerCoexWifiActive() ? "true" : "false");
   j += ",\"flip\":" + String(settings.displayFlip ? "true" : "false");
   j += ",\"scroll\":" + String(settings.scrollTitles ? "true" : "false");
   j += ",\"muted\":" + String(playerMuted() ? "true" : "false");
@@ -707,6 +712,16 @@ void webBegin(bool setupMode) {
   server.on("/api/btuse", HTTP_POST, handleBtUse);
   server.on("/api/btpair", HTTP_POST, handleBtPair);
   server.on("/api/btdel", HTTP_POST, handleBtDel);
+  server.on("/api/coex", HTTP_POST, [] {
+    playerSetCoexWifi(server.arg("wifi") == "1");
+    server.send(200, "text/plain", "ok");
+  });
+  server.on("/api/btlead", HTTP_POST, [] {
+    settings.btLead = server.arg("on") == "1";
+    settingsSave();
+    playerApplyLinkPolicy();  // for the next connection
+    server.send(200, "text/plain", "ok");
+  });
   server.on("/api/btauto", HTTP_POST, [] {
     playerBtSetAuto(server.arg("on") == "1");
     server.send(200, "text/plain", "ok");

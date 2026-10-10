@@ -15,6 +15,7 @@
 #include "power.h"
 #include "settings.h"
 #include "sdcard.h"
+#include "serialupdate.h"
 #include "web.h"
 #include "weblog.h"
 
@@ -262,6 +263,7 @@ static void powerGuard() {
 }
 
 void setup() {
+  Serial.setRxBufferSize(2048);  // room for one 1 KB chunk of a USB update (serialupdate.cpp)
   Serial.begin(115200);
   weblogBegin();  // from here on every log line is also kept for the web page
   delay(200);
@@ -355,6 +357,7 @@ void setup() {
 
 void loop() {
   webLoop();
+  serialUpdateLoop();  // firmware update over USB (scripts/usb_update.py)
   playerLoop();  // remembers a Bluetooth device that just connected
 
   // Battery: read every 30 s; the display text shows the voltage and the percentage.

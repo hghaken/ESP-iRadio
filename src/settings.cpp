@@ -55,6 +55,7 @@ void settingsLoad() {
   settings.nightLevel = constrain(prefs.getInt("ngtl", 10), 0, 100);
   settings.idleMinutes = constrain(prefs.getInt("idlm", 0), 0, 240);
   settings.idleLevel = constrain(prefs.getInt("idll", 0), 0, 100);
+  settings.btLead = prefs.getBool("btlead", true);
   // Station list: a blob under "stlist" (NVS strings are capped at 4000 bytes, which 20+
   // StreamTheWorld lines exceed). Older installs stored a string under "stations".
   String stations;
@@ -109,6 +110,7 @@ void settingsSave() {
   prefs.putInt("ngtl", settings.nightLevel);
   prefs.putInt("idlm", settings.idleMinutes);
   prefs.putInt("idll", settings.idleLevel);
+  prefs.putBool("btlead", settings.btLead);
   String stations = settingsStationsText();
   prefs.putBytes("stlist", stations.c_str(), stations.length());
   if (prefs.isKey("stations")) prefs.remove("stations");  // pre-blob format
