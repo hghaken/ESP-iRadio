@@ -267,6 +267,7 @@ Hardware:
   entrance `.../livestream-redirect/TEAMFM.mp3` (MP3 192 kbps 44.1 kHz; the audiostreamen.nl links
   go to https or to the Drenthe-Groningen regional stream), hidden mount `/teamfm.aac`, container
   `teamfm-relay`. Titles already "Artist - Song", no swap.
+- `LICENSE` - GPL-3.0 (arduino-audio-tools is GPL-3.0).
 - `AGENTS.md` (this file), `README.md` (short GitHub intro), `CLAUDE.md` (Claude Code workflow only,
   includes this file), `.claude/`.
 
