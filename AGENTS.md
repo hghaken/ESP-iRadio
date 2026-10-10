@@ -7,7 +7,8 @@ streams internet radio stations over WiFi, sends the audio to the headphones ove
 shows station/status info on the display and is configured/controlled through a web page served by
 the ESP32.
 
-Current state (2026-10-10): working and in daily use. WiFi setup via captive portal; the radio
+Current state (2026-10-11): working and in daily use. Everything is in English (web page, display,
+messages, docs) and the project is public as hghaken/ESP-iRadio. WiFi setup via captive portal; the radio
 remembers the last mesh access point and moves to a point of the same network that is at least
 12 dB stronger, checked a minute after every connect and while the signal is weak (the web scan
 list also offers a manual hop). Bluetooth gets the radio to itself while connecting (at boot and in
@@ -356,7 +357,8 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
   charger (>= 1 A) for an empty battery, not a PC port.
 
 ## Conventions
-- AGENTS.md and code comments in English; communication with the user in Dutch.
+- Everything in the repository is English: web page, display texts, messages, docs and code
+  comments (since 2026-10-11, for the public repo). Communication with the user is in Dutch.
 - WiFi credentials are entered via the web page and stored in NVS; they are never hard-coded, printed,
   returned by the API, or committed. Any future compile-time secrets go in git-ignored `secrets.h`.
 - Commit messages: short, imperative. Push to `origin master` after each working step.
