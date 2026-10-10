@@ -1,0 +1,101 @@
+<icecast>
+    <location>Netherlands</location>
+    <admin>icecast@example.com</admin>
+    <hostname>icecast.example.com</hostname>
+
+    <limits>
+        <clients>100</clients>
+        <sources>4</sources>
+        <!-- Max queue per listener; must stay larger than the biggest burst-size below. -->
+        <queue-size>1048576</queue-size>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>10</source-timeout>
+        <burst-on-connect>1</burst-on-connect>
+        <!-- Default burst for every mount without its own <burst-size> below
+             (back to the Icecast default; was 262144 for all mounts). -->
+        <burst-size>65536</burst-size>
+    </limits>
+
+    <authentication>
+        <!-- FILL IN: your own (preferably new) passwords -->
+        <source-password>SOURCE-PASSWORD</source-password>
+        <relay-password>RELAY-PASSWORD</relay-password>
+        <admin-user>icecast</admin-user>
+        <admin-password>ADMIN-PASSWORD</admin-password>
+    </authentication>
+
+    <listen-socket>
+        <port>8888</port>
+        <shoutcast-mount>/320.mp3</shoutcast-mount>
+    </listen-socket>
+
+    <listen-socket>
+        <port>8890</port>
+        <shoutcast-mount>/192.ogg</shoutcast-mount>
+    </listen-socket>
+
+    <listen-socket>
+        <port>8892</port>
+        <shoutcast-mount>/96.aac</shoutcast-mount>
+    </listen-socket>
+
+    <listen-socket>
+        <port>8894</port>
+        <shoutcast-mount>/64.opus</shoutcast-mount>
+    </listen-socket>
+
+    <http-headers>
+        <header name="Access-Control-Allow-Origin" value="*" />
+    </http-headers>
+
+    <!-- Burst per stream. The burst is what a listener gets at once on (re)connect; it is
+         also how far that listener runs behind live.
+         /96.aac  : ESP iRadio. 256 KB = ~21 s cushion at 12 KB/s, fills the radio's
+                    256 KB buffer in one go, so WiFi dips next to Bluetooth are covered.
+         others   : ~4 s, enough for browsers and apps without a long delay. -->
+    <mount type="normal">
+        <mount-name>/96.aac</mount-name>
+        <burst-size>262144</burst-size>
+    </mount>
+
+    <mount type="normal">
+        <mount-name>/320.mp3</mount-name>
+        <burst-size>163840</burst-size>  <!-- 160 KB = ~4 s at 40 KB/s -->
+    </mount>
+
+    <mount type="normal">
+        <mount-name>/192.ogg</mount-name>
+        <burst-size>98304</burst-size>   <!-- 96 KB = ~4 s at 24 KB/s -->
+    </mount>
+
+    <mount type="normal">
+        <mount-name>/64.opus</mount-name>
+        <burst-size>32768</burst-size>   <!-- 32 KB = ~4 s at 8 KB/s -->
+    </mount>
+
+    <fileserve>1</fileserve>
+
+    <paths>
+        <basedir>/usr/share/icecast</basedir>
+        <logdir>/var/log/icecast</logdir>
+        <webroot>/usr/share/icecast/web</webroot>
+        <adminroot>/usr/share/icecast/admin</adminroot>
+        <alias source="/" destination="/status.xsl"/>
+    </paths>
+
+    <logging>
+        <accesslog>access.log</accesslog>
+        <errorlog>error.log</errorlog>
+        <loglevel>3</loglevel> <!-- 4 Debug, 3 Info, 2 Warn, 1 Error -->
+        <logsize>1000</logsize>
+    </logging>
+
+    <security>
+        <chroot>0</chroot>
+        <changeowner>
+            <user>icecast</user>
+            <group>icecast</group>
+        </changeowner>
+    </security>
+</icecast>

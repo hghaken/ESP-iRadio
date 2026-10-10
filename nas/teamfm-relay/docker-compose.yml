@@ -1,0 +1,15 @@
+# Team FM relay for ESP iRadio: Liquidsoap in Docker on the NAS (see README.md).
+services:
+  teamfm-relay:
+    image: savonet/liquidsoap:v2.4.6
+    container_name: teamfm-relay
+    restart: unless-stopped
+    # Icecast runs on the NAS itself; with host networking 127.0.0.1:8888 is that Icecast.
+    network_mode: host
+    entrypoint: ["liquidsoap"]
+    command: ["/scripts/teamfm.liq"]
+    environment:
+      # Comes from the .env file next to this file (not in git).
+      ICECAST_SOURCE_PASSWORD: ${ICECAST_SOURCE_PASSWORD}
+    volumes:
+      - ./teamfm.liq:/scripts/teamfm.liq:ro

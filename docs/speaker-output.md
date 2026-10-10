@@ -1,0 +1,81 @@
+# Speaker and line output: PCM5102A DAC + PAM8403 amplifier (plan, 2026-10-09)
+
+Goal: besides the Bluetooth headphones, add (1) a line output on RCA/3.5 mm for an amplifier or active
+speakers and (2) a small speaker directly on the radio. The Bluetooth switch in the GUI chooses:
+Bluetooth on = headphones, off = DAC output (line + speaker).
+
+Ordered (2026-10-09): PCM5102A DAC module (the purple "GY-PCM5102" board) and a PAM8403
+amplifier module (2 x 3 W class D).
+
+## Why these two
+- **PCM5102A**: a real line output (2.1 Vrms, 112 dB SNR, own low-pass filter, no MCLK needed),
+  I2S from the ESP32. Supplies the signal for the RCA connectors and for the amplifier.
+- **PAM8403**: 2 x 3 W at 5 V into 4 Ω (roughly 1 W per channel from the battery, 3.7 V), line-level input,
+  ~10 mA idle. Sits behind the DAC's line output.
+- A MAX98357A (I2S + amplifier in one) was dropped: it only has a balanced speaker output, no line
+  output; an RCA plug on it would short it out.
+
+## Wiring
+### PCM5102A module (GY-PCM5102)
+| Module | ESP32 | Note |
+|---|---|---|
+| VIN | 5V (USB) or BAT | the module has its own 3.3 V regulator; 5 V is safest, BAT (3.7 V) works on most units |
+| GND | GND | |
+| LCK (LRCK) | GPIO14 | I2S word select, 44.1 kHz |
+| DIN | GPIO13 | I2S data |
+| BCK | GPIO27 | I2S bit clock (2.8 MHz) |
+| SCK | **GND** | master clock not used: tie to ground, otherwise no sound. Most purple boards have a solder jumper on the back for this ("SCK" to GND), otherwise use a wire |
+
+Solder jumpers on the back of the purple board (H = high, L = low; often already set this way from the factory):
+| Jumper | Setting | Meaning |
+|---|---|---|
+| 1 FLT | L | normal filter |
+| 2 DEMP | L | de-emphasis off |
+| 3 XSMT | **H** | sound on (L = mute) |
+| 4 FMT | L | I2S format (H = left-justified) |
+
+Output: 3.5 mm socket plus solder pads **L, R, G** next to the socket. RCA connectors: L → centre pin of
+the red/white RCA, R → centre pin of the other, G → both RCA grounds. Shielded cable, keep it short.
+
+### PAM8403 amplifier module
+| Module | Connection | Note |
+|---|---|---|
+| +5V / VCC | BAT (3.7 V) or 5V (USB) | not on 3V3: the 3.3 V regulator of the Olimex board cannot supply the current peaks |
+| GND | GND | common ground with the DAC |
+| L IN / R IN / GND | pads L / R / G of the DAC | inputs have their own coupling capacitors; mono speaker: use only L, or L and R on two speakers |
+| L+ / L- (R+ / R-) | speaker(s) 4-8 Ω, 2-3 W | **balanced**: never connect a speaker wire to ground; never both outputs to one speaker |
+| SD (shutdown, if the board has that pin) | GPIO2 | high = on; the firmware switches the amplifier off while Bluetooth is on. Board without SD pin: amplifier stays on (~10 mA) or power it through a small MOSFET on GPIO2 |
+
+Boards with a potentiometer: set it to ~3/4 and adjust the volume further on the radio (software).
+
+### Pins on the ESP32
+Used after this extension: display (Arduino Robot LCD, since 2026-10-10) 5/18/21/22/23 +
+backlight 26 + SD card 4 (CS) and 19 (MISO), encoder 32/33/25 (planned), battery 35/39, I2S 27/14/13,
+amplifier SD **2** (was 19, but that is now the SD card's MISO). GPIO2 is a strapping pin
+that is low at start-up: the amplifier then stays off, which is what we want. Not available:
+16/17 (PSRAM), 0/12/15 (strapping), 1/3 (USB serial), 6-11 (flash). After that everything is taken.
+GPIO13/14 are briefly undefined during start-up; at worst that gives a tick from the speaker.
+
+## Current and playing time
+DAC ~15 mA. PAM8403 idle ~10 mA, at room volume on average 50-150 mA, peaks ~0.5 A at 3.7 V.
+When listening through the speaker, expect a third to a half less playing time than with the
+headphones (~14 h). Line output only (amplifier off): hardly any difference.
+
+## Firmware plan
+- Output choice in `PcmSink`: the same 44.1 kHz 16-bit stereo PCM goes to (a) the Bluetooth buffer or
+  (b) the I2S output (`i2s_write`, DMA, ~8 kB internal RAM for DMA buffers). Software volume stays.
+- The choice follows the Bluetooth switch: on = headphones (I2S silent, amplifier off via GPIO2);
+  off = DAC (line output + amplifier on). Possibly a separate "speaker" button later.
+- The decoder must then also run without headphones (now it waits for the Bluetooth link).
+- I2S on the ESP32 (IDF 4.4): `i2s_driver_install(I2S_NUM_0)` with `I2S_MODE_MASTER | I2S_MODE_TX`,
+  44100 Hz, 16 bit, stereo, `I2S_COMM_FORMAT_STAND_I2S`, pins BCK 27 / WS 14 / DOUT 13, no MCLK.
+  The A2DP library does not use I2S (source, not sink), so no conflict. ~5-10 kB flash.
+- For a sample rate other than 44.1 kHz, `PcmSink` already resamples (linear); I2S stays at 44.1 kHz.
+- Without active Bluetooth, WiFi is relaxed (no coexistence problems): then the 320 kbps stream
+  probably also plays without stuttering.
+
+## Order of work
+1. Bluetooth switch in the GUI (done, 2026-10-09).
+2. Connect PCM5102A + PAM8403 according to the tables (SCK to ground, XSMT high, SD on GPIO2).
+3. I2S output in `PcmSink` + switching on the Bluetooth switch; test via OTA, first with the
+   line output (headphones in the 3.5 mm socket), then the amplifier.

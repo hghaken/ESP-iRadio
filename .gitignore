@@ -1,0 +1,22 @@
+# Personal Claude Code settings
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Secrets
+.env
+*.key
+
+# System files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# PlatformIO / Arduino
+.pio/
+build/
+backup/
+.vscode/.browse*
+secrets.h
+
+# Generated before every build (scripts/patch_a2dp_reconnect.py)
+include/build_stamp.h
