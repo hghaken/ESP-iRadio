@@ -23,3 +23,15 @@ public/
 
 # Generated before every build (scripts/patch_a2dp_reconnect.py)
 include/build_stamp.h
+
+# KiCad (KiCad/esp-iradio): backups, caches, locks, per-user project state
+*-backups/
+fp-info-cache
+*.lck
+_autosave-*
+\#auto_saved_files\#
+*.kicad_prl
+KiCad/esp-iradio/ref/
+# JLCPCB Tools output (regenerated); its project.db (LCSC assignments) is committed
+KiCad/esp-iradio/jlcpcb/gerber/
+KiCad/esp-iradio/jlcpcb/production_files/
