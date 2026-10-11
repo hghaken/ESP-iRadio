@@ -297,6 +297,13 @@ Hardware:
   entrance `.../livestream-redirect/TEAMFM.mp3` (MP3 192 kbps 44.1 kHz; the audiostreamen.nl links
   go to https or to the Drenthe-Groningen regional stream), hidden mount `/teamfm.aac`, container
   `teamfm-relay`. Titles already "Artist - Song", no swap.
+- `KiCad/` - design input for a PCB in KiCad (no KiCad files yet): `README.md` (overview, phase 1
+  carrier board for the Olimex board with display, EC11 encoder, microSD, PCM5102A line out and
+  PAM8403 speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
+  questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
+  `src/config.h`), `03-parts-and-footprints.md`, `04-power.md`, `05-layout-guidelines.md` (antenna
+  keep-out, routing, fab rules), `06-checklist-and-bring-up.md`. A pin change on the board means
+  updating `src/config.h`, this file and `KiCad/02-pinout-and-nets.md` together.
 - `LICENSE` - GPL-3.0 (arduino-audio-tools is GPL-3.0).
 - `AGENTS.md` (this file), `README.md` (short GitHub intro), `CLAUDE.md` (Claude Code workflow only,
   includes this file), `.claude/`.
