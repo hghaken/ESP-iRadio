@@ -61,6 +61,24 @@ charger and regulator on the PCB itself. Only after phase 1 works; notes in `01-
 5. If a pin changes: update `src/config.h`, `AGENTS.md` and `02-pinout-and-nets.md` in the same
    step. The firmware and the board must never disagree.
 
+## Tooling on the owner's PC (2026-10-11)
+
+- **KiCad 9.0.9** (`C:\Program Files\KiCad\9.0`). Chosen over EasyEDA Pro for git-friendly text
+  files and AI access; JLCPCB output comes from plugins.
+- **KiCad MCP server** for Claude Code: mixelpixx/KiCAD-MCP-Server v2.8.2 (branch `stable`, MIT),
+  cloned to `C:\Users\Admin\mcp-servers\KiCAD-MCP-Server`. Python: a venv in that folder (`venv\`,
+  made from KiCad's own Python 3.11 with `--system-site-packages`, so `pcbnew` imports and the KiCad
+  install itself stays untouched) with `requirements.txt`; the server finds the venv by itself.
+  Node 24, `npm install` + `npm run build` -> `dist\index.js`. Registered in Claude Code at user
+  scope as `kicad` (`claude mcp add kicad --scope user -e KICAD_AUTO_LAUNCH=false ... -- node
+  ...\dist\index.js`); the tools appear in a new Claude Code session. Update: `git pull` in that
+  folder, `npm run build`, `venv\Scripts\python -m pip install -r requirements.txt`.
+- Optional, for live sync with an open KiCad window: KiCad -> Preferences -> Plugins -> enable
+  the KiCad API (IPC). The file-based tools work without it.
+- To install in KiCad (Plugin and Content Manager), owner's choice: **kicad-jlcpcb-tools** (LCSC
+  part search with stock, `LCSC` fields, JLCPCB BOM/CPL export) and **easyeda2kicad** (symbol,
+  footprint and 3D model of an LCSC part).
+
 ## Rules for agents
 
 - Do not invent part numbers, LCSC codes or module dimensions: look them up (datasheet, supplier
