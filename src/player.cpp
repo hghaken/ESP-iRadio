@@ -938,11 +938,34 @@ static void checkStarvation() {
 
 int playerBtRefreshes() { return btRefreshCount; }
 
+// Test (review experiment E3, docs/wifi-stall-investigation.md): suspend the A2DP media stream for
+// a few seconds while the link (ACL) and WiFi stay as they are, then start it again. Shows
+// whether the WiFi starvation follows the Bluetooth audio traffic or the link itself.
+static uint32_t pauseUntil = 0;  // 0 = no pause running
+
+bool playerBtPause(int seconds) {
+  if (!lock || !btStackStarted || !btLinkUp() || pauseUntil) return false;
+  seconds = constrain(seconds, 2, 60);
+  esp_err_t err = esp_a2d_media_ctrl(ESP_A2D_MEDIA_CTRL_SUSPEND);
+  Log.printf("[bt] test: audio stream suspended for %d s -> %d\n", seconds, (int)err);
+  if (err != ESP_OK) return false;
+  pauseUntil = (millis() + seconds * 1000UL) | 1;
+  return true;
+}
+
+static void checkPause() {
+  if (!pauseUntil || (int32_t)(millis() - pauseUntil) < 0) return;
+  pauseUntil = 0;
+  esp_err_t err = esp_a2d_media_ctrl(ESP_A2D_MEDIA_CTRL_START);
+  Log.printf("[bt] test: audio stream started again -> %d\n", (int)err);
+}
+
 void playerLoop() {
   handleButtons();
   checkRole();
   updateCoex();
-  checkStarvation();
+  checkPause();
+  if (!pauseUntil) checkStarvation();
   static uint32_t lastPolicy = 0;
   if (btStackStarted && settings.btLead && !btLinkUp() && millis() - lastPolicy > 2000) {
     lastPolicy = millis();  // before every page: Bluedroid allows the switch again after a stream

@@ -96,6 +96,8 @@ void playerBtPairNew();               // no selection, library address cleared; 
 bool playerBtForgetDevice(int index); // bond and entry removed; true when the caller should restart
 // Times the A2DP link was dropped and paged again because WiFi starved next to it (v1.12).
 int playerBtRefreshes();
+// Test: suspend the A2DP audio stream for 2-60 s (link and WiFi untouched), then start it again.
+bool playerBtPause(int seconds);
 void playerLoop();                    // call from loop(): stores a device that just connected,
                                       // handles the speaker/headphone buttons
 // Buttons on the Bluetooth device (AVRCP): play/pause once = mute on/off, twice = next station,

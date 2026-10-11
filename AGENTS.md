@@ -27,7 +27,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.15 (2026-10-11 evening). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.17 (2026-10-11 evening). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -82,7 +82,7 @@ Hardware:
   see Commands. `scripts/usb_update.py` is its firmware path.
 - `scripts/patch_idf_bitpool.py` - env idf only (patches the framework-espidf package before
   each build; part 3 adds the v1.15 Bluetooth TX counters in btc_a2dp_source.c, bta_av_aact.c,
-  l2c_link.c and btm_pm.c): sets Bluedroid's SBC source max bitpool
+  l2c_link.c and btm_pm.c, part 4 the v1.17 full-media-packets rule): sets Bluedroid's SBC source max bitpool
   (`BTA_AV_CO_SBC_MAX_BITPOOL` in the framework-espidf package) to 35 before each build (v1.08,
   did not cure the JBL stalls; set it back to 53 when the investigation closes), and adds one
   `ESP_LOGE` "(diag) a2dp stream: peer mtu ..." line where the stream starts (v1.11). The self-built
@@ -241,7 +241,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.15 on 2026-10-11),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.17 on 2026-10-11),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -393,6 +393,10 @@ Toolchains and frameworks live in `C:/pio` (see `core_dir` in `platformio.ini`).
   "Erase all pairings" wipes the stored address and bonds on the radio only and does not change
   the Bluetooth address. Remove "ESP iRadio" in the Sony app first, then put the headphones in
   pairing mode; otherwise they keep the old link key and refuse the new attempt.
+- Volume: the web slider sets the radio's software volume (applied in `btData()`), stored in NVS
+  (`vol`, only that key) and restored at boot. The speaker's or headphones' own volume buttons
+  are not controlled by the radio (no AVRCP absolute volume); mute via the play button is not
+  stored (a restart plays with sound).
 - Battery: shown bottom right on the display and under Diagnostics. Empty cell -> "Battery empty - charge it"
   and deep sleep; charging an empty cell on USB -> "Charging battery, please wait" until 3.55 V. Use a real
   charger (>= 1 A) for an empty battery, not a PC port.
@@ -577,7 +581,18 @@ before editing and commit small steps, so agents do not overwrite each other.
   every 30 s `(diag) a2dp tx 30s: queued N, av drops, frame drops, l2c bufs max, acl completed,
   txq` and a `(diag) link mode` line per HCI mode change. Healthy on the JBL: ~2000 media
   packets per 30 s (~67/s, about 5 SBC frames each), no drops, queue empty, every packet
-  completed. A radio restart cured the bad state when a link refresh did not. Seen working the same
+  completed. A radio restart cured the bad state when a link refresh did not (once; at 18:50
+  the state survived a restart too).
+  The counters stayed exactly the same when the WiFi side collapsed (18:46): no BT backlog, no
+  mode change. v1.16 adds a test endpoint `/api/btpause` (s=2..60: `esp_a2d_media_ctrl` SUSPEND,
+  then START; link and WiFi untouched): in the bad state the input went from 0-4 KB/s to 48 KB/s
+  while paused and back to 0 the moment audio resumed. Cause found: Bluedroid sends a packet
+  every 30 ms tick with the frames due (~10.3) and splits what does not fit the sink MTU into a
+  second, small packet; the JBL (MTU 660, 7 frames per packet) got ~67 packets/s, two back to
+  back per tick, the headphones (MTU 883, 10 frames) ~34. v1.17 (`scripts/patch_idf_bitpool.py`
+  part 4, in `btc_get_num_aa_frame()`): the frames due are rounded down to whole packets, the
+  rest stays in the PCM counter for the next tick, so the JBL gets ~49 full packets/s (measured
+  1477 per 30 s) with the same audio; the headphones are unchanged. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up

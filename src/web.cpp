@@ -713,6 +713,10 @@ void webBegin(bool setupMode) {
   server.on("/api/btuse", HTTP_POST, handleBtUse);
   server.on("/api/btpair", HTTP_POST, handleBtPair);
   server.on("/api/btdel", HTTP_POST, handleBtDel);
+  server.on("/api/btpause", HTTP_POST, [] {  // test: s = seconds without Bluetooth audio
+    bool ok = playerBtPause(server.hasArg("s") ? server.arg("s").toInt() : 10);
+    server.send(ok ? 200 : 409, "text/plain", ok ? "ok" : "not possible now");
+  });
   server.on("/api/coex", HTTP_POST, [] {
     playerSetCoexWifi(server.arg("wifi") == "1");
     server.send(200, "text/plain", "ok");

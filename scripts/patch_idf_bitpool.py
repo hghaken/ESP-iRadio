@@ -131,6 +131,31 @@ patch(a2dp / "btc_a2dp_source.c", "/* iradio: tx diag */", [
 """),
 ])
 
+# --- 4. Full media packets only (v1.17) ---
+# Every 30 ms tick Bluedroid encodes the frames due (~10.3 SBC frames at 44.1 kHz) and packs them
+# into media packets of at most the sink's MTU. With the JBL Charge 5 (MTU 660, 83-byte frames at
+# bitpool 35: 7 frames per packet) that is a full packet plus a packet with the 3-4 left over,
+# ~67 packets/s, two back to back per tick; the WH-1000XM6 (MTU 883: 10 frames) needs ~34/s.
+# Next to the JBL WiFi starved while the band was busy (2026-10-11, pausing the A2DP stream
+# brought WiFi back at once). Here the frames due are rounded down to whole packets; the rest
+# stays in the PCM counter for the next tick (one tick of extra latency at most), so the JBL gets
+# ~49 full packets/s with the same audio and the headphones are unchanged.
+patch(a2dp / "btc_a2dp_source.c", "/* iradio: full packets */", [
+    ("""        result = a2dp_source_local_param.btc_aa_src_cb.media_feeding_state.pcm.counter / pcm_bytes_per_frame;
+""",
+     """        result = a2dp_source_local_param.btc_aa_src_cb.media_feeding_state.pcm.counter / pcm_bytes_per_frame;
+        { /* iradio: full packets */
+            UINT32 fl = a2dp_source_local_param.btc_aa_src_cb.encoder.u16PacketLength;
+            UINT32 mtu = a2dp_source_local_param.btc_aa_src_cb.TxAaMtuSize;
+            if (fl > 0 && mtu > fl) {
+                UINT32 fpp = (mtu - 1) / fl;  /* frames per packet, as the packing loop fills them */
+                if (fpp > 15) fpp = 15;
+                if (fpp > 1 && result >= fpp) result -= result % fpp;
+            }
+        }
+"""),
+])
+
 patch(BT / "bta/av/bta_av_aact.c", "/* iradio: tx diag */", [
     ("    p_scb->l2c_bufs = (UINT8)L2CA_FlushChannel (p_scb->l2c_cid, L2CAP_FLUSH_CHANS_GET);\n",
      "    p_scb->l2c_bufs = (UINT8)L2CA_FlushChannel (p_scb->l2c_cid, L2CAP_FLUSH_CHANS_GET);\n"

@@ -67,6 +67,7 @@ Other facts:
 | H4 | Coexistence arbitration (BALANCE) gives WiFi too little time with this sink's A2DP timing (packet types, flow control, retransmissions) | **rejected as a fix** (v1.09: fewer full collapses, but average input 9.7 KB/s) |
 | H5 | WiFi channel 6 specifically (AFH map / ch 6 AP) | open - try an access point on another channel |
 | H6 | TCP: delayed ACKs from the radio during BT slots -> server RTO backoff -> long stalls | open - would show in a packet capture on the server side |
+| H8 | The JBL's small MTU (660) makes Bluedroid send ~67 packets/s (a full one plus a leftover one per 30 ms tick) vs ~34 for the headphones; with a busy band WiFi no longer fits between them | **confirmed by E3** (pausing A2DP: 0 -> 48 KB/s); fix v1.17 (full packets only, ~49/s) under test |
 | H7 | The JBL's own state (other devices in its pairing memory / a second link / a stuck link mode) used the airtime | weakened: the reset bought ~2.5 h, then the collapse came back |
 
 ## Where we stopped (2026-10-11 01:20)
@@ -296,3 +297,24 @@ BALANCE). Agreed next steps for the next session:
   link-rate watch (TR-064 + /api/status + ping every ~50 s) and the serial logger (diag, stat, bt,
   wifi lines); both are files in the Claude session scratchpad, results will be added here.
   Radio lock: Claude Code keeps it for these passive measurements only (no flashing planned).
+- 2026-10-11 18:46-19:00 Claude Code: collapse at 18:46 on channel 7 with the Pi off, after ~40 min
+  clean (28 MB on one connection). The v1.15 TX counters stayed exactly as when healthy (2000
+  queued/completed per 30 s, no drops, queue 0, no mode change) -> review mechanisms 2 and 3
+  rejected: the Bluetooth side does not change. The v1.13 refresh fired (starved input) and did
+  not help; at 18:50 even the v1.16 restart did not clear it (4-7 KB/s right after boot).
+  **E3 (v1.16 `/api/btpause`)** in the bad state: input 0-4 KB/s with the JBL playing, **48 KB/s**
+  while the A2DP stream was suspended (link and WiFi untouched), 0 KB/s the moment it resumed;
+  ping 167 -> 45 ms while paused. So the A2DP traffic itself starves WiFi, live.
+  Why the JBL and not the headphones (user's question): Bluedroid's media timer ticks every 30 ms
+  (`BTC_MEDIA_TIME_TICK_MS` 30) and sends the ~10.3 SBC frames due per tick, split into packets of
+  at most the sink MTU: JBL (MTU 660, 7 x 83 bytes) a full packet plus one with the 3-4 left over
+  = ~67 packets/s (the counter's 2000 per 30 s), two back to back per tick; WH-1000XM6 (MTU 883,
+  10 frames) one packet per tick = ~34/s. Twice the transmissions and turnarounds, shorter gaps
+  for WiFi; with a busy band (evening) WiFi no longer fits.
+  **v1.17** (patch part 4): `btc_get_num_aa_frame()` rounds the frames due down to whole packets;
+  the rest stays in the PCM counter for the next tick. Measured on the JBL: 1476-1478 packets per
+  30 s (~49/s), audio pull 176 KB/s without silence. Right after the update the input climbed to
+  19-21 KB/s and the buffer filled (it was 0-7 KB/s on v1.16 minutes before). Watching.
+- 2026-10-11 19:27 Claude Code: v1.17 on the JBL, first 28 min (18:59-19:27): 167 [stat] samples,
+  input 11-12 KB/s (avg 11.5, never below 11), no stall, no underrun, no refresh; buffer full,
+  FRITZ!Box 57-72 Mbit/s, ping 64-127 ms. The user hears it playing fine. Watching continues.
