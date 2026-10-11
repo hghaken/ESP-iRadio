@@ -140,8 +140,8 @@ fewer parts for one speaker. Follow the Diodes Inc. datasheet application circui
 |---|---|---|
 | VDD | `+VAMP` | USB-C 5 V branch, see `04-power.md`; 10 uF + 1 uF at the pin, bulk cap nearby |
 | GND | `GND` | |
-| IN+ | `AMP_IN` via the input coupling cap (datasheet value, ~0.1-1 uF) | mono sum of the DAC outputs: `LINE_L` and `LINE_R` each through 10k into `AMP_IN` (passive summing) |
-| IN- | `GND` via an identical coupling cap + resistor | single-ended drive of the differential input, as in the datasheet |
+| IN+ | `AMP_INP`: 100 nF from `AMP_SUM` | mono sum: `LINE_L` and `LINE_R` each through 180k into `AMP_SUM` (Thevenin 90k = external Rin, gain 150k/(10k+Rin) ~ x1.5, so the DAC's 2.1 Vrms full scale gives ~2.5 W in 4 Ohm) |
+| IN- | `AMP_INN`: 91k + 100 nF to GND | matches the IN+ source impedance, single-ended drive of the differential input |
 | SD | `AMP_SD` | active low: 100k pull-down keeps the amplifier off at boot; GPIO2 high = on |
 | OUT+ / OUT- | `SPK+` / `SPK-` | bridged (BTL): neither side may touch GND; optional ferrite + 220 pF per output for EMI |
 

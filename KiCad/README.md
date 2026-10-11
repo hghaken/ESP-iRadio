@@ -73,11 +73,32 @@ charger and regulator on the PCB itself. Only after phase 1 works; notes in `01-
   scope as `kicad` (`claude mcp add kicad --scope user -e KICAD_AUTO_LAUNCH=false ... -- node
   ...\dist\index.js`); the tools appear in a new Claude Code session. Update: `git pull` in that
   folder, `npm run build`, `venv\Scripts\python -m pip install -r requirements.txt`.
+- Pitfall: the server writes new sheets in the KiCad 10 file format, which KiCad 9 skips
+  without an error (empty netlist). Its templates are patched to KiCad 9 on this PC; details and
+  the fix in `esp-iradio/NOTES.md` ("Tooling pitfall"). Check every change with
+  `kicad-cli sch export netlist` (component count) and `kicad-cli sch erc`.
 - Optional, for live sync with an open KiCad window: KiCad -> Preferences -> Plugins -> enable
   the KiCad API (IPC). The file-based tools work without it.
 - To install in KiCad (Plugin and Content Manager), owner's choice: **kicad-jlcpcb-tools** (LCSC
   part search with stock, `LCSC` fields, JLCPCB BOM/CPL export) and **easyeda2kicad** (symbol,
   footprint and 3D model of an LCSC part).
+
+## Commands (`kicad-cli`, run inside `esp-iradio/`)
+
+`C:\Program Files\KiCad\9.0\bin\kicad-cli.exe`:
+- ERC: `kicad-cli sch erc --severity-all -o erc.rpt esp-iradio.kicad_sch`
+- Netlist (check the component count after every schematic change):
+  `kicad-cli sch export netlist --format kicadsexpr -o esp-iradio.net esp-iradio.kicad_sch`
+- Schematic PDF/SVG: `kicad-cli sch export pdf esp-iradio.kicad_sch` (or `export svg -o <dir>`)
+- DRC: `kicad-cli pcb drc esp-iradio.kicad_pcb`
+- Gerbers/drill: `kicad-cli pcb export gerbers esp-iradio.kicad_pcb -o fab/`,
+  `kicad-cli pcb export drill esp-iradio.kicad_pcb -o fab/`; JLCPCB BOM/CPL via the JLCPCB Tools
+  plugin in the KiCad GUI.
+- STEP for the case: `kicad-cli pcb export step esp-iradio.kicad_pcb -o case/esp-iradio.step`
+
+Close the schematic/board in KiCad (or reload afterwards) before an agent edits the files: KiCad
+overwrites external changes; `*.lck` files mean KiCad has them open. Only one agent session works
+on the KiCad project at a time.
 
 ## Rules for agents
 
