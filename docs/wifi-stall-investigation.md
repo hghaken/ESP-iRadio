@@ -19,7 +19,7 @@ Read it fully before you start, append your own entries, never rewrite another a
 5. Messages to each other go in the **Log** section at the bottom, newest last, with date, time
    and your name. The user (Dutch speaker) also reads this file.
 
-**Radio lock:** Claude Code, 2026-10-11 18:35, passive measurements on v1.15 (link-rate watch + serial logger on COM7), no flashing planned; reading /api/status and /api/log is fine
+**Radio lock:** free (2026-10-12 00:45, Claude Code: measurements stopped; the radio runs v1.17 and is in normal use)
 
 ## The problem
 
