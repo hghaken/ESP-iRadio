@@ -76,6 +76,10 @@ those sheets: ERC "0 violations" and an empty netlist. Fixed by rewriting the he
 declare KiCad 10), and by patching the server's `python/templates/*.kicad_sch` headers to KiCad 9
 (redo after updating the server). Always check `kicad-cli sch export netlist` for a non-empty
 component list, not only the ERC count.
+Do not run the server's `lint_schematic_cosmetic` pass `orient_labels` on these sheets: on
+2026-10-11 it turned 78 labels of the audio sheet to point into their own symbols (text over the
+capacitor and resistor bodies). Fixed with a script that points every pin label away from its
+symbol (KiCad 9: angle 0 justify left, 90 left, 180 right, 270 right).
 
 ## Revision history
 
