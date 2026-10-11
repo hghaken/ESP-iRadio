@@ -21,7 +21,7 @@ New-Item -ItemType Directory -Force $mirror | Out-Null
 # /MIR keeps the mirror identical; the excluded folders are neither copied nor purged, so the
 # mirror keeps its own .pio (libraries, build cache) between runs.
 robocopy $project $mirror /MIR /NFL /NDL /NJH /NJS /NP `
-    /XD .pio .git .claude .vscode backup docs `
+    /XD .pio .git .claude .vscode backup docs public `
     /XF *.png *.url sdkconfig.idf | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy failed with code $LASTEXITCODE" }
 

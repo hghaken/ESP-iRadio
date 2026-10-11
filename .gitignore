@@ -18,5 +18,8 @@ backup/
 .vscode/.browse*
 secrets.h
 
+# Clone of the public repo (hghaken/ESP-iRadio), filled by scripts/export_public.py
+public/
+
 # Generated before every build (scripts/patch_a2dp_reconnect.py)
 include/build_stamp.h
