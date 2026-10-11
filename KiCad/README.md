@@ -1,9 +1,9 @@
 # KiCad: PCB for the ESP iRadio
 
 This folder holds everything an AI agent (Claude, Grok, ...) or a person needs to design a printed
-circuit board for this radio in **KiCad (8 or 9)**. It contains design input only: no KiCad files
-exist yet. Put the KiCad project in this folder when it is started (`KiCad/esp-iradio/`, see
-"Deliverables").
+circuit board for this radio in **KiCad 9**. The KiCad project is `esp-iradio/` (schematic Rev A
+draft: one A3 sheet in Elektuur/Elektor style; no board layout yet). Its status, decisions and
+libraries are in `esp-iradio/NOTES.md`.
 
 ## What the board is
 

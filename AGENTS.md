@@ -297,7 +297,9 @@ Hardware:
   entrance `.../livestream-redirect/TEAMFM.mp3` (MP3 192 kbps 44.1 kHz; the audiostreamen.nl links
   go to https or to the Drenthe-Groningen regional stream), hidden mount `/teamfm.aac`, container
   `teamfm-relay`. Titles already "Artist - Song", no swap.
-- `KiCad/` - design input for a PCB in KiCad (no KiCad files yet): `README.md` (overview, phase 1
+- `KiCad/` - PCB in KiCad 9: the project `KiCad/esp-iradio/` (schematic Rev A draft on one A3
+  sheet in Elektuur style, module symbol MOD1, project libraries in `lib/`; status and decisions in
+  its `NOTES.md`; no board layout yet) and the design input: `README.md` (overview, phase 1
   carrier board for the Olimex board with display, EC11 encoder, microSD, PCM5102A line out and
   PAM8403 speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match

@@ -16,7 +16,7 @@ footprint, from the datasheet or measured from the owner's part; record the sour
 
 | Ref | Qty | Part | KiCad symbol | KiCad footprint | Notes |
 |---|---|---|---|---|---|
-| J1, J2 | 2 | Female header 1x19, 2.54 mm | `Connector_Generic:Conn_01x19` | `Connector_PinSocket_2.54mm:PinSocket_1x19_P2.54mm_Vertical` | socket for the Olimex board; positions from the Olimex Rev.D files |
+| MOD1 | 1 (2 sockets) | Olimex module on two female headers 1x19, 2.54 mm, rows 25.40 mm apart | `esp-iradio:Olimex_ESP32-DevKit-LiPo` (project symbol, pins 1-19 = EXT1, 20-38 = EXT2) | `esp-iradio:Olimex_ESP32-DevKit-LiPo_Socket` (project footprint: 38 THT pads, 1x19 socket 3D models, board and antenna outline on F.Fab) | was J1/J2 (two `Conn_01x19`) until 2026-10-12; order two 1x19 female headers |
 | J3 | 1 | Display connection 1x8, 2.54 mm | `Connector_Generic:Conn_01x08` | `Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical` (plug-in) or `Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical` (module soldered) | display on the board (D2); add the module's mounting holes/standoffs if it has them |
 | SW1 | 1 | Rotary encoder EC11 with switch, vertical | `Device:RotaryEncoder_Switch` | `Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm` | shaft length to suit the case; check the footprint against the bought part |
 | J4 | 1 | microSD socket, push-push, SMD | `Connector:Micro_SD_Card` (or `_Det`) | per socket, e.g. `Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5` or `Connector_Card:microSD_HC_Molex_104031-0811` | choose one that JLCPCB stocks, then its footprint |

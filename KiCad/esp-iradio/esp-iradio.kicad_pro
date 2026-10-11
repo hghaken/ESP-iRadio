@@ -613,26 +613,6 @@
     [
       "41c4da12-e59e-4675-bbd9-2603c7cfe6e6",
       "Root"
-    ],
-    [
-      "58bd93f5-7533-4afa-afe7-0e32f702b139",
-      "Power"
-    ],
-    [
-      "3366db3a-f3bb-4a94-99d3-67745534badc",
-      "Olimex socket"
-    ],
-    [
-      "54f6f4dd-d102-46b4-9aba-77a3fd46d879",
-      "Display and microSD"
-    ],
-    [
-      "091154de-985e-4b79-9432-46de5492c493",
-      "Controls"
-    ],
-    [
-      "1b878ea0-415a-4554-b100-100f8e880c3a",
-      "Audio"
     ]
   ],
   "text_variables": {}

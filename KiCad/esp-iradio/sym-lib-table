@@ -1,0 +1,5 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "Elektuur")(type "KiCad")(uri "${KIPRJMOD}/lib/Elektuur.kicad_sym")(options "")(descr "Elektuur style symbols (CC0) by M. Gyger, gitlab.com/mgyger/kicad-addons v0.7.0"))
+	(lib (name "esp-iradio")(type "KiCad")(uri "${KIPRJMOD}/lib/esp-iradio.kicad_sym")(options "")(descr "Project symbols"))
+)
