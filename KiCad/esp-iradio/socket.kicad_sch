@@ -1198,24 +1198,24 @@
 		(dnp no)
 		(uuid "6cc84b2d-6682-463b-b8ea-702d3089c6c8")
 		(property "Reference" "#FLG03"
-			(at 40.64 139.7 0)
+			(at 40.64 138.43 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-			)
+			 (hide yes))
 		)
 		(property "Value" "PWR_FLAG"
-			(at 40.64 144.78 0)
+			(at 40.64 138.43 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-			)
+			 (hide yes))
 		)
 		(property "Footprint" ""
 			(at 40.64 142.24 0)
@@ -1272,24 +1272,24 @@
 		(dnp no)
 		(uuid "60c83159-9ab4-4bcb-bd71-90d81cf628d9")
 		(property "Reference" "#FLG04"
-			(at 40.64 38.1 0)
+			(at 40.64 36.83 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-			)
+			 (hide yes))
 		)
 		(property "Value" "PWR_FLAG"
-			(at 40.64 43.18 0)
+			(at 40.64 36.83 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-			)
+			 (hide yes))
 		)
 		(property "Footprint" ""
 			(at 40.64 40.64 0)
@@ -1346,7 +1346,7 @@
 		(dnp no)
 		(uuid "3b334baf-d159-4165-95a4-851da2eb4a43")
 		(property "Reference" "TP4"
-			(at 25.4 36.83 0)
+			(at 30.48 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1356,14 +1356,14 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 25.4 35.559999999999995 0)
+			(at 25.4 36.83 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-			)
+			 (hide yes))
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
 			(at 30.48 40.64 0)

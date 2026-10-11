@@ -1631,7 +1631,7 @@
 		(dnp no)
 		(uuid "c6b8254a-5e29-4d06-b54b-c05c4a5d3fd5")
 		(property "Reference" "R8"
-			(at 99.06 125.73 0)
+			(at 99.06 125.73 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1641,7 +1641,7 @@
 			)
 		)
 		(property "Value" "0R"
-			(at 99.06 124.46000000000001 0)
+			(at 99.06 133.35 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1708,7 +1708,7 @@
 		(dnp no)
 		(uuid "9d32f5b0-1dd1-434e-891b-8a0263778e9b")
 		(property "Reference" "R9"
-			(at 99.06 139.7 0)
+			(at 99.06 138.43 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1718,7 +1718,7 @@
 			)
 		)
 		(property "Value" "0R"
-			(at 99.06 138.42999999999998 0)
+			(at 99.06 146.05 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2022,7 +2022,7 @@
 		(dnp no)
 		(uuid "5b4a2934-0722-49a1-8401-d4ad3723f529")
 		(property "Reference" "TP5"
-			(at 81.28 151.13 0)
+			(at 86.36 152.4 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2032,13 +2032,14 @@
 			)
 		)
 		(property "Value" "SPI_SCK"
-			(at 81.28 149.85999999999999 0)
+			(at 81.28 151.13 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
@@ -2366,105 +2367,105 @@
 		)
 		(uuid "91597002-ed7f-40e2-a8b7-6db9d5ff66ad")
 	)
-	(label "SPI_SCK_BUS"
+	(global_label "SPI_SCK_BUS"
 		(at 58.42 60.96 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "512e19ce-9214-4b41-9117-c1d4e50a0b60")
+		(uuid "83df6d40-2eb7-4fe9-9af6-96a2056fed62")
 	)
-	(label "SPI_MOSI_BUS"
+	(global_label "SPI_MOSI_BUS"
 		(at 58.42 63.5 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "448c6383-a356-4b17-8e43-d88f556188d1")
+		(uuid "aac3905a-674e-46eb-a8c0-468e983c8e8f")
 	)
-	(label "SPI_SCK_BUS"
+	(global_label "SPI_SCK_BUS"
 		(at 167.64 78.74000000000001 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "7b05ceb3-4500-442e-bd44-8610ca697b7a")
+		(uuid "6a784fbd-bb84-4429-b6c5-017779aa994d")
 	)
-	(label "SPI_MOSI_BUS"
+	(global_label "SPI_MOSI_BUS"
 		(at 167.64 73.66 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "1bdec3c6-3cd3-4d0c-91e1-dfb938841a4b")
+		(uuid "128c32ca-6703-442f-8008-917ac0c04c6f")
 	)
-	(label "SD_DAT1"
+	(global_label "SD_DAT1"
 		(at 167.64 86.36 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "d86cc81a-b7c6-42bd-82f0-174ce86c5f7c")
+		(uuid "9be7d99d-92fc-4960-aefa-1edddb7ecb1a")
 	)
-	(label "SD_DAT2"
+	(global_label "SD_DAT2"
 		(at 167.64 68.58 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "a16984a5-eac9-4b20-89d7-cccb13938164")
+		(uuid "383ceb04-8173-4301-b848-e897722aad03")
 	)
-	(label "SD_DAT1"
+	(global_label "SD_DAT1"
 		(at 144.78 105.41 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "471c7fe0-43a9-453a-9a60-b71133eb0d62")
+		(uuid "ab03dd83-a467-4269-891a-e89dba5abbf6")
 	)
-	(label "SD_DAT2"
+	(global_label "SD_DAT2"
 		(at 157.48 105.41 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify right)
 		)
-		(uuid "7ae6b0b3-394e-4484-ac67-b97959235d7b")
+		(uuid "8da948e7-d855-4bf8-8e8f-474727695087")
 	)
-	(label "SPI_SCK_BUS"
+	(global_label "SPI_SCK_BUS"
 		(at 102.87 129.54 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify left)
 		)
-		(uuid "23b4084f-f8e1-4999-9cb4-e26e72276b7e")
+		(uuid "c78dd510-ca15-4dbe-b2fb-e041c8be9374")
 	)
-	(label "SPI_MOSI_BUS"
+	(global_label "SPI_MOSI_BUS"
 		(at 102.87 142.24 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify left)
 		)
-		(uuid "546b037f-0d5b-406f-a2f1-0a358ae2c908")
+		(uuid "d448ef00-12d3-4e71-becd-11a2aa42e355")
 	)
 	(sheet_instances
 		(path "/"

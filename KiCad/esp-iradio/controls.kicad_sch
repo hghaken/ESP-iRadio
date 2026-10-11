@@ -1605,7 +1605,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 172.72 50.8 0)
+		(at 177.8 50.8 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1613,7 +1613,7 @@
 		(dnp no)
 		(uuid "3c5d6c3c-5095-46a0-bc02-2fd0c2e138a5")
 		(property "Reference" "R14"
-			(at 176.53 50.8 0)
+			(at 181.61 50.8 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1623,7 +1623,7 @@
 			)
 		)
 		(property "Value" "10k DNP"
-			(at 177.8 52.07 0)
+			(at 182.88000000000002 52.07 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1633,7 +1633,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 170.942 50.8 90)
+			(at 176.02200000000002 50.8 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1644,7 +1644,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 172.72 50.8 0)
+			(at 177.8 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1655,7 +1655,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 172.72 50.8 0)
+			(at 177.8 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1921,7 +1921,7 @@
 		(uuid "a0ee51ae-350c-4402-baff-1166d001b7a9")
 	)
 	(global_label "+3V3"
-		(at 172.72 46.989999999999995 90)
+		(at 177.8 46.99 90)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1931,7 +1931,7 @@
 		(uuid "db92f0db-0526-489b-8190-cd604089a178")
 	)
 	(global_label "SPARE_IN36"
-		(at 172.72 54.61 270)
+		(at 177.8 54.61 270)
 		(effects
 			(font
 				(size 1.27 1.27)

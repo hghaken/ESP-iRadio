@@ -19,6 +19,10 @@ the revision history of the actual KiCad project.
   strapping, amplifier, USB-C, ideal diode, encoder): all correct. Layout of the sheets is
   functional, not yet tidy (some field/label overlaps, a few diagonal wire stubs): cosmetic
   clean-up still to do. No `LCSC`/`MPN` fields yet (next: JLCPCB Tools).
+- Same evening, readability pass: audio sheet on A3 and spread out, DAC supply/ground pins joined
+  by short wires with one label each, horizontal fields on rotated parts, PWR_FLAG and test-point
+  value texts hidden, display sheet uses global labels on every connector pin. ERC 0, netlist
+  check unchanged (OK).
 
 ## Schematic plan (Rev A, done as a draft)
 
