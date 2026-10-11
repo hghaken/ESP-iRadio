@@ -69,7 +69,7 @@ Notes:
 
 ## Connectors on the carrier
 
-### J_LCD: display module (1x8, 2.54 mm, order as printed on the module)
+### J_LCD: display module on the board (1x8, 2.54 mm, order as printed on the module)
 
 | Pin | Module | Net |
 |---|---|---|
@@ -107,46 +107,61 @@ enough. Keep the encoder traces away from the I2S lines.
 | DAT1, DAT2 | 10k pull-ups to `+3V3` (unused in SPI mode, must not float) |
 | Card detect (if the socket has it) | spare: `SPARE_IN34` via a jumper, or leave open |
 
-### U_DAC: PCM5102A
+### U_DAC: PCM5102APWR (TSSOP-20, on the board)
 
-Module variant (GY-PCM5102 "purple board"; verify its header order on the actual module):
+Follow the reference circuit in the TI PCM510xA datasheet; take every component value from there.
 
-| Module pin | Net | Note |
+| Pin / function | Net | Note |
 |---|---|---|
-| VIN | `+3V3` (see `04-power.md`: `+5V_USB` is absent on battery) | module has its own 3.3 V LDO; at ~15 mA its dropout is a few tens of mV |
-| GND | `GND` | |
-| LCK | `I2S_LRCK` | |
-| DIN | `I2S_DATA` | |
 | BCK | `I2S_BCK` | |
-| SCK | `GND` | **system clock unused: must be tied to GND, otherwise no sound** |
-| FLT / DEMP / XSMT / FMT | L / L / **H** / L | solder jumpers on the module, check them |
-| Out L / R / G | `LINE_L` / `LINE_R` / `AGND` | to J_LINE and to the amplifier input |
-
-Chip variant (PCM5102APWR, TSSOP-20): follow the reference circuit in the TI PCM510xA datasheet
-(take every value from there): SCK to GND, XSMT to 3V3 via 10k (no GPIO is free for a mute),
-FMT/FLT/DEMP to GND, the charge-pump capacitor on CAPP/CAPM, decoupling on AVDD/DVDD/CPVDD, the
-LDOO capacitor, and an RC on each output to the jack.
+| LRCK | `I2S_LRCK` | |
+| DIN | `I2S_DATA` | |
+| SCK (system clock) | `GND` | **unused: must be tied to GND**, the PLL then runs from BCK (otherwise no sound) |
+| XSMT | `+3V3` via 10k | soft mute off (no GPIO free to drive it) |
+| FMT, FLT, DEMP | `GND` | I2S format, normal filter, de-emphasis off |
+| AVDD, DVDD, CPVDD | `+3V3` (own decoupling per pin; a ferrite bead or 10 Ohm from `+3V3` to AVDD is a good idea) | ~15 mA |
+| CAPP / CAPM, VNEG, LDOO | capacitors per datasheet | charge pump for the ground-centred output |
+| OUTL / OUTR | `LINE_L` / `LINE_R` via the datasheet output RC | 2.1 Vrms, ground-centred: no DC-blocking caps needed to the jack |
+| AGND / DGND / CPGND | `GND` (see grounding in `04-power.md`) | |
 
 ### J_LINE: 3.5 mm stereo jack (line out)
 
-Tip = `LINE_L`, ring = `LINE_R`, sleeve = `AGND`. Optional: switched jack whose switch mutes the
-amplifier (not needed, the firmware decides).
+Tip = `LINE_L`, ring = `LINE_R`, sleeve = `GND` (at the DAC's ground). No switch needed: the
+firmware decides between speaker and line out.
 
-### U_AMP: PAM8403
+### U_AMP: mono class-D amplifier
+
+Recommended **PAM8302A** (mono, 2.5 W into 4 Ohm at 5 V, 2.0-5.5 V, SOP-8/MSOP-8, shutdown pin
+active low). Alternative PAM8403 (stereo, SOP-16) with only one channel used; the PAM8302A needs
+fewer parts for one speaker. Follow the Diodes Inc. datasheet application circuit.
 
 | Pin | Net | Note |
 |---|---|---|
-| VDD / PVDD | `+VAMP` | see `04-power.md` (5 V USB, or battery) |
-| GND / PGND | `GND` (power ground, see grounding) | |
-| INL / INR | `LINE_L` / `LINE_R` via 1 uF coupling caps (modules have them) | |
-| SHDN (or SD) | `AMP_SD` | 100k pull-down to GND; high = on |
-| MUTE (chip only) | `+VAMP` via 100k (not muted) | |
-| OUTL+ / OUTL- | `SPK_L+` / `SPK_L-` | bridged: neither side may touch GND |
-| OUTR+ / OUTR- | `SPK_R+` / `SPK_R-` | |
+| VDD | `+VAMP` | USB-C 5 V branch, see `04-power.md`; 10 uF + 1 uF at the pin, bulk cap nearby |
+| GND | `GND` | |
+| IN+ | `AMP_IN` via the input coupling cap (datasheet value, ~0.1-1 uF) | mono sum of the DAC outputs: `LINE_L` and `LINE_R` each through 10k into `AMP_IN` (passive summing) |
+| IN- | `GND` via an identical coupling cap + resistor | single-ended drive of the differential input, as in the datasheet |
+| SD | `AMP_SD` | active low: 100k pull-down keeps the amplifier off at boot; GPIO2 high = on |
+| OUT+ / OUT- | `SPK+` / `SPK-` | bridged (BTL): neither side may touch GND; optional ferrite + 220 pF per output for EMI |
 
-### J_SPK_L, J_SPK_R: speaker outputs
+Gain: set by the input resistors (see datasheet); the DAC delivers 2.1 Vrms, so keep the gain low
+(the firmware volume does the rest).
 
-2-pin each (screw terminal 5.0/3.5 mm or JST-PH 2-pin): pin 1 = `SPK_x+`, pin 2 = `SPK_x-`.
+### J_SPK: speaker output
+
+JST-PH 2-pin (or a 2-pin terminal): pin 1 = `SPK+`, pin 2 = `SPK-`. Speaker 4 or 8 Ohm, 2-3 W.
+
+### J_USBC: USB-C power input
+
+Power-only USB-C receptacle (6-pin power type or a 16-pin USB 2.0 type with the data pins left
+open).
+
+| Pin | Net | Note |
+|---|---|---|
+| VBUS (all) | `VBUS_C` | through a polyfuse (2-3 A hold) to `+5V_USBC`; TVS diode (5 V class) at the connector |
+| CC1, CC2 | `GND` via **5.1k each** (separate resistors) | identifies the board as a sink: a USB-C source then gives 5 V, up to 3 A if it can |
+| GND, shell | `GND` | shell to GND directly or via 1 M // 4.7 nF |
+| D+ / D- | not connected | firmware updates stay on the Olimex micro-USB |
 
 ### J_SPARE: spare header (1x5, 2.54 mm)
 

@@ -11,13 +11,30 @@
     any layer** (and no parts) under the antenna and ~10 mm around it. The radio already fights
     for WiFi throughput next to Bluetooth: any loss at the antenna hurts (see `AGENTS.md`, "WiFi
     and Bluetooth share one 2.4 GHz radio").
-- Display: on the front (or on a cable), its header above or below the Olimex board; encoder
-  shaft through the front panel next to it. Agree the front layout with the owner first.
-- Jack and speaker terminals on one board edge (the back of the enclosure).
-- microSD socket at an edge where the card can be inserted with the board in the enclosure.
-- 4 mounting holes, one per corner, clear of tracks (keep-out 1 mm around the screw head).
+- Display on the board (D2): the module sits on the front side, its glass parallel to the board,
+  next to (not over) the Olimex board, so the case front shows the display and the encoder knob.
+  Agree the front layout with the owner first (screenshot of the 3D view).
+- USB-C, 3.5 mm jack and speaker connector on one board edge (the back of the case); the Olimex
+  micro-USB on an edge too (USB updates from the PC).
+- microSD socket at an edge where the card can be inserted with the board in the case.
+- 4 mounting holes, one per corner, clear of tracks (keep-out 1 mm around the screw head); sized
+  for M2.5/M3 screws into heat-set inserts in the printed case.
 - Height: the Olimex board on female headers sits ~8.5-11 mm above the carrier; parts under it
   must stay below that (only 0805 passives there).
+
+## 3D-printed case (decision D3)
+
+The case is designed around the board, so the board files must give the case designer everything:
+- Export a **STEP** of the assembled board (File -> Export -> STEP, with all 3D models, including
+  the Olimex board and the display module models from `03-parts-and-footprints.md`).
+- Export the board outline and mounting holes as **DXF** (Edge.Cuts + holes) for 2D sketches.
+- Document in `NOTES.md`: board thickness, tallest part per side, display glass position and active
+  area, encoder shaft position and length, connector openings (USB-C, micro-USB, jack, microSD),
+  speaker size and the space it needs (D4: one speaker, mounted in the case wall with a grille,
+  wired to J6).
+- Keep the WROVER antenna end of the case free of metal and of the speaker magnet; plastic only.
+- Leave room for the Li-Po (5000 mAh pouch, roughly 60 x 50 x 8 mm: measure the owner's cell) and
+  its JST cable to the Olimex board.
 
 ## Routing
 
@@ -34,11 +51,16 @@
   the chip/module pins, outputs straight to the terminals.
 - Encoder lines can be thin (0.25 mm) but keep them off the I2S lines.
 
-## Fab rules (JLCPCB/PCBWay standard 2-layer)
+## Fab and assembly rules (JLCPCB standard 2-layer + SMT assembly, decision D6)
 
 - Track/space 0.15/0.15 mm minimum (use 0.25 mm signals by default), via 0.3 mm drill / 0.6 mm pad.
 - Board edge clearance 0.3 mm for copper.
-- Silkscreen: connector pin names, "ESP iRadio", revision (Rev A), date, polarity marks on the
-  battery JST (if option B of `04-power.md`), "+" on the speaker terminals.
+- Silkscreen: connector pin names, "ESP iRadio", revision (Rev A), date, "+" on the speaker
+  connector, "5V" at the USB-C connector.
 - Run DRC with the fab's rule set; export Gerbers (F.Cu, B.Cu, F/B.Mask, F/B.Silkscreen,
-  Edge.Cuts, F/B.Paste for assembly) and the Excellon drill file.
+  Edge.Cuts, F/B.Paste) and the Excellon drill file.
+- Assembly: all SMD parts on the top side; BOM with the `LCSC` field and a CPL (position) file in
+  JLCPCB's format (columns Designator, Mid X, Mid Y, Layer, Rotation). Check the part rotations in
+  JLCPCB's preview before ordering (TSSOP/SOIC pin 1 and the USB-C connector are often rotated).
+- Add 3 fiducials (1 mm copper, 2 mm mask opening) if JLCPCB asks for them, and tooling holes or
+  rails if the board is panelized.

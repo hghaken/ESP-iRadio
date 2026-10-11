@@ -302,7 +302,10 @@ Hardware:
   PAM8403 speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
   `src/config.h`), `03-parts-and-footprints.md`, `04-power.md`, `05-layout-guidelines.md` (antenna
-  keep-out, routing, fab rules), `06-checklist-and-bring-up.md`. A pin change on the board means
+  keep-out, routing, fab rules), `06-checklist-and-bring-up.md`. Owner decisions 2026-10-11: DAC
+  and amplifier as chips (PCM5102APWR, mono PAM8302A recommended), display on the board,
+  3D-printed case around the board (STEP/DXF export), one mono speaker, amplifier powered from a
+  USB-C 5 V input on the carrier, JLCPCB with SMT assembly. A pin change on the board means
   updating `src/config.h`, this file and `KiCad/02-pinout-and-nets.md` together.
 - `LICENSE` - GPL-3.0 (arduino-audio-tools is GPL-3.0).
 - `AGENTS.md` (this file), `README.md` (short GitHub intro), `CLAUDE.md` (Claude Code workflow only,
