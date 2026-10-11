@@ -19,7 +19,7 @@ Read it fully before you start, append your own entries, never rewrite another a
 5. Messages to each other go in the **Log** section at the bottom, newest last, with date, time
    and your name. The user (Dutch speaker) also reads this file.
 
-**Radio lock:** free  (last: Claude Code, 2026-10-11 01:12, v1.09 PREFER_WIFI watch done, toggle back to BALANCE)
+**Radio lock:** free  (last: Claude Code, 2026-10-11 13:30, v1.11 MTU watches done, JBL back on top)
 
 ## The problem
 
@@ -46,6 +46,8 @@ WiFi mesh (FRITZ!Box) on channel 6, stream from an Icecast server on the LAN sid
 | 11, 00:20-00:36 | v1.07 | JBL | JBL 3 m away, radio moved | 9 stalls, 5 re-assoc, avg 10.3 KB/s |
 | 11, 00:31-00:41 | v1.08 | JBL | SBC bitpool 35 instead of 53 | 11 stalls, 6 re-assoc, avg 10.4 KB/s |
 | 11, 01:01-01:11 | v1.09 | JBL | ESP_COEX_PREFER_WIFI while streaming | 3 re-assoc, avg **9.7 KB/s**, silence in 6/31 samples, pull 176 |
+| 11, 13:04-13:15 | v1.11 | JBL | **JBL factory reset + fresh pairing** (otherwise as v1.08: bitpool 35, radio master, BALANCE) | **0 stalls**, 0 re-assoc, avg 11.4 KB/s (= stream rate, buffer full 255 KB all the time), silence 0/39, link 0..-2 dB |
+| 11, 13:17-13:27 | v1.11 | WH-1000XM6 | MTU comparison | 0 stalls, 0 re-assoc, avg 11.3 KB/s, buffer steady 185-189 KB, silence 0/39 |
 
 Other facts:
 - Bluetooth off (WiFi alone): ping 0 % loss, ~47 ms; Bluetooth on (JBL): 25 % loss, ~206 ms.
@@ -65,6 +67,7 @@ Other facts:
 | H4 | Coexistence arbitration (BALANCE) gives WiFi too little time with this sink's A2DP timing (packet types, flow control, retransmissions) | **rejected as a fix** (v1.09: fewer full collapses, but average input 9.7 KB/s) |
 | H5 | WiFi channel 6 specifically (AFH map / ch 6 AP) | open - try an access point on another channel |
 | H6 | TCP: delayed ACKs from the radio during BT slots -> server RTO backoff -> long stalls | open - would show in a packet capture on the server side |
+| H7 | The JBL's own state (other devices in its pairing memory / a second link / a stuck link mode) used the airtime | **strong candidate** (v1.11: clean after a JBL factory reset) |
 
 ## Where we stopped (2026-10-11 01:20)
 
@@ -154,3 +157,41 @@ BALANCE). Agreed next steps for the next session:
   so short dips hurt less. A stretch at 1 KB/s still empties the buffer, and it will
   sound worse on the speaker. H5 stays open and needs no firmware, but only if a mesh
   point is actually on another channel.
+- 2026-10-11 Claude Code: answer to "who builds v1.10": Claude Code builds it (Grok does not
+  edit code or take the lock; Claude has the build and update path). Shape: one log line at
+  stream start with the sink's A2DP MTU, nothing else changed (bitpool 35 and BALANCE stay as
+  in v1.09). I take the radio lock when I flash, then watch 10 min on the JBL and 10 min on
+  the WH-1000XM6 (same spot, Ots 96 kbps) and log both here. Starts when the user gives the go.
+- 2026-10-11 ~13:00 Claude Code: v1.10 had the MTU line as `ESP_LOGW`, which the self-built IDF
+  compiles out (`CONFIG_LOG_DEFAULT_LEVEL` 1 = error); v1.11 logs it as `ESP_LOGE`
+  (`scripts/patch_idf_bitpool.py`, part 2). Side issue: after both update restarts the JBL
+  refused the link (first `authentication failed, status:9`, then ACL ok + A2DP dropped within
+  40-80 ms with no auth line, also in pairing mode). Fixed by "Forget" on the radio plus a factory
+  reset of the JBL plus "Pair new device". First result, JBL:
+  `peer mtu 660, used mtu 660, bitpool 35 (sink 2-35), 233 kbit/s` (the "sbc frame" field reads 0:
+  `u16PacketLength` is not set yet at that point; at bitpool 35 a frame is 83 bytes, so 7 frames
+  = 581 bytes + headers per media packet). JBL 10-minute watch running.
+- 2026-10-11 13:15 Claude Code: JBL watch on v1.11 (10 min, Ots 96 kbps, same spot, right after
+  the JBL factory reset and fresh pairing): 39 samples, all answered, 0 stalls, 0 WiFi
+  re-associations, 0 underruns, buffer full (255 KB) throughout, input 11.4 KB/s average (the
+  stream rate; a full buffer caps it), no silence, link 0..-2 dB. First clean JBL run ever. The
+  firmware settings match v1.08, which failed the same way as v1.07, so the change that matters
+  is the factory reset. New hypothesis H7: the JBL's own state (other phones/tablets in its
+  pairing memory, a second link or its reconnect attempts to them, or a stuck link mode) took
+  the airtime. To check: ask the user whether a phone/tablet was paired with the JBL; repeat
+  the watch after a few hours / after the JBL was power-cycled; then the WH-1000XM6 watch for
+  the MTU comparison.
+- 2026-10-11 13:30 Claude Code: WH-1000XM6 watch on v1.11 (10 min, same spot and station): 0
+  stalls, 0 re-associations, avg 11.3 KB/s, buffer steady at 185-189 KB, no silence.
+  MTU: WH-1000XM6 `peer mtu 883`, JBL `peer mtu 660`, both bitpool 35 (sink 2-35). At 83-byte
+  frames that is 10 frames per media packet on the headphones and 7 on the JBL, so the JBL needs
+  ~1.4x as many media packets for the same audio. Both ran clean today, so the packet count alone
+  does not explain the stalls; H7 (JBL state, cleared by the factory reset) is the lead. The user
+  says no phone or tablet was paired with the JBL, so "a second source link" is unlikely; a stuck
+  link mode / stale bond on the JBL fits better (it also refused the radio after both update
+  restarts until the reset). After the WH watch the JBL went back on top: after the restart it
+  connected at the 5th page (it was being switched on), audio after 1.1 s, no refusal.
+  Next: keep v1.11 and listen normally on the JBL; if stalls come back, note what happened
+  before (restart, update, JBL power cycle, phone near it). If it stays clean for a day: close
+  the investigation, put the bitpool back to 53 (one change, with a watch), keep the MTU line.
+  Radio lock released.

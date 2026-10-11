@@ -78,7 +78,10 @@ Hardware:
   see Commands. `scripts/usb_update.py` is its firmware path.
 - `scripts/patch_idf_bitpool.py` - env idf only: sets Bluedroid's SBC source max bitpool
   (`BTA_AV_CO_SBC_MAX_BITPOOL` in the framework-espidf package) to 35 before each build (v1.08,
-  did not cure the JBL stalls; set it back to 53 when the investigation closes).
+  did not cure the JBL stalls; set it back to 53 when the investigation closes), and adds one
+  `ESP_LOGE` "(diag) a2dp stream: peer mtu ..." line where the stream starts (v1.11). The self-built
+  IDF logs at level error (`CONFIG_LOG_DEFAULT_LEVEL` 1): `ESP_LOGW`/`ESP_LOGI` inside IDF
+  components compile to nothing (v1.10 lost its line that way).
 - `scripts/patch_a2dp_reconnect.py` - reapplies six patches onto the git-ignored ESP32-A2DP
   copy (cancel a stuck page; do not page when auto-reconnect is off; publish the RSSI delta; start
   the media stream right after connecting instead of on the next 10 s heartbeat; diag log lines
@@ -523,9 +526,13 @@ before editing and commit small steps, so agents do not overwrite each other.
   `docs/wifi-stall-investigation.md`): next to the JBL the WiFi path is throughput-limited below
   the 12 KB/s the stream needs (5760-byte TCP window / RTT above ~480 ms), not just stalling now
   and then. Not a larger TCP window first (it stalled on 2026-10-09 and makes a deaf spell worse).
-  Next: v1.10 with one log line of the sink's A2DP MTU (JBL vs WH-1000XM6); practical workaround
-  a 64 kbps AAC relay mount for the speaker. The stall recovery covers it meanwhile; with the
-  headphones it does not happen. Seen working the same
+  v1.11 (2026-10-11 midday): after both update restarts the JBL refused the radio (`authentication
+  failed, status:9`, then ACL ok and A2DP dropped within 40-80 ms, also in pairing mode); "Forget"
+  on the radio + a factory reset of the JBL + "Pair new device" fixed that, and the next
+  10-minute watch on the JBL was the first clean one (0 stalls, buffer full, 11.4 KB/s), as clean
+  as the headphones (0 stalls, 11.3 KB/s). Lead: the JBL's own state (stale bond / stuck link
+  mode), cleared by the factory reset (H7). If the JBL stalls again or refuses after a restart,
+  try that reset first. A2DP MTU (v1.11 log line `(diag) a2dp stream`): JBL 660, WH-1000XM6 883. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up
