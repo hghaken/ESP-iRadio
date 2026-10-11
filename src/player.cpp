@@ -248,6 +248,7 @@ static int autoIndex = 0;             // candidate being paged
 static volatile bool autoHold = false;  // a planned disconnect (shutdown, switch, toggle off): do not move on
 static volatile int pageFailures = 0;   // pages that ended without a link since boot
 static volatile bool linkWasUp = false;  // the last DISCONNECTED ends a link, not a failed page
+static volatile uint32_t btConnects = 0;  // CONNECTED events since boot
 
 // After a failed page (or a dropped link) page the next device in the order. The library's
 // heartbeat pages last_connection every 10 s; set_auto_reconnect(addr) changes that address.
@@ -271,6 +272,7 @@ static void onBtState(esp_a2d_connection_state_t state, void*) {
   esp_bd_addr_t* peer = a2dp->get_last_peer_address();
   Log.printf("[bt] %s (%s)\n", a2dp->to_str(state), peer ? a2dp->to_str(*peer) : "?");
   if (state == ESP_A2D_CONNECTION_STATE_CONNECTED) {
+    btConnects = btConnects + 1;
     linkWasUp = true;
     autoHold = false;  // a planned disconnect (e.g. the starvation refresh) is over
     if (peer) {
@@ -884,11 +886,12 @@ static const uint32_t STARVE_COOLDOWN_MAX_MS = 3600000;
 static const uint32_t STARVE_BACK_MS = 60000;        // the device must play again within this
 
 static void checkStarvation() {
-  static uint32_t lastRefresh = 0, cooldown = STARVE_COOLDOWN_MS, waitUntil = 0;
+  static uint32_t lastRefresh = 0, cooldown = STARVE_COOLDOWN_MS, waitUntil = 0, connectsBefore = 0;
   static bool off = false;
   if (off) return;
   if (waitUntil) {  // a refresh is running: is the device back?
-    if (btLinkUp() && playerBtAudioActive()) {
+    // A new CONNECTED, then audio: btLinkUp() alone still counts pulls of the old link for 2 s.
+    if (btConnects != connectsBefore && btLinkUp() && playerBtAudioActive()) {
       waitUntil = 0;
       Log.printf("[bt] back after the WiFi refresh (%u ms)\n", (unsigned)(millis() - lastRefresh));
     } else if ((int32_t)(millis() - waitUntil) >= 0) {
@@ -929,6 +932,7 @@ static void checkStarvation() {
   }
   a2dp->set_auto_reconnect(addr);   // the library heartbeat pages this same device
   playerRequestQuietPage();         // loop() opens a paging window: WiFi off, page, WiFi back
+  connectsBefore = btConnects;
   waitUntil = millis() + STARVE_BACK_MS;
 }
 

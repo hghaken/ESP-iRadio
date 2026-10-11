@@ -19,7 +19,7 @@ Read it fully before you start, append your own entries, never rewrite another a
 5. Messages to each other go in the **Log** section at the bottom, newest last, with date, time
    and your name. The user (Dutch speaker) also reads this file.
 
-**Radio lock:** free  (last: Claude Code, 2026-10-11 13:30, v1.11 MTU watches done, JBL back on top)
+**Radio lock:** Claude Code, 2026-10-11 18:35, passive measurements on v1.15 (link-rate watch + serial logger on COM7), no flashing planned; reading /api/status and /api/log is fine
 
 ## The problem
 
@@ -32,7 +32,7 @@ headphones the same firmware runs without a single stall.
 
 Setup: Olimex ESP32-DevKit-LiPo (ESP32-D0WD-V3, WROVER, PSRAM), env `idf` (Arduino 2.0.17 as an
 ESP-IDF 4.4.7 component, classic BT only, Bluedroid, ESP32-A2DP 1.8.3 patched, see AGENTS.md),
-WiFi mesh (FRITZ!Box) on channel 6, stream from an Icecast server on the LAN side of the internet
+WiFi mesh (FRITZ!Box) on channel 6 (channel 7 since 2026-10-11 18:08, see the log), stream from an Icecast server on the LAN side of the internet
 (verified fine from a PC at the same time: 403 KB in 12 s). Coexistence preference: BALANCE.
 
 ## Facts (measured)
@@ -241,3 +241,58 @@ BALANCE). Agreed next steps for the next session:
     after boot/station change, growing cooldown. All applied in v1.13 (on the radio via USB,
     JBL back 6 s after the update).
   Next: E1 (user reads the FRITZ!Box link rate during the next collapse), then E3.
+- 2026-10-11 17:30 Claude Code: E1 result. The FRITZ!Box (the radio is associated to the 5590
+  itself, BSSID 50:E6:36:CD:2B:FE, channel 6, 24 clients on the 2.4 GHz radio) showed the radio's
+  link at 26 Mbit/s while it played fine and 2 Mbit/s, then 1 Mbit/s, during the drop (user's
+  screenshots; TR-064 `GetSpecificAssociatedDeviceInfo` gives the same: `X_AVM-DE_Speed` 2/1,
+  signal 93 %, 20 MHz). Caveat: a Galaxy Tab on the same radio also showed 1 Mbit/s (was 172),
+  so the shown value may be the rate of the last frames rather than a steady state.
+  v1.13 refresh fired at ~17:25 (2 stalls in 358 s) and did NOT help this time: right after the
+  fresh A2DP link and the fresh WiFi association the stalls continued (each connection 176-707 KB,
+  ping ~1.1 s, FRITZ!Box 1-2 Mbit/s). So the state is not (only) inside one BT link or one WiFi
+  association; with the JBL streaming the WiFi side cannot get out of the low-rate state, while
+  Bluetooth off cured it at once at 17:00. Fits mechanism 1 of the review (rate spiral: long
+  low-rate frames collide with the JBL's ~49 packets/s) plus channel load (evening, 24 clients).
+  Bug found: the v1.13 "back after the WiFi refresh" check passed after 114 ms because
+  `playerBtAudioActive()` stays true for 2 s after the last pull; it must wait for a new CONNECTED.
+  A link-rate watch (TR-064 every minute, next to /api/status and ping) is running on the PC.
+- 2026-10-11 ~17:55 Claude Code: v1.14 on the radio (USB; the firmware path did not answer, esptool
+  fallback): one experiment, `CONFIG_LWIP_TCP_MSS` 1436 -> 536 (server sends short segments that
+  fit between the JBL's A2DP packets even at 1-2 Mbit/s), plus the refresh check fix (waits for a
+  new CONNECTED). JBL back 5 s after boot. The link-rate watch keeps running; compare stalls,
+  input and the FRITZ!Box rate with the v1.13 evening.
+- 2026-10-11 ~18:20 Claude Code: v1.14 (MSS 536) gave no visible change: the evening stayed in the
+  bad state. Meanwhile the user set the FRITZ!Box 2.4 GHz to channel 1: it chose 40 MHz there,
+  the radio moved to mesh point E8:DF:70:A1:99:B4 (also channel 1) and got almost nothing (0-2
+  KB/s, ping 1.3-3.7 s, FRITZ!Box rate 39-43 Mbit/s: so the low link rate is not the cause).
+  Back to channel 6 (fixed, 20 MHz) and the radio sent back to the 5590 with `/api/roamto`: still
+  bad (0-2 KB/s). v1.15: MSS back to 1436 + log-only TX diagnostics (review E2 + E4): every 30 s
+  `(diag) a2dp tx 30s` (media packets queued, bta_av drops, SBC frame drops, max L2CAP queue,
+  ACL packets completed, TX queue) and `(diag) link mode` on each HCI mode change. Right after
+  the USB update the JBL played fine again (buffer full, 11-12 KB/s): healthy numbers ~2000
+  packets/30 s queued and completed, no drops, queue 0, no mode change. So a full restart cured
+  what a link refresh + WiFi re-association did not. The user listens elsewhere tonight: the
+  radio is free for tests. A serial logger on COM7 records all diag/stat/bt/wifi lines.
+- 2026-10-11 18:15 Claude Code: the user re-planned the mesh 2.4 GHz channels (fixed, 20 MHz):
+  5590 main router channel 7, 7581 living room channel 1, 7581 studio channel 13 (in the house:
+  non-overlapping), 7583 storage channel 4, 7583 garage channel 10 (further away). The radio is
+  on the 5590 (50:E6:36:CD:2B:FE) channel 7 since ~18:08: FRITZ!Box rate 65 Mbit/s, ping 20-170
+  ms, buffer full. The dip 18:01-18:08 was the channel change itself (`NOT_ASSOCED`, re-association,
+  the v1.13 refresh fired on it as a false positive). The new TX counters stayed normal all the
+  time (about 2000 queued/completed per 30 s, no drops, queue 0), also while WiFi stalled; the
+  only `link mode` lines were sniff (mode 2, interval 800) right after the planned disconnect and
+  active (mode 0) at the new connect. Waiting for a real collapse on channel 7.
+- 2026-10-11 18:25 Claude Code: the radio's WiFi scan showed "gamecontroller2.4", an access point
+  on channel 2 at -43 dBm (as strong as the 5590): a Raspberry Pi hotspot right next to the radio.
+  It may have run all day (channel 2 vs the 5590 on channel 6 overlap at the edge). The user
+  switched it off. Confound: from now on channel 7, the new channel plan and the Pi off changed
+  together; if the JBL stays clean, the Pi needs its own test later (switch it back on, 1 h watch).
+  The 7583s (channels 4 and 10, storage and garage) do not show in the radio's scan: most likely
+  out of range (weakest entries already -81/-92 dBm), plus scans next to Bluetooth miss beacons.
+- 2026-10-11 18:35 Claude Code: a later scan from the web page did list the 7583 garage (channel
+  10, -68 dBm) and the 7581s (-66/-72 dBm); the 7583 storage (channel 4) stays out of range.
+  Status at the end of the session: v1.15 on the radio, 5590 channel 7, Pi hotspot off, JBL
+  playing clean since ~18:08 (buffer full, 65 Mbit/s, ping 20-170 ms). Running on the PC: the
+  link-rate watch (TR-064 + /api/status + ping every ~50 s) and the serial logger (diag, stat, bt,
+  wifi lines); both are files in the Claude session scratchpad, results will be added here.
+  Radio lock: Claude Code keeps it for these passive measurements only (no flashing planned).

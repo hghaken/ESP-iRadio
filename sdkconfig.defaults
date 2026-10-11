@@ -18,6 +18,9 @@
 #   2b (applied): CONFIG_BT_SPP_ENABLED / CONFIG_BT_HFP_ENABLE off (no serial port or hands-free
 #     profile; the radio only needs A2DP source + AVRCP).
 #   2c (applied): CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST=y: Bluedroid heap in PSRAM first.
+# 2026-10-11 (v1.14, JBL stall investigation, docs/wifi-stall-investigation.md):
+#   v1.14 tried CONFIG_LWIP_TCP_MSS 1436 -> 536 (shorter frames between the JBL's A2DP packets):
+#   no visible change in the bad state, back to 1436 in v1.15.
 #
 #
 # Automatically generated file. DO NOT EDIT.

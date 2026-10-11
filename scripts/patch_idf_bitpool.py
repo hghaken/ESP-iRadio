@@ -75,3 +75,99 @@ else:
         body = body.replace("\n", "\r\n")
     src.write_bytes(body.encode("utf-8"))
     print("A2DP MTU log line added to %s" % src)
+
+
+# --- 3. Bluetooth TX diagnostics (v1.15, review experiments E2 + E4) ---
+# Counters for the A2DP send path, logged every 30 s as "(diag) a2dp tx": SBC frames dropped
+# because the TX queue overflowed (btc), media packets handed to AVDTP and packets dropped
+# because L2CAP did not move data (bta_av), the highest L2CAP queue depth seen, and the ACL
+# packets the controller reported as completed (l2c). Plus one "(diag) link mode" line per HCI
+# mode change (0 active, 1 hold, 2 sniff, 3 park). Log only: no behaviour changes.
+BT = pkg / "components/bt/host/bluedroid"
+
+
+def patch(path, marker, pairs):
+    text = path.read_text(encoding="utf-8")
+    if marker in text:
+        print("%s already patched" % path.name)
+        return
+    crlf = "\r\n" in text
+    body = text.replace("\r\n", "\n")
+    for old, new in pairs:
+        if body.count(old) != 1:
+            raise SystemExit("patch_idf_bitpool: anchor not found in %s: %r" % (path, old[:60]))
+        body = body.replace(old, new, 1)
+    if crlf:
+        body = body.replace("\n", "\r\n")
+    path.write_bytes(body.encode("utf-8"))
+    print("TX diagnostics added to %s" % path.name)
+
+
+patch(a2dp / "btc_a2dp_source.c", "/* iradio: tx diag */", [
+    ('#include "sbc_encoder.h"\n',
+     '#include "sbc_encoder.h"\n#include "esp_timer.h"\n/* iradio: tx diag */\n'
+     'volatile uint32_t iradio_q_drop, iradio_av_drop, iradio_av_writes, iradio_l2c_bufs_max, iradio_cmpl_pkts;\n'),
+    ("""    while (fixed_queue_length(a2dp_source_local_param.btc_aa_src_cb.TxAaQ) > (MAX_OUTPUT_A2DP_SRC_FRAME_QUEUE_SZ - nb_frame)) {
+        osi_free(fixed_queue_dequeue(a2dp_source_local_param.btc_aa_src_cb.TxAaQ, 0));
+    }
+""",
+     """    while (fixed_queue_length(a2dp_source_local_param.btc_aa_src_cb.TxAaQ) > (MAX_OUTPUT_A2DP_SRC_FRAME_QUEUE_SZ - nb_frame)) {
+        osi_free(fixed_queue_dequeue(a2dp_source_local_param.btc_aa_src_cb.TxAaQ, 0));
+        iradio_q_drop++;
+    }
+    {
+        static int64_t iradio_next = 0;
+        int64_t now = esp_timer_get_time();
+        if (now >= iradio_next) {
+            if (iradio_next)
+                ESP_LOGE("BT_AV", "(diag) a2dp tx 30s: queued %u, av drops %u, frame drops %u, l2c bufs max %u, acl completed %u, txq %d",
+                         (unsigned)iradio_av_writes, (unsigned)iradio_av_drop, (unsigned)iradio_q_drop,
+                         (unsigned)iradio_l2c_bufs_max, (unsigned)iradio_cmpl_pkts,
+                         (int)fixed_queue_length(a2dp_source_local_param.btc_aa_src_cb.TxAaQ));
+            iradio_av_writes = iradio_av_drop = iradio_q_drop = iradio_l2c_bufs_max = iradio_cmpl_pkts = 0;
+            iradio_next = now + 30000000;
+        }
+    }
+"""),
+])
+
+patch(BT / "bta/av/bta_av_aact.c", "/* iradio: tx diag */", [
+    ("    p_scb->l2c_bufs = (UINT8)L2CA_FlushChannel (p_scb->l2c_cid, L2CAP_FLUSH_CHANS_GET);\n",
+     "    p_scb->l2c_bufs = (UINT8)L2CA_FlushChannel (p_scb->l2c_cid, L2CAP_FLUSH_CHANS_GET);\n"
+     "    { /* iradio: tx diag */ extern volatile uint32_t iradio_l2c_bufs_max;\n"
+     "      if (p_scb->l2c_bufs > iradio_l2c_bufs_max) iradio_l2c_bufs_max = p_scb->l2c_bufs; }\n"),
+    ("            AVDT_WriteReqOpt(p_scb->avdt_handle, p_buf, timestamp, m_pt, opt);\n",
+     "            AVDT_WriteReqOpt(p_scb->avdt_handle, p_buf, timestamp, m_pt, opt);\n"
+     "            { extern volatile uint32_t iradio_av_writes; iradio_av_writes++; }\n"),
+    ("                    bta_av_co_audio_drop(p_scb->hndl);\n",
+     "                    bta_av_co_audio_drop(p_scb->hndl);\n"
+     "                    { extern volatile uint32_t iradio_av_drop; iradio_av_drop++; }\n"),
+])
+
+patch(BT / "stack/l2cap/l2c_link.c", "/* iradio: tx diag */", [
+    ("        STREAM_TO_UINT16 (num_sent, p);\n",
+     "        STREAM_TO_UINT16 (num_sent, p);\n"
+     "        { /* iradio: tx diag */ extern volatile uint32_t iradio_cmpl_pkts; iradio_cmpl_pkts += num_sent; }\n"),
+])
+
+patch(BT / "stack/btm/btm_pm.c", "/* iradio: mode diag */", [
+    ("#include <stddef.h>\n", '#include <stddef.h>\n#include "esp_log.h"\n'),
+    ("""void btm_pm_proc_mode_change (UINT8 hci_status, UINT16 hci_handle, UINT8 mode, UINT16 interval)
+{
+    tACL_CONN   *p;
+    tBTM_PM_MCB *p_cb = NULL;
+    int yy;
+    tBTM_PM_STATE  old_state;
+    tL2C_LCB        *p_lcb;
+""",
+     """void btm_pm_proc_mode_change (UINT8 hci_status, UINT16 hci_handle, UINT8 mode, UINT16 interval)
+{
+    tACL_CONN   *p;
+    tBTM_PM_MCB *p_cb = NULL;
+    int yy;
+    tBTM_PM_STATE  old_state;
+    tL2C_LCB        *p_lcb;
+    /* iradio: mode diag */
+    ESP_LOGE("BT_PM", "(diag) link mode: status %d, handle %d, mode %d, interval %d", hci_status, hci_handle, mode, interval);
+"""),
+])

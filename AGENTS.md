@@ -27,6 +27,10 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
+Firmware v1.15 (2026-10-11 evening). Open problem: with the JBL Charge 5 the WiFi stream starves
+now and then (minutes to hours into a link; the headphones never show it); investigation,
+workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
+Pitfalls.
 Size/speed optimisation done 2026-10-09 in three tagged steps (`opt-1-fixes`, `opt-2-resampler`,
 `opt-3-flash`; baseline `opt-0-baseline`): firmware 90.6% -> 81.8% of the OTA slot, min free heap
 while playing ~52 KB (was 37-41). Verified on the radio: My Radio (AAC 44.1 kHz) steady, NPO
@@ -76,7 +80,9 @@ Hardware:
   Plan, status and test plan: `docs/framework-build.md`.
 - `scripts/flash_usb.ps1` - USB update (through the firmware with progress bar, esptool fallback),
   see Commands. `scripts/usb_update.py` is its firmware path.
-- `scripts/patch_idf_bitpool.py` - env idf only: sets Bluedroid's SBC source max bitpool
+- `scripts/patch_idf_bitpool.py` - env idf only (patches the framework-espidf package before
+  each build; part 3 adds the v1.15 Bluetooth TX counters in btc_a2dp_source.c, bta_av_aact.c,
+  l2c_link.c and btm_pm.c): sets Bluedroid's SBC source max bitpool
   (`BTA_AV_CO_SBC_MAX_BITPOOL` in the framework-espidf package) to 35 before each build (v1.08,
   did not cure the JBL stalls; set it back to 53 when the investigation closes), and adds one
   `ESP_LOGE` "(diag) a2dp stream: peer mtu ..." line where the stream starts (v1.11). The self-built
@@ -235,7 +241,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` ("v1.01" on 2026-10-11),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.15 on 2026-10-11),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -342,7 +348,8 @@ Run from the project root:
   esptool: app to app0 (0x10000), otadata (0xe000) erased so app0 boots, reset (1.5 MB in 13 s,
   no progress on the display: the ROM loader runs then). Settings and pairings in NVS stay
   either way. A WiFi upload had timed out because the radio kept opening paging windows with no
-  device paired.
+  device paired. Seen 2026-10-11: the firmware path sometimes times out at the start ("radio:
+  timeout") while WiFi starves; run it again, or let it fall back to esptool (also fine).
 - Full flash over USB (bootloader + partition table + app; ask the user first): `pio run -e usb -t
   upload` (COM7). Only for the first install of the OTA partition table.
 - Live log without USB: web page, section "Log", "Show live log", or
@@ -490,6 +497,14 @@ before editing and commit small steps, so agents do not overwrite each other.
     The scan crackles the audio for a few seconds (seen 2026-10-07); it does not run while
     the headphones are still connecting. A dropped association reconnects to the remembered
     access point. Bad placement (next to the PC, Li-Po over the antenna) costs 15-20 dB.
+    The user's mesh (2026-10-11 evening, fixed channels, 20 MHz): FRITZ!Box 5590 main router
+    channel 7 (BSSID ..2B:FE, the radio's point, -43..-50 dBm), 7581 living room channel 1
+    (..99:B4), 7581 studio channel 13 (..76:4D), 7583 storage channel 4 and 7583 garage
+    channel 10 (..B1:A6) further away. With the 5590 on channel 1 the box picked 40 MHz and the
+    radio got almost nothing: keep 2.4 GHz at 20 MHz. A changed AP channel makes the radio
+    re-associate (`NOT_ASSOCED`, about a minute of dropouts). Scans next to Bluetooth miss
+    beacons, so a list may lack a point that a second scan shows. A Raspberry Pi hotspot
+    ("gamecontroller2.4", channel 2, -43 dBm) stood next to the radio until 2026-10-11 18:20.
 - **Stale `is_connected()` (2026-10-08):** audio was flowing at 176 KB/s while the library's
   `is_connected()` stayed false, so `loop()` kept opening paging windows every 45 s (web page
   unreachable, stream stalls, display "Waiting for headphones"). `btLinkUp()` in `player.cpp` now also
@@ -550,7 +565,19 @@ before editing and commit small steps, so agents do not overwrite each other.
   WiFi"). The zombie rule alone did not catch it: those connections delivered 100-800 KB before
   stalling. Reviewer's next experiments (docs/wifi-stall-investigation.md): FRITZ!Box link rate
   of the radio healthy vs collapsed, A2DP SUSPEND/START instead of a full reconnect, Bluedroid
-  drop/queue counters. Seen working the same
+  drop/queue counters.
+  E1 done 2026-10-11: the FRITZ!Box showed the radio's link at 26 Mbit/s while it played fine and
+  1-2 Mbit/s during the drop, and a refresh at that moment did not help (stalls went on right
+  after the fresh link and association): a WiFi rate spiral next to the JBL's ~49 A2DP packets/s.
+  v1.14 tried `CONFIG_LWIP_TCP_MSS` 1436 -> 536 (no visible change, back to 1436 in v1.15) and
+  fixed the refresh check (it waits for a new CONNECTED; `playerBtAudioActive()` stays true for
+  2 s after the old link's last pull). Changing the FRITZ!Box to channel 1 made it worse (the box
+  picked 40 MHz there; the radio also moved to another mesh point): back on channel 6, then the user moved all mesh points to a new plan (5590 on channel 7, see Mesh WiFi).
+  v1.15 adds log-only Bluetooth TX diagnostics (`scripts/patch_idf_bitpool.py` part 3, env idf):
+  every 30 s `(diag) a2dp tx 30s: queued N, av drops, frame drops, l2c bufs max, acl completed,
+  txq` and a `(diag) link mode` line per HCI mode change. Healthy on the JBL: ~2000 media
+  packets per 30 s (~67/s, about 5 SBC frames each), no drops, queue empty, every packet
+  completed. A radio restart cured the bad state when a link refresh did not. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up
