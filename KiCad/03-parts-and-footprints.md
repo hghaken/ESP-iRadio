@@ -21,7 +21,7 @@ footprint, from the datasheet or measured from the owner's part; record the sour
 | SW1 | 1 | Rotary encoder EC11 with switch, vertical | `Device:RotaryEncoder_Switch` | `Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm` | shaft length to suit the case; check the footprint against the bought part |
 | J4 | 1 | microSD socket, push-push, SMD | `Connector:Micro_SD_Card` (or `_Det`) | per socket, e.g. `Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5` or `Connector_Card:microSD_HC_Molex_104031-0811` | choose one that JLCPCB stocks, then its footprint |
 | J5 | 1 | 3.5 mm stereo jack | `Connector_Audio:AudioJack3` | e.g. `Connector_Audio:Jack_3.5mm_PJ320D_Horizontal` | choose a stocked part, then its footprint |
-| J6 | 1 | Speaker connector JST-PH 2-pin | `Connector_Generic:Conn_01x02` | `Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical` | mono speaker (D4) |
+| J6 | 1 | Speaker connector JST-PH 2-pin | `Connector_Generic:Conn_01x02` | `Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical` | mono speaker, 4 or 8 Ohm (D4); JST-PH is rated 2 A, enough for 4 Ohm at 5 V |
 | J7 | 1 | USB-C receptacle, power only (or USB 2.0 16-pin with data open) | `Connector:USB_C_Receptacle_PowerOnly_6P` (or `USB_C_Receptacle_USB2.0_16P`) | per part, e.g. `Connector_USB:USB_C_Receptacle_GCT_USB4125-xx-x_6P_TopMnt_Horizontal` | choose a stocked part; at a board edge |
 | J8 | 1 | Spare header 1x5, 2.54 mm | `Connector_Generic:Conn_01x05` | `Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical` | may stay unpopulated |
 | H1-H4 | 4 | Mounting holes M2.5 or M3 | `Mechanical:MountingHole` | `MountingHole:MountingHole_2.7mm_M2.5` or `_3.2mm_M3` | for heat-set inserts in the 3D-printed case |
@@ -32,7 +32,7 @@ footprint, from the datasheet or measured from the owner's part; record the sour
 |---|---|---|---|---|
 | U1 | PCM5102APWR (TI) | check the KiCad `Audio` library for a PCM510x symbol; else a project symbol | `Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm` | reference circuit and values from the TI PCM510xA datasheet |
 | U2 | PAM8302AASCR (Diodes Inc., SOP-8) - or PAM8403 SOP-16 | project symbol if none in the library | `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` (PAM8403: `Package_SO:SOIC-16_3.9x9.9mm_P1.27mm`) | application circuit from the Diodes Inc. datasheet |
-| U3 | Ideal diode / power mux for `+5V_USBC` -> Olimex `+5V` (only if open question 3 is "yes") | e.g. TI LM66100 (SC-70-6) or a P-MOSFET ideal-diode circuit | per part | blocks backfeed between the Olimex micro-USB and the USB-C input; see `04-power.md` |
+| U3 | Ideal diode for `+5V_USBC` -> `+5V_OLI` (Olimex +5V pin), rated >= 1.5 A | e.g. TI LM66100 (SC-70-6, 1.5 A) or a P-MOSFET ideal-diode circuit for more margin | per part | required (decision D7): blocks backfeed from the Olimex micro-USB into the USB-C connector; see `04-power.md` |
 | D1 | TVS 5 V (unidirectional) at VBUS | `Device:D_TVS` | SOD-123 / SMA per part | USB-C input protection |
 | F1 | Polyfuse 2-3 A hold, 1206/1812 | `Device:Polyfuse` | `Fuse:Fuse_1812_4532Metric` (or 1206) | USB-C input |
 | FB1 | Ferrite bead 600 Ohm @ 100 MHz, 0805 (optional) | `Device:FerriteBead` | `Inductor_SMD:L_0805_2012Metric` | `+3V3` -> DAC AVDD |

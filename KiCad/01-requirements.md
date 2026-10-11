@@ -14,8 +14,9 @@ JST-PH on the Olimex board), charged over USB.
 | D1 | Modules or chips | **Chips on the board** (PCM5102A, class-D amplifier), no plug-in audio modules |
 | D2 | Display | **On the board** (the 1.69" module mounted on the carrier) |
 | D3 | Enclosure | **3D-printed case designed around the board** (the KiCad STEP model is its input) |
-| D4 | Speaker | **One mono speaker**; impedance 4 or 8 Ohm still open (design for both, see below) |
-| D5 | Amplifier supply | **USB-C** input on the carrier ("USB-C PD version", see `04-power.md` for what PD means here) |
+| D4 | Speaker | **One mono speaker, 4 or 8 Ohm at the user's choice**: the board must work with both (4 Ohm ~2.5 W, 8 Ohm ~1.5 W at 5 V) |
+| D5 | Amplifier supply | **USB-C 5 V** input on the carrier (plain USB-C sink, no PD negotiation) |
+| D7 | USB-C also powers the radio | **Yes**: USB-C runs the radio and charges the Li-Po through the Olimex +5V pin, via an ideal diode (one cable for everything) |
 | D6 | Fab | **JLCPCB with SMT assembly** (parts from the JLCPCB/LCSC library, prefer "basic" parts) |
 
 ## Phase 1: carrier board (design this)
@@ -32,7 +33,7 @@ JST-PH on the Olimex board), charged over USB.
 | R6 | 3.5 mm stereo jack for the line output | PCB jack at a board edge | analog |
 | R7 | Mono speaker amplifier ~2.5-3 W at 5 V | class-D chip: **PAM8302A** (mono, recommended) or PAM8403 with one channel used, see `03-parts-and-footprints.md` | analog in from the DAC (L+R summed), shutdown on GPIO2 |
 | R8 | Speaker connection, bridged output | JST-PH 2-pin (or 2-pin terminal); speaker 4 or 8 Ohm, 2-3 W | never connect a speaker pin to GND |
-| R9 | USB-C power input (5 V, up to 3 A) for the amplifier and, through a protected path, the radio | USB-C receptacle, CC pull-downs (sink), protection | power only, no data |
+| R9 | USB-C power input (5 V, up to 3 A) for the amplifier, the radio and Li-Po charging | USB-C receptacle, 5.1k CC pull-downs (sink), polyfuse, TVS, ideal diode to the Olimex +5V pin | power only, no data |
 | R10 | Mounting holes for the 3D-printed case | 4 x M2.5 or M3 | |
 
 ### Should have
@@ -61,8 +62,11 @@ JST-PH on the Olimex board), charged over USB.
    the speaker when USB-C power is present. (Firmware for the I2S path is still to be written.)
 3. On battery only (no USB-C): radio, display, Bluetooth and line out work; the speaker does not
    (the amplifier is powered from USB-C only, decision D5).
-4. Encoder: turn = scroll stations / volume, press = menu (firmware to be written).
-5. microSD: log files, settings backup, station logos, firmware copies (firmware exists,
+4. USB-C plugged in: the radio runs from USB-C and the Li-Po charges (decision D7); the Olimex
+   micro-USB may be plugged in at the same time (PC for USB updates) without either source feeding
+   the other.
+5. Encoder: turn = scroll stations / volume, press = menu (firmware to be written).
+6. microSD: log files, settings backup, station logos, firmware copies (firmware exists,
    `SD_ENABLED` in `src/config.h` switches it on).
 
 ## Phase 2: integrated board (later, notes only)
@@ -75,12 +79,8 @@ JST-PH on the Olimex board), charged over USB.
 - Then the Olimex reference design (its KiCad files) is the starting point. Do not start phase 2
   before phase 1 has run for a while.
 
-## Still open (owner decides)
+## Still open
 
-1. Speaker impedance: 4 Ohm (louder: ~2.5-3 W at 5 V) or 8 Ohm (~1.5 W, less current). The board
-   works with both; the choice sets the speaker part and the case's speaker grille.
-2. "USB-C PD": is a plain USB-C 5 V input enough (5 V up to 3 A from any USB-C charger or power
-   bank, no PD chip needed), or should the board negotiate a higher PD voltage (9/12 V, only
-   useful for a bigger amplifier than this one)? Recommendation: plain 5 V USB-C sink.
-3. Should USB-C also run and charge the radio (feeding the Olimex board's +5V pin through an
-   ideal diode), so one USB-C cable powers everything? Recommendation: yes, see `04-power.md`.
+Nothing from the owner (all answered 2026-10-11). To verify by the designer: how the Olimex +5V
+pin connects to its USB VBUS, charger input and 3.3 V regulator (Rev.D schematic), see
+`04-power.md`.

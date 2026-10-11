@@ -14,9 +14,10 @@
 - [ ] Amplifier: SD pin pulled down (off at boot), mono sum of `LINE_L`/`LINE_R` into its input,
       gain low; speaker outputs not connected to GND anywhere.
 - [ ] The amplifier is supplied from `+5V_USBC` only, not from `+3V3`.
-- [ ] USB-C: 5.1k on CC1 and CC2 separately (not one shared resistor), polyfuse, TVS; if USB-C
-      also feeds the Olimex +5V pin, the ideal diode blocks backfeed both ways (checked against
-      the Olimex Rev.D schematic).
+- [ ] USB-C: 5.1k on CC1 and CC2 separately (not one shared resistor), polyfuse, TVS, ideal diode
+      U3 to the Olimex +5V pin; Olimex Rev.D schematic checked: its USB VBUS has a diode to the +5V
+      rail and the +5V pin feeds the charger and the 3.3 V regulator.
+- [ ] Speaker path dimensioned for 4 Ohm (the heavier case): `+VAMP` and speaker traces >= 0.8 mm.
 - [ ] No copper/parts under the WROVER antenna (or the antenna overhangs the edge).
 - [ ] USB connector, Li-Po JST and reset button reachable with the Olimex board plugged in.
 - [ ] ERC clean (or every remaining warning explained in `NOTES.md`), DRC clean with the fab rules.
@@ -38,8 +39,9 @@
    the web page's SD card section (`AGENTS.md`, `src/sdcard.*`).
 5. Encoder: once the firmware reads it, turn and press; until then, check with a multimeter that
    A/B/SW pull to GND.
-6. USB-C: plug in a USB-C charger; measure `+5V_USBC` and `+VAMP` (~5 V); with the Olimex
-   micro-USB also plugged in, check that no current flows back into either port.
+6. USB-C: plug in a USB-C charger without the Li-Po and without the micro-USB; the radio must
+   boot from USB-C alone. Then with the Li-Po: the Olimex charge LED lights. Then with the PC on
+   the micro-USB as well: measure that no current flows back into either port (USB meter).
 7. DAC + amplifier: with the I2S firmware (planned), switch Bluetooth off on the web page; line out
    first (headphones in the jack, low volume), then the speaker (USB-C plugged in). Check that
    `AMP_SD` is low while Bluetooth is on (no hiss from the speaker).

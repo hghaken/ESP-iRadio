@@ -33,7 +33,7 @@ drawing in the repository shows an older revision with a WROOM module; the radio
 | 16 | GPIO9 | - | not connected (internal flash) |
 | 17 | GPIO10 | - | not connected (internal flash) |
 | 18 | GPIO11 | - | not connected (internal flash) |
-| 19 | +5V | `+5V_USB` | USB 5 V from the Olimex board (only present when USB is powered) |
+| 19 | +5V | `+5V_OLI` | Olimex 5 V rail: from its micro-USB, or fed by the carrier's USB-C through the ideal diode U3 (decision D7) |
 
 ### EXT2 (right), top to bottom
 
@@ -149,7 +149,8 @@ Gain: set by the input resistors (see datasheet); the DAC delivers 2.1 Vrms, so 
 
 ### J_SPK: speaker output
 
-JST-PH 2-pin (or a 2-pin terminal): pin 1 = `SPK+`, pin 2 = `SPK-`. Speaker 4 or 8 Ohm, 2-3 W.
+JST-PH 2-pin (or a 2-pin terminal): pin 1 = `SPK+`, pin 2 = `SPK-`. Speaker 4 or 8 Ohm at the
+user's choice (decision D4), rated >= 3 W; the amplifier drives both (4 Ohm louder, more current).
 
 ### J_USBC: USB-C power input
 
@@ -158,7 +159,7 @@ open).
 
 | Pin | Net | Note |
 |---|---|---|
-| VBUS (all) | `VBUS_C` | through a polyfuse (2-3 A hold) to `+5V_USBC`; TVS diode (5 V class) at the connector |
+| VBUS (all) | `VBUS_C` | through a polyfuse (2-3 A hold) to `+5V_USBC`; TVS diode (5 V class) at the connector. `+5V_USBC` feeds the amplifier and, via the ideal diode U3, the Olimex +5V pin (`+5V_OLI`): radio + Li-Po charging (decision D7) |
 | CC1, CC2 | `GND` via **5.1k each** (separate resistors) | identifies the board as a sink: a USB-C source then gives 5 V, up to 3 A if it can |
 | GND, shell | `GND` | shell to GND directly or via 1 M // 4.7 nF |
 | D+ / D- | not connected | firmware updates stay on the Olimex micro-USB |

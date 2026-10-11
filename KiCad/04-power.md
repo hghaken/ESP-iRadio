@@ -5,26 +5,23 @@
 | Net | Present when | Max current for the carrier | Notes |
 |---|---|---|---|
 | `+3V3` | always (battery or USB) | ~200-300 mA spare (estimate; the ESP32 with WiFi + Bluetooth already takes 150-200 mA average and 400+ mA peaks from the same regulator) | Olimex on-board regulator. Check its part and rating in the Olimex Rev.D schematic |
-| `+5V_OLI` | when the Olimex micro-USB is powered (or when the carrier feeds it, see below) | - | the Olimex header's +5V pin. **0 V on battery only**: the Olimex board has no boost converter (verify in its schematic) |
+| `+5V_OLI` | when the Olimex micro-USB is powered, or when USB-C on the carrier feeds it through U3 (decision D7) | - | the Olimex header's +5V pin. **0 V on battery only**: the Olimex board has no boost converter (verify in its schematic) |
 | `VBUS_C` / `+5V_USBC` | when a USB-C charger or power bank is plugged into the carrier | up to 3 A (USB-C at 5 V with 5.1k CC pull-downs; less from a weak source) | new on the carrier (decision D5) |
 | `VBAT` | always | Li-Po 3.0-4.2 V, 5000 mAh | only on the Olimex JST-PH connector, not on the headers; not used by the carrier |
 
-## "USB-C PD version" (decision D5)
+## USB-C input (decisions D5 and D7)
 
-A USB-C sink with 5.1k pull-downs on CC1 and CC2 receives **5 V, up to 3 A** from any USB-C
-charger or power bank, PD-capable or not: no PD controller chip is needed for 5 V. A PD controller
-(e.g. CH224K, HUSB238, STUSB4500) only makes sense to ask for 9/12/15/20 V, which this board does
-not need: the amplifier and the Olimex board run on 5 V (PAM8302A/PAM8403: 2.0-5.5 V, absolute
-maximum 6 V). **Recommendation: plain USB-C 5 V sink.** If the owner still wants PD (open question
-2 in `01-requirements.md`), use a fixed-5V or higher-voltage request with a buck converter to 5 V
-behind it; that adds parts and gives no audible benefit here.
+A plain USB-C sink: 5.1k pull-downs on CC1 and CC2 make any USB-C charger or power bank (PD-capable
+or not) deliver **5 V, up to 3 A**. No PD controller: higher PD voltages are not needed (the
+amplifier and the Olimex board run on 5 V; PAM8302A/PAM8403 allow 2.0-5.5 V, 6 V absolute
+maximum).
 
 ## Power tree (recommended)
 
 ```
 USB-C VBUS --TVS-- polyfuse 2-3 A --+-- +5V_USBC --+-- +VAMP --> amplifier (bulk 220-470 uF + 10 uF + 1 uF)
                                     |              |
-                                    |              +-- ideal diode (U3) --> +5V_OLI (Olimex +5V pin)   [open question 3]
+                                    |              +-- ideal diode (U3) --> +5V_OLI (Olimex +5V pin)   [D7]
                                     |
 Olimex micro-USB --> (on the Olimex board) --> +5V_OLI --> Olimex charger + 3.3 V regulator --> +3V3
 Li-Po (JST on Olimex) --------------------------------------------------------------------^
@@ -32,13 +29,16 @@ Li-Po (JST on Olimex) ----------------------------------------------------------
 
 - **Amplifier** (`+VAMP` = `+5V_USBC`): the speaker works only with USB-C power (decision D5); on
   battery only the amplifier is unpowered, `AMP_SD` low does not matter then.
-- **Feeding the radio from USB-C** (open question 3, recommended): one cable then powers and charges
-  everything. It needs an ideal diode (or a power mux) between `+5V_USBC` and the Olimex +5V pin so
-  that (a) USB-C does not push current back into a PC on the Olimex micro-USB and (b) the
-  micro-USB does not feed the USB-C connector. Check in the Olimex Rev.D schematic how its +5V pin
-  connects to its USB VBUS (a diode or not; the radio measured 4.54 V on its USB sense from a power
-  bank, which suggests a diode drop already) and to the charger input. Without that path, the
-  radio itself keeps running from its micro-USB / battery as today.
+- **USB-C powers the radio and charges the Li-Po** (decision D7): `+5V_USBC` feeds the Olimex +5V
+  pin through the ideal diode U3, so one cable powers and charges everything. U3 stops the Olimex
+  micro-USB (a PC during USB updates) from feeding the USB-C connector. The other direction (USB-C
+  pushing current back into the PC's micro-USB port) depends on the Olimex board: **verify in the
+  Olimex Rev.D schematic** that its USB VBUS reaches the +5V rail through a diode (the radio
+  measured 4.54 V on its USB sense from a power bank, which suggests a diode drop) and that the
+  +5V pin feeds the Li-Po charger and the 3.3 V regulator. If the +5V pin bypasses the charger,
+  stop and ask the owner: the D7 path then needs another connection point.
+- The radio's USB voltage reading (GPIO39, `diag.usbMv`) then shows the USB-C supply too, so the
+  firmware's "USB" indication and the power guard keep working.
 - **Never** put the amplifier on `+3V3`: its peaks would brown out the ESP32 (the radio already had
   brownout loops on a weak supply, see `AGENTS.md` "Brownouts").
 
