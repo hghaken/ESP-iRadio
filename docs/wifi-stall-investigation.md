@@ -318,3 +318,8 @@ BALANCE). Agreed next steps for the next session:
 - 2026-10-11 19:27 Claude Code: v1.17 on the JBL, first 28 min (18:59-19:27): 167 [stat] samples,
   input 11-12 KB/s (avg 11.5, never below 11), no stall, no underrun, no refresh; buffer full,
   FRITZ!Box 57-72 Mbit/s, ping 64-127 ms. The user hears it playing fine. Watching continues.
+- 2026-10-11 20:20 Claude Code: v1.17 on the JBL, 18:59-20:20 (1 h 20 min, evening, channel 7, Pi
+  off): 484 [stat] samples, input 11-12 KB/s (avg 11.5, never below 11), no stall, no underrun, no
+  refresh, no link mode change; TX 1476-1483 packets per 30 s (~49/s); FRITZ!Box 65-72 Mbit/s,
+  ping 3-130 ms. Before v1.17 the same evening collapsed within 40 min (18:46). Watching continues
+  overnight; if it stays clean, H8 is the cause and the v1.13 refresh can stay as a safety net.
