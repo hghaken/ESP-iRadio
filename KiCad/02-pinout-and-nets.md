@@ -6,10 +6,11 @@ All GPIO numbers are the ones the firmware uses (`src/config.h`, `docs/speaker-o
 ## Olimex ESP32-DevKit-LiPo headers
 
 Two 1x19 rows, 2.54 mm pitch: EXT1 (left) and EXT2 (right) seen from the top with the antenna
-up and the USB connector down (pinout drawing `docs/ESP32-DevKit-Lipo-GPIOs.png`). **Verify the
-order, the row spacing and pin 1 against the Olimex Rev.D KiCad files before routing**: the
-drawing in the repository shows an older revision with a WROOM module; the radio has the WROVER
-(rev D), where GPIO16/17 belong to the PSRAM.
+up and the USB connector down. **Verified 2026-10-11 against the Olimex Rev.D netlist and board
+file** (`ESP32-DevKit-Lipo_Rev_D.net` / `.kicad_pcb`, fetched into the git-ignored
+`KiCad/esp-iradio/ref/`): the pin order below is exact; the rows are **25.40 mm apart** (centre to
+centre); each row runs the full board length, **pin 1 at the antenna end**, pin 19 at the USB end.
+The radio has the WROVER (GPIO16/17 belong to the PSRAM).
 
 ### EXT1 (left), top to bottom
 
@@ -60,10 +61,10 @@ drawing in the repository shows an older revision with a WROOM module; the radio
 | 19 | GPIO6 | - | not connected (internal flash) |
 
 Notes:
-- The Olimex drawing says GPIO0-GPIO3 connect to the CH340 USB serial converter. GPIO2 is used here
-  only as an output after boot; with the 100k pull-down it stays low during reset, which is what
-  the boot ROM needs for serial download. Check the Olimex Rev.D schematic that nothing else
-  drives GPIO2.
+- On the Olimex board GPIO0 and GPIO2 go to the anodes of a BAT54C (D3, common cathode via 220 Ohm
+  to the auto-reset circuit): the USB-serial converter can pull both low for serial download but
+  never drives them high (verified in the Rev.D netlist). GPIO2 is used here only as an output
+  after boot; the 100k pull-down keeps it low during reset, as the boot ROM needs.
 - No free GPIO is left apart from GPIO34/36 (inputs). Any new function needs a firmware change and
   a pin from someone else.
 

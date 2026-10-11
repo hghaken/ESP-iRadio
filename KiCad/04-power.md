@@ -31,12 +31,14 @@ Li-Po (JST on Olimex) ----------------------------------------------------------
   battery only the amplifier is unpowered, `AMP_SD` low does not matter then.
 - **USB-C powers the radio and charges the Li-Po** (decision D7): `+5V_USBC` feeds the Olimex +5V
   pin through the ideal diode U3, so one cable powers and charges everything. U3 stops the Olimex
-  micro-USB (a PC during USB updates) from feeding the USB-C connector. The other direction (USB-C
-  pushing current back into the PC's micro-USB port) depends on the Olimex board: **verify in the
-  Olimex Rev.D schematic** that its USB VBUS reaches the +5V rail through a diode (the radio
-  measured 4.54 V on its USB sense from a power bank, which suggests a diode drop) and that the
-  +5V pin feeds the Li-Po charger and the 3.3 V regulator. If the +5V pin bypasses the charger,
-  stop and ask the owner: the D7 path then needs another connection point.
+  micro-USB (a PC during USB updates) from feeding the USB-C connector.
+  **Verified 2026-10-11 in the Olimex Rev.D netlist:** the micro-USB VBUS (`/+5V_USB`) reaches the
+  board's `+5V` net only through a 1N5819 Schottky (D1), so USB-C on the +5V pin cannot push current
+  back into a PC (this diode also explains the 4.54 V the radio reads from a power bank). The `+5V`
+  net (header EXT1 pin 19) feeds the BL4054B charger (U1 VCC), the WPM2015 P-MOSFET power path
+  (FET1: battery cut off from the load while 5 V is present), the 3.3 V regulator through another
+  1N5819 (D2), the charge LED and the USB-voltage divider (R15 220k, GPIO39). So the D7 path works
+  as planned.
 - The radio's USB voltage reading (GPIO39, `diag.usbMv`) then shows the USB-C supply too, so the
   firmware's "USB" indication and the power guard keep working.
 - **Never** put the amplifier on `+3V3`: its peaks would brown out the ESP32 (the radio already had

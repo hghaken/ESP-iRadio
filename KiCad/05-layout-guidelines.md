@@ -3,7 +3,11 @@
 ## Board and mechanics
 
 - Start from the Olimex outline (from their Rev.D KiCad file) placed on a fab layer, so the
-  carrier's headers line up exactly. Place the Olimex board so that:
+  carrier's headers line up exactly. Measured from the Rev.D board file: board **27.94 x 48.26 mm**,
+  header rows **25.40 mm** apart, each 1x19 row spanning the full 48.26 mm length (pin 1 at the
+  antenna end); the WROVER module sticks out ~6 mm past the board's antenna edge; the micro-USB,
+  the reset button and the Li-Po JST (DW02S) sit at the opposite (bottom) edge. Place the Olimex
+  board so that:
   - its **USB connector** and **Li-Po JST connector** point to a board edge and stay reachable
     (the owner plugs a power bank into the USB connector daily, and the PC for USB updates);
   - its **reset button** stays reachable (or leave a hole above it);
