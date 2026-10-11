@@ -67,7 +67,7 @@ Other facts:
 | H4 | Coexistence arbitration (BALANCE) gives WiFi too little time with this sink's A2DP timing (packet types, flow control, retransmissions) | **rejected as a fix** (v1.09: fewer full collapses, but average input 9.7 KB/s) |
 | H5 | WiFi channel 6 specifically (AFH map / ch 6 AP) | open - try an access point on another channel |
 | H6 | TCP: delayed ACKs from the radio during BT slots -> server RTO backoff -> long stalls | open - would show in a packet capture on the server side |
-| H7 | The JBL's own state (other devices in its pairing memory / a second link / a stuck link mode) used the airtime | **strong candidate** (v1.11: clean after a JBL factory reset) |
+| H7 | The JBL's own state (other devices in its pairing memory / a second link / a stuck link mode) used the airtime | weakened: the reset bought ~2.5 h, then the collapse came back |
 
 ## Where we stopped (2026-10-11 01:20)
 
@@ -195,3 +195,49 @@ BALANCE). Agreed next steps for the next session:
   before (restart, update, JBL power cycle, phone near it). If it stays clean for a day: close
   the investigation, put the bitpool back to 53 (one change, with a watch), keep the MTU line.
   Radio lock released.
+- 2026-10-11 17:05 Claude Code: the collapse came back on v1.11 with the freshly reset JBL.
+  Clean from 13:30 to ~16:13 (97 MB on one connection, buffer full, 11-12 KB/s), then the known
+  pattern: input 1-6 KB/s, buffer empty, silence, WiFi associated at -49 dBm, Bluetooth pull
+  176 KB/s. The WiFi re-association (zombie rule) fixed it for ~10 min; after that every
+  connection delivered 100-800 KB before stalling, so the zombie rule (needs < 64 KB per
+  connection) no longer fired and it stayed bad. Ping to the radio at 16:57: 0 % loss but
+  332-2481 ms, average 1.4 s (normal ~50 ms; NAS from the PC 0 ms).
+  **Causality test** (radio lock taken for 2 min, released): `/api/btenable on=0` in the middle of
+  the collapse -> ping at once 2-285 ms, avg 46 ms, input 20-36 KB/s. `on=1` -> JBL back in ~20 s
+  (MTU 660, bitpool 35, sbc frame 83 bytes now that the encoder ran once), first ping round on
+  the fresh link avg 466 ms (21-1128), input back to 14 KB/s. So the JBL's A2DP link is what
+  starves WiFi (not the AP, not the server, not memory: internal heap flat at 83-85 KB over 3.5 h,
+  PSRAM 3.37 MB min), and it builds up over time on one link: a fresh BT link or a fresh WiFi
+  association resets it for minutes to hours.
+  Open question for analysis: what in the JBL link degrades over time (retransmissions /
+  flow control in the Bluedroid TX queue, a sniff or QoS request from the JBL, AFH map drift onto
+  WiFi channel 6, coex scheduler state)? Practical workaround candidate: when the stream
+  collapses while Bluetooth pulls normally, drop and re-page the sink (a few seconds of silence
+  instead of minutes).
+- 2026-10-11 ~17:30 Claude Code: v1.12 on the radio (USB): workaround `checkStarvation()` in
+  `src/player.cpp`: 2 stream stalls within 3 min while the A2DP link plays -> drop the link and
+  page the same device in a paging window (WiFi off ~5-20 s, fresh association afterwards), at
+  most every 10 min; `diag.btRefreshes` counts it. Root-cause analysis requested from the
+  reviewer agent (Opus) in parallel; results follow here. JBL reconnected 6 s after the update.
+- 2026-10-11 ~18:00 Claude Code: reviewer agent (Opus) analysis, summary:
+  - Confound: `/api/btenable on=1` also opens a paging window, so "fresh BT link cures it" was
+    always also a fresh WiFi association. Proven: active BT traffic is needed; a new WiFi
+    association helps for a while. The ~1.4 s ping is the TCP queue (5760 B / ~4 KB/s).
+  - Ranked mechanisms: (1) WiFi-side spiral under BT slot pressure: frames from the AP lost
+    while the radio serves BT, FRITZ!Box rate control steps down and/or AMPDU RX reorder holes
+    stall delivery (`CONFIG_ESP32_WIFI_AMPDU_RX_ENABLED=y`, BA window 6); the JBL's ~49 media
+    packets/s vs ~34/s on the headphones leave WiFi shorter gaps. (2) BT backlog growing over
+    one link: the source is paced by the ESP32 clock, the audio flush timeout is 0 (no flush,
+    unlimited retransmissions), and host-side drops are silent (`CONFIG_BT_STACK_NO_LOG=y`).
+    (3) Packet-type fallback (EDR -> basic rate) or sniff requested by the JBL; `MODE_CHG` is
+    logged at INFO, compiled out. (4) AFH/BLE advertising: weak.
+  - Experiments: E1 FRITZ!Box mesh overview link rate of the radio healthy vs collapsed (no
+    firmware); follow-up AMPDU RX off. E2 log Bluedroid drop counters, `l2c_bufs` max and
+    completed packets/s every 30 s. E3 A2DP SUSPEND, 3 s, START without touching ACL or WiFi:
+    separates BT state from WiFi state and would be a lighter workaround. E4 `MODE_CHG` as
+    ESP_LOGE.
+  - Workaround review: keep the hold until the link is back, guard against a refusing device,
+    reset the zombie counter, wider trigger (starved input, 2 stalls in 10 min), quiet period
+    after boot/station change, growing cooldown. All applied in v1.13 (on the radio via USB,
+    JBL back 6 s after the update).
+  Next: E1 (user reads the FRITZ!Box link rate during the next collapse), then E3.

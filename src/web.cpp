@@ -137,7 +137,7 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
   ['WiFi',s.wifi.mode=='ap'?'setup mode':s.wifi.rssi+' dBm, access point '+d.bssid+', channel '+d.channel+(s.wifi.roam<0?', threshold '+s.wifi.roam+' dBm':'')],
   ['Memory','internal '+Math.round(s.heap/1024)+' kB free (min '+Math.round(d.minHeap/1024)+'), PSRAM '+Math.round(s.psram/1024)+' kB (min '+Math.round(d.psramMin/1024)+')'],
   ['Battery',(s.batteryMv?(s.batteryMv/1000).toFixed(2)+' V, '+s.batteryPct+'%':'no reading')+' (pin '+d.batRawMv+' mV), '+(s.usbMv?'USB '+(s.usbMv/1000).toFixed(2)+' V':'no USB')+' (pin '+d.pwrRawMv+' mV)'],
-  ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)')+(d.btRole==0?', radio leads the link':d.btRole==1?', the device leads the link':''):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)],
+  ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)')+(d.btRole==0?', radio leads the link':d.btRole==1?', the device leads the link':''):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)+(d.btRefreshes?', reconnected '+d.btRefreshes+'x for WiFi':'')],
   ['Firmware',(d.version||'')+', built '+d.build+', running from slot '+d.partition],
   ['SD card',d.sd||'-'],
   ['Uptime',Math.floor(s.uptime/3600)+' h '+Math.floor(s.uptime%3600/60)+' min, last reset: '+({1:'power on',3:'software',4:'crash',5:'watchdog',6:'watchdog',7:'watchdog',8:'deep sleep',9:'voltage dip (brownout)'}[d.resetReason]||('code '+d.resetReason))+(d.brownouts?', '+d.brownouts+'x brownout in a row':'')]];
@@ -282,7 +282,8 @@ static void handleStatus() {
   j += ",\"silenceKBps\":" + String(p.silenceKBps) + ",\"bufferKB\":" + String(p.bufferKB);
   j += ",\"bufferMaxKB\":" + String(NET_BUFFER_BYTES / 1024) + ",\"pcmKB\":" + String(p.pcmBufferKB);
   j += ",\"underruns\":" + String(p.underruns) + ",\"reconnects\":" + String(p.reconnects);
-  j += ",\"bitrateKbps\":" + String(p.bitrateKbps) + ",\"btRssiDelta\":" + String(p.btRssiDelta) + ",\"btBonds\":" + String(p.btBonds) + ",\"btRole\":" + String(p.btRole);
+  j += ",\"bitrateKbps\":" + String(p.bitrateKbps) + ",\"btRssiDelta\":" + String(p.btRssiDelta) + ",\"btBonds\":" + String(p.btBonds) + ",\"btRole\":" + String(p.btRole) +
+       ",\"btRefreshes\":" + String(playerBtRefreshes());
   j += ",\"bssid\":\"" + (ap ? String("") : WiFi.BSSIDstr()) + "\",\"channel\":" + String(ap ? 0 : WiFi.channel());
   j += ",\"batRawMv\":" + String(b.rawBatMv) + ",\"pwrRawMv\":" + String(b.rawPwrMv);
   j += ",\"minHeap\":" + String(ESP.getMinFreeHeap()) + ",\"psramMin\":" + String(ESP.getMinFreePsram());

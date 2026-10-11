@@ -532,7 +532,25 @@ before editing and commit small steps, so agents do not overwrite each other.
   10-minute watch on the JBL was the first clean one (0 stalls, buffer full, 11.4 KB/s), as clean
   as the headphones (0 stalls, 11.3 KB/s). Lead: the JBL's own state (stale bond / stuck link
   mode), cleared by the factory reset (H7). If the JBL stalls again or refuses after a restart,
-  try that reset first. A2DP MTU (v1.11 log line `(diag) a2dp stream`): JBL 660, WH-1000XM6 883. Seen working the same
+  try that reset first. A2DP MTU (v1.11 log line `(diag) a2dp stream`): JBL 660, WH-1000XM6 883.
+  The reset only bought ~2.5 h: the collapse came back at 16:13. Turning Bluetooth off in the
+  middle of it brought ping from ~1.4 s to 46 ms and the input to 20-36 KB/s at once, so the
+  JBL's A2DP link starves WiFi, building up over time on one link (that test also gave a fresh
+  WiFi association, so a WiFi-side spiral is not ruled out). Workaround since v1.12, revised in
+  v1.13 after a review (`checkStarvation()` in `player.cpp`): while the link plays, two stream
+  stalls within 10 min or 30 s of starved input (`slowPeriods`: input under 70 % of the stream
+  rate, buffer under half and falling) -> `sourceDisconnect()`, page the same device again in a
+  paging window (WiFi off, then a fresh association). Not in the first 3 min after boot or a
+  station change; cooldown 10 min doubling to 60 min (reset after 2 h quiet); the planned
+  disconnect's `autoHold` lasts until the link is back (cleared on CONNECTED), so automatic
+  mode does not move to another device; stream failures are reset so the zombie rule does not
+  fire right before the window; when the device does not play within 60 s (e.g. it refuses the
+  bond) the refresh stays off until a restart. Log `[bt] WiFi starved next to the link`, `[bt]
+  back after the WiFi refresh`; count in `diag.btRefreshes` (Diagnostics: "reconnected Nx for
+  WiFi"). The zombie rule alone did not catch it: those connections delivered 100-800 KB before
+  stalling. Reviewer's next experiments (docs/wifi-stall-investigation.md): FRITZ!Box link rate
+  of the radio healthy vs collapsed, A2DP SUSPEND/START instead of a full reconnect, Bluedroid
+  drop/queue counters. Seen working the same
   day (stream back within 5 s). The reconnect logs `timeout when WiFi un-init` and `ESPmDNS addService
   failed` (service already registered); `radio.local` still resolves.
 - **Fresh link drops when WiFi returns (2026-10-09, fixed):** three times in a row the link came up

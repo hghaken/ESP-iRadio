@@ -94,6 +94,8 @@ std::vector<BtDeviceInfo> playerBtDevices();
 bool playerBtUseDevice(int index);    // move it to the top (manual mode uses the top one); caller restarts
 void playerBtPairNew();               // no selection, library address cleared; caller restarts
 bool playerBtForgetDevice(int index); // bond and entry removed; true when the caller should restart
+// Times the A2DP link was dropped and paged again because WiFi starved next to it (v1.12).
+int playerBtRefreshes();
 void playerLoop();                    // call from loop(): stores a device that just connected,
                                       // handles the speaker/headphone buttons
 // Buttons on the Bluetooth device (AVRCP): play/pause once = mute on/off, twice = next station,

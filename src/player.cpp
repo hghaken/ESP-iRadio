@@ -272,6 +272,7 @@ static void onBtState(esp_a2d_connection_state_t state, void*) {
   Log.printf("[bt] %s (%s)\n", a2dp->to_str(state), peer ? a2dp->to_str(*peer) : "?");
   if (state == ESP_A2D_CONNECTION_STATE_CONNECTED) {
     linkWasUp = true;
+    autoHold = false;  // a planned disconnect (e.g. the starvation refresh) is over
     if (peer) {
       memcpy(recordBda, *peer, 6);
       recordPending = true;
@@ -320,6 +321,11 @@ static volatile uint32_t btPulled = 0;    // bytes handed to Bluetooth (diagnost
 static volatile uint32_t btSilence = 0;   // bytes of padding because pcmBuf was empty
 static volatile int statInKBps = 0, statBtKBps = 0, statSilenceKBps = 0;  // last 10 s averages
 static volatile int underrunCount = 0, reconnectCount = 0;
+// Stream stalls while the Bluetooth link plays (see checkStarvation()).
+static volatile uint32_t stallAt = 0, prevStallAt = 0;
+static volatile int btRefreshCount = 0;
+static volatile int slowPeriods = 0;      // consecutive 10 s periods of starved input (see netTask)
+static volatile uint32_t playStartAt = 0;  // last station request (millis | 1)
 
 // Set when the station changes. btData() (the only reader of pcmBuf) empties the buffer
 // itself: a reset from netTask could race with a receive running on core 0 and leave
@@ -391,6 +397,14 @@ static void netTask(void*) {
         statInKBps = (totalIn - statIn) / dt;
         statBtKBps = (btPulled - statPulled) / dt;
         statSilenceKBps = (btSilence - statSilence) / dt;
+        // Starved input next to a playing link: under 70 % of the stream rate with the buffer
+        // under half and falling. Three periods in a row (30 s) trigger checkStarvation().
+        static int lastBufKB = 0;
+        int bufKB = netBuf->available() / 1024, kbps = url->bitrateKbps();
+        bool slow = streaming && kbps > 0 && statBtKBps >= 170 && statInKBps * 80 < kbps * 7 &&
+                    bufKB < (int)(NET_BUFFER_BYTES / 2048) && bufKB < lastBufKB;
+        slowPeriods = slow ? slowPeriods + 1 : 0;
+        lastBufKB = bufKB;
         Log.printf("[stat] in %d KB/s, bt pull %d KB/s (silence %d KB/s), buffer %d KB, heap %u\n",
                       statInKBps, statBtKBps, statSilenceKBps, netBuf->available() / 1024, ESP.getFreeHeap());
       }
@@ -488,6 +502,10 @@ static void netTask(void*) {
         // A connection that stalls before delivering real data counts as a failure: three in a
         // row make loop() re-associate WiFi (the "zombie" check in main.cpp).
         if (connBytes < HEALTHY_BYTES && WiFi.status() == WL_CONNECTED) streamFailures = streamFailures + 1;
+        if (btLinkUp()) {
+          prevStallAt = stallAt;
+          stallAt = millis() | 1;  // never 0: 0 means "none"
+        }
         url->end();
         streaming = false;
         retryAt = millis() + 200;
@@ -848,10 +866,79 @@ static void updateCoex() {
   Log.printf("[coex] preference %s -> %d\n", want ? "WIFI" : "BALANCE", (int)err);
 }
 
+static void sourceDisconnect();
+
+// WiFi starvation next to some sinks (JBL Charge 5, 2026-10-11, docs/wifi-stall-investigation.md):
+// after minutes to hours on one A2DP link the WiFi path slows to 1-4 KB/s (ping 1-2.5 s) while
+// Bluetooth plays on; Bluetooth off cured it at once. Trigger (link up and playing): two stream
+// stalls within STARVE_WINDOW_MS, or 30 s of starved input (slowPeriods, netTask). Then drop the
+// link and page the same device again in a paging window (WiFi off meanwhile, then a fresh
+// association too). Not in the first 3 min after boot or a station change. The cooldown starts
+// at 10 min and doubles up to 60 min; 2 h without a refresh resets it. When the device does not
+// play again within 60 s (e.g. it refuses the bond), the refresh stays off until a restart.
+// Reviewed by the reviewer agent 2026-10-11 (hold kept until the link is back, zombie reset).
+static const uint32_t STARVE_WINDOW_MS = 600000;
+static const uint32_t STARVE_QUIET_MS = 180000;      // after boot or a station change
+static const uint32_t STARVE_COOLDOWN_MS = 600000;   // first cooldown, doubles per refresh
+static const uint32_t STARVE_COOLDOWN_MAX_MS = 3600000;
+static const uint32_t STARVE_BACK_MS = 60000;        // the device must play again within this
+
+static void checkStarvation() {
+  static uint32_t lastRefresh = 0, cooldown = STARVE_COOLDOWN_MS, waitUntil = 0;
+  static bool off = false;
+  if (off) return;
+  if (waitUntil) {  // a refresh is running: is the device back?
+    if (btLinkUp() && playerBtAudioActive()) {
+      waitUntil = 0;
+      Log.printf("[bt] back after the WiFi refresh (%u ms)\n", (unsigned)(millis() - lastRefresh));
+    } else if ((int32_t)(millis() - waitUntil) >= 0) {
+      waitUntil = 0;
+      off = true;
+      Log.println("[bt] device not back within 60 s after the WiFi refresh: refresh off until restart");
+    }
+    return;
+  }
+  uint32_t a = prevStallAt, b = stallAt;
+  bool stalls = a && b && b - a <= STARVE_WINDOW_MS && millis() - b < 10000;
+  bool slow = slowPeriods >= 3;
+  if (!stalls && !slow) return;
+  if (!btStackStarted || !btEnabled || !btLinkUp() || !playerBtAudioActive()) return;
+  if (millis() < STARVE_QUIET_MS || (playStartAt && millis() - playStartAt < STARVE_QUIET_MS)) return;
+  if (lastRefresh && millis() - lastRefresh > 2 * STARVE_COOLDOWN_MAX_MS) cooldown = STARVE_COOLDOWN_MS;
+  if (lastRefresh && millis() - lastRefresh < cooldown) return;
+  esp_bd_addr_t* peer = a2dp->get_last_peer_address();
+  if (peer == nullptr) return;
+  uint8_t addr[6];
+  memcpy(addr, *peer, 6);
+  if (lastRefresh) cooldown = min(cooldown * 2, STARVE_COOLDOWN_MAX_MS);
+  lastRefresh = millis() | 1;
+  prevStallAt = stallAt = 0;
+  slowPeriods = 0;
+  btRefreshCount = btRefreshCount + 1;
+  if (stalls)
+    Log.printf("[bt] WiFi starved next to the link (2 stalls in %u s): reconnecting %s\n",
+               (unsigned)((b - a) / 1000), bdaText(addr).c_str());
+  else
+    Log.printf("[bt] WiFi starved next to the link (input %d KB/s for 30 s): reconnecting %s\n",
+               (int)statInKBps, bdaText(addr).c_str());
+  playerResetStreamFailures();      // the zombie rule must not re-associate right before the window
+  sourceDisconnect();               // planned: autoHold stays until the link is back (onBtState)
+  if (a2dp->get_connection_state() != ESP_A2D_CONNECTION_STATE_DISCONNECTED) {
+    Log.println("[bt] link did not go down, no paging window");
+    return;
+  }
+  a2dp->set_auto_reconnect(addr);   // the library heartbeat pages this same device
+  playerRequestQuietPage();         // loop() opens a paging window: WiFi off, page, WiFi back
+  waitUntil = millis() + STARVE_BACK_MS;
+}
+
+int playerBtRefreshes() { return btRefreshCount; }
+
 void playerLoop() {
   handleButtons();
   checkRole();
   updateCoex();
+  checkStarvation();
   static uint32_t lastPolicy = 0;
   if (btStackStarted && settings.btLead && !btLinkUp() && millis() - lastPolicy > 2000) {
     lastPolicy = millis();  // before every page: Bluedroid allows the switch again after a stream
@@ -965,6 +1052,7 @@ void playerPlay(int stationIndex) {
   xSemaphoreTake(lock, portMAX_DELAY);
   requestStation = stationIndex;
   requestPending = true;
+  playStartAt = millis() | 1;
   xSemaphoreGive(lock);
 }
 
