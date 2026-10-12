@@ -61,7 +61,9 @@ Still to add: `LCSC` and `MPN` fields (JLCPCB Tools).
   `+5V_USBC`, 10 uF; LM66100 `+5V_USBC` -> `+5V_OLI` (CE to GND, ST open) with 1 uF out; ferrite FB2
   (600 R @ 100 MHz, 2 A) from `+5V_USBC` to `+VAMP` (keeps amplifier switching noise off the
   radio's 5 V).
-- Display/SD: 0 Ohm R8/R9 at the ESP32 side of SCK/MOSI; bus side nets `SPI_SCK_BUS`,
+- Display/SD: series resistors at the ESP32 side of SCK/MOSI: R8 22 Ohm on SCK (softer clock
+  edges, less interference next to the WROVER antenna; owner's choice 2026-10-12), R9 0 Ohm on
+  MOSI (placeholder, 22-33 Ohm if ringing shows); bus side nets `SPI_SCK_BUS`,
   `SPI_MOSI_BUS`; pull-ups 10k on LCD_CS, SD_CS, MISO, DAT1, DAT2.
 - DAC (TI PCM510xA datasheet SLAS859C, Figure 33): 0.1 uF + 10 uF on DVDD, CPVDD, AVDD; 2.2 uF
   flying (CAPP-CAPM) and on VNEG; 0.1 uF on LDOO; 470 Ohm + 2.2 nF per output; AVDD through

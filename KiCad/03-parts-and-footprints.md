@@ -48,7 +48,7 @@ footprint, from the datasheet or measured from the owner's part; record the sour
 | R_XSMT | 10k | PCM5102A XSMT to `+3V3` |
 | R_CC1, R_CC2 | 5.1k 1 % | USB-C CC pull-downs (sink) |
 | R_SUM_L, R_SUM_R | 10k | mono sum `LINE_L`/`LINE_R` -> `AMP_IN` |
-| R_SPI_SCK, R_SPI_MOSI | 0 Ohm (22-33 Ohm if ringing) | series at the ESP32 end |
+| R8 (SCK), R9 (MOSI) | R8 22 Ohm, R9 0 Ohm (22-33 Ohm if ringing) | series at the ESP32 end |
 | R_SPARE34, R_SPARE36 | 10k, DNP | optional pull-ups |
 | DAC caps | per TI datasheet | decoupling, charge pump, LDOO, output RC |
 | Amp caps | per Diodes datasheet | input coupling, 10 uF + 1 uF supply |

@@ -45,8 +45,8 @@ The case is designed around the board, so the board files must give the case des
 - 2 layers: top for signals and short power, bottom as solid ground plane. Stitch ground vias
   around the board edge and next to signal vias.
 - SPI (`SPI_SCK`, `SPI_MOSI`, `SPI_MISO`, CS lines): the display runs at 26.7 MHz. Keep them short
-  (< 80 mm), over unbroken ground, no stubs; series resistors 22-33 Ohm footprints at the ESP32 end
-  of `SPI_SCK` and `SPI_MOSI` (0 Ohm by default) in case of ringing.
+  (< 80 mm), over unbroken ground, no stubs; series resistors at the ESP32 end of `SPI_SCK`
+  (R8, 22 Ohm) and `SPI_MOSI` (R9, 0 Ohm; 22-33 Ohm if ringing shows).
 - I2S (`I2S_BCK` 2.8 MHz, `I2S_LRCK`, `I2S_DATA`): short, over ground, away from the analog
   output and the speaker traces.
 - Analog line out (`LINE_L`, `LINE_R`, `AGND`): short, guarded by ground, away from the amplifier
