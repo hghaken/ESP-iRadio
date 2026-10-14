@@ -156,6 +156,15 @@ bool sdBegin() {
   return false;
 #endif
   bool ok = mount(false);
+  if (!ok) {
+    // A reset in the middle of a card transfer (esptool's hard reset after a USB flash, seen
+    // 2026-10-14) leaves the card out of step: GO_IDLE_STATE fails once and a second attempt
+    // (the init sends its wake-up clocks again) finds it.
+    SD.end();
+    delay(200);
+    Log.println("[sd] second attempt");
+    ok = mount(false);
+  }
   if (ok && !SD.exists(BACKUP_SETTINGS)) sdScheduleBackup();
   return ok;
 }

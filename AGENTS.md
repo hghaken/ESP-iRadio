@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.32 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.33 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -95,7 +95,9 @@ Hardware:
   4,194,304 sectors (> 2 GB) is switched to block addressing, with a log line. Without it the
   faulty 16 GB card of 2026-10-14 read sector 0 only ("no valid FAT volume") and every write failed
   (CMD13 R1 0x33), also at 1 MHz. `sdcard.cpp` logs `[sd] diag:` lines (card type, sectors,
-  partition and boot sector) after a failed mount.
+  partition and boot sector) after a failed mount. `sdBegin()` tries a second time after 200 ms
+  (v1.33): after esptool's hard reset the card once answered `GO_IDLE_STATE failed` and stayed
+  unread until the next restart.
 - `scripts/patch_a2dp_reconnect.py` - reapplies six patches onto the git-ignored ESP32-A2DP
   copy (cancel a stuck page; do not page when auto-reconnect is off; publish the RSSI delta; start
   the media stream right after connecting instead of on the next 10 s heartbeat; diag log lines
@@ -287,7 +289,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.32 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.33 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
