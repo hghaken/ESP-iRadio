@@ -50,15 +50,13 @@ struct Strip {
   uint16_t color, bg;
 };
 
-// Artist and song sit on a dark blue bar, centred between the station line (ends at row 64) and
-// the status line (text from row ~149): bar rows 70..141, strips 74..105 and 106..137.
-static const uint16_t COL_BAR = 0x010C;  // #002060-ish: yellow and cyan keep a >10:1 contrast
-static const int BAR_TOP = 70, BAR_BOTTOM = 142;
+// Station, artist and song on black (the dark blue bar behind artist and song was dropped in
+// v1.23, once the logo sat next to all three lines).
 
 static const Strip STRIPS[3] = {
     {32, 64, 56, &FreeSansBold12pt7b, COL_STATION, COL_BG},  // station
-    {74, 106, 98, &FreeSans12pt7b, COL_ARTIST, COL_BAR},     // artist (or the whole title)
-    {106, 138, 130, &FreeSans12pt7b, COL_SONG, COL_BAR},     // song
+    {74, 106, 98, &FreeSans12pt7b, COL_ARTIST, COL_BG},      // artist (or the whole title)
+    {106, 138, 130, &FreeSans12pt7b, COL_SONG, COL_BG},      // song
 };
 
 static Adafruit_ST7789* tft = nullptr;
@@ -332,9 +330,6 @@ static void drawScreen(const Screen& s) {
   canvas->print("ESP iRadio");
   canvas->setCursor(W - MARGIN - textWidth(btText), HEADER_BASELINE);
   canvas->print(btText);
-
-  // Bar behind artist and song (the strips repaint their own rows in the same colour).
-  canvas->fillRect(0, BAR_TOP, W, BAR_BOTTOM - BAR_TOP, COL_BAR);
 
   // Station logo (SD card) and the text areas next to it.
   logoShown = s.logo && logoPix && sdCopyLogo(logoPix, LOGO_SIZE);
