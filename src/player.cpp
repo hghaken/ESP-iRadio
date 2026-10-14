@@ -376,25 +376,31 @@ static volatile bool lineActive = false;  // the line output plays (Bluetooth sw
 static bool outputUp() { return lineActive || btLinkUp(); }
 
 // Writes pcmBuf to I2S while lineActive. i2s_write blocks until the DMA has room, so the
-// DMA clock paces this task. 32-bit slots (BCK = 64 x fs), the usual choice for PCM5102A boards
-// without a master clock (the chip's PLL runs from BCK); i2s_write_expand widens the 16-bit
-// samples. (The crackling of the first test, 2026-10-14, was a DATA wire on the wrong pin, so
-// 16-bit slots were never tried again; /api/linetest can switch them.) The driver is installed on first use
-// (4 x 256 frames x 8 bytes = 8 KB of internal DMA RAM); with Bluetooth on, I2S is stopped.
+// DMA clock paces this task. 16-bit slots (BCK = 32 x fs): on 2026-10-14 they sounded the same
+// as 32-bit slots (64 x fs, written with i2s_write_expand) on the PCM5102A board, which has no
+// master clock and runs its PLL from BCK; /api/linetest bits=32 switches back for a test. (The
+// crackling of the first test was a DATA wire on the wrong pin.) The driver is installed on
+// first use (4 x 256 frames x 4 bytes = 4 KB of internal DMA RAM); with Bluetooth on, I2S is
+// stopped.
 // Test settings from /api/linetest (not stored): 440 Hz tone instead of the stream, I2S or
 // left-justified format, 16 or 32-bit slots. A change reinstalls the driver.
 static volatile bool lineTone = false;
 static volatile bool lineMsb = false;
-static volatile int lineBits = 32;
+static volatile int lineBits = 16;
 static volatile uint32_t lineCfgGen = 0;
 
 void playerLineTest(bool tone, bool msb, int bits) {
   lineTone = tone;
   lineMsb = msb;
-  lineBits = bits == 16 ? 16 : 32;
+  lineBits = bits == 32 ? 32 : 16;
   lineCfgGen = lineCfgGen + 1;
   Log.printf("[line] test: %s, %s, %d-bit slots\n", tone ? "440 Hz tone" : "stream",
              msb ? "left-justified" : "I2S", lineBits);
+}
+
+void playerSetLineSlots32(bool on) {
+  lineBits = on ? 32 : 16;
+  lineCfgGen = lineCfgGen + 1;
 }
 
 static void lineTask(void*) {
@@ -1184,6 +1190,7 @@ void playerBegin(const char* btName, int volume) {
 
   xTaskCreatePinnedToCore(netTask, "net", 4096, nullptr, 3, nullptr, 1);
   xTaskCreatePinnedToCore(decodeTask, "decode", 8192, nullptr, 4, nullptr, 1);
+  lineBits = settings.line32 ? 32 : 16;
   xTaskCreatePinnedToCore(lineTask, "line", 3072, nullptr, 5, nullptr, 1);
 }
 

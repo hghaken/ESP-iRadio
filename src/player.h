@@ -58,6 +58,8 @@ void playerSetBluetoothEnabled(bool on);
 // Line output test (not stored): 440 Hz tone instead of the stream, left-justified
 // instead of I2S, 16 or 32-bit slots.
 void playerLineTest(bool tone, bool msb, int bits);
+// Line output slot width: 32-bit slots (BCK 64 x fs) or 16-bit (32 x fs); takes effect at once.
+void playerSetLineSlots32(bool on);
 bool playerBluetoothEnabled();
 // Consecutive failed Bluetooth connection attempts (0 once connected).
 // A failed inquiry does not increment this: inquiry never raises DISCONNECTED.

@@ -67,6 +67,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 <div class="row"><label><input type="checkbox" id="coexwifi" onchange="post('/api/coex','wifi='+(this.checked?'1':'0'))"> Test: WiFi priority while streaming (until the next restart)</label><span class="mut" id="coexstat"></span></div>
 <div class="row"><label><input type="checkbox" id="btlead" onchange="post('/api/btlead','on='+(this.checked?'1':'0'))"> Radio leads the Bluetooth link (no role switch; keeps WiFi steady next to some speakers)</label></div>
 <div class="row"><label><input type="checkbox" id="bten" onchange="post('/api/btenable','on='+(this.checked?'1':'0'))"> Bluetooth on (connect to the chosen device)</label></div>
+<div class="row"><label><input type="checkbox" id="line32" onchange="post('/api/line32','on='+(this.checked?'1':'0'))"> Line output: 32-bit I2S slots (off = 16-bit)</label></div>
+<div class="mut">With Bluetooth off the radio plays through the line output (PCM5102A DAC).</div>
 <div class="mut" style="margin-top:8px">Not connecting? Try again turns WiFi off for 30 seconds and calls the chosen device. Nothing is erased.</div>
 <div class="row"><button class="sec" onclick="if(confirm('WiFi goes off for 30 seconds. The radio tries the chosen device again. Nothing is erased. The page will be gone for a moment. Continue?'))post('/api/btretry','')">Try again</button></div>
 <div class="mut">Last resort: erase all pairings. This erases all devices on the radio and restarts; the Bluetooth address stays the same. Also remove ESP iRadio on the devices themselves (Sony app, JBL: clear the pairing memory).</div>
@@ -147,7 +149,7 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
  $('diag').innerHTML=rows.map(r=>'<tr><td class="mut" style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top">'+r[0]+'</td><td style="padding:3px 0">'+r[1]+'</td></tr>').join('');
  if(s.backlight)$('blnow').textContent='Now '+s.backlight.now+'%. ';$('sys').textContent=(s.batteryMv?'Battery '+(s.batteryMv/1000).toFixed(2)+' V ('+s.batteryPct+'%)':'Battery: no reading (jumper open?)')+(s.usb?', USB power present':'')+'. Uptime '+Math.floor(s.uptime/60)+' min, heap '+Math.round(s.heap/1024)+' kB free (min '+Math.round(s.minHeap/1024)+' kB), PSRAM '+Math.round(s.psram/1024)+' kB free';
  if(first){first=false;stList=s.stations;lastSt=s.station>=0?s.station:s.last;setTimeout(sdRefresh,300);const sel=$('sel');sel.innerHTML='';s.stations.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;sel.appendChild(o)});
-  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
+  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('line32').checked=!!s.line32;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
  {const c=s.station>=0?s.station:s.last;if(c!=selShown&&document.activeElement!==$('sel'))$('sel').value=c;selShown=c}
  if(s.btDevices)btRender(s.btDevices,!!s.btAuto);if(document.activeElement!==$('coexwifi'))$('coexwifi').checked=!!s.coexWanted;$('coexstat').textContent=s.coexWanted?(s.coexActive?'active':'waiting for streaming'):'';document.querySelectorAll('input[type=range]').forEach(rangeFill);considerAutoScan(s);
 })}
@@ -303,6 +305,7 @@ static void handleStatus() {
   j += ",\"bt\":" + String(p.btConnected ? "true" : "false");
   j += ",\"btEnabled\":" + String(p.btEnabled ? "true" : "false");
   j += ",\"lineOut\":" + String(p.lineOut ? "true" : "false");
+  j += ",\"line32\":" + String(settings.line32 ? "true" : "false");
   j += ",\"btLead\":" + String(settings.btLead ? "true" : "false");
   j += ",\"coexWanted\":" + String(playerCoexWifiWanted() ? "true" : "false") + ",\"coexActive\":" +
        String(playerCoexWifiActive() ? "true" : "false");
@@ -718,9 +721,15 @@ void webBegin(bool setupMode) {
   server.on("/api/btuse", HTTP_POST, handleBtUse);
   server.on("/api/btpair", HTTP_POST, handleBtPair);
   server.on("/api/btdel", HTTP_POST, handleBtDel);
+  server.on("/api/line32", HTTP_POST, [] {  // line output slot width, stored
+    settings.line32 = server.arg("on") == "1";
+    settingsSave();
+    playerSetLineSlots32(settings.line32);
+    server.send(200, "text/plain", "ok");
+  });
   server.on("/api/linetest", HTTP_POST, [] {  // test: tone=0/1 fmt=i2s/msb bits=16/32
     playerLineTest(server.arg("tone") == "1", server.arg("fmt") == "msb",
-                   server.hasArg("bits") ? server.arg("bits").toInt() : 32);
+                   server.hasArg("bits") ? server.arg("bits").toInt() : 16);
     server.send(200, "text/plain", "ok");
   });
   server.on("/api/btpause", HTTP_POST, [] {  // test: s = seconds without Bluetooth audio

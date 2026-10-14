@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.30 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.32 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -45,7 +45,7 @@ BLE Mesh / SPP / HFP, Bluedroid heap in PSRAM first; tag `opt-5-idf-phase2` + la
 dropped. Mind which env you
 upload: `pio run -t upload` (env `radio`) puts the prebuilt build back; the `idf` build goes on
 with `.\scripts\build_idf.ps1` plus the curl upload under Commands.
-Line output since 2026-10-14 (v1.30): a PCM5102A DAC module on I2S plays when the Bluetooth
+Line output since 2026-10-14 (v1.31): a PCM5102A DAC module on I2S plays when the Bluetooth
 toggle is off; a speaker amplifier is still to come (see `docs/speaker-output.md`).
 Public repository: GitHub hghaken/ESP-iRadio (branch `master`, GPL-3.0). Host names such as
 `icecast.example.com`, `my-nas` and 192.168.1.x stand for the owner's own servers.
@@ -118,14 +118,17 @@ Hardware:
   sleep off. TLS would not fit in RAM anyway.
 - Line output (in `src/player.*`, since v1.28/v1.30): `lineTask` (core 1, prio 5) pulls PCM from
   `pcmBuf` through the same `pullPcm()` as `btData()` (flush, silence padding, software volume,
-  `btPulled` counters) and writes it to I2S_NUM_0 (master TX, 44.1 kHz, 32-bit slots via
-  `i2s_write_expand`, APLL, 4 x 256-frame DMA = 8 KB internal RAM, driver installed on first use).
+  `btPulled` counters) and writes it to I2S_NUM_0 (master TX, 44.1 kHz, 16-bit slots by default
+  since v1.31, they sounded the same as 32-bit slots; web checkbox "Line output: 32-bit I2S slots"
+  since v1.32, NVS `l32`, `/api/line32 on=`, also in the SD backup; APLL, 4 x 256-frame DMA = 4 KB internal RAM, driver
+  installed on first use).
   Pins `I2S_BCK_PIN` 27, `I2S_LRCK_PIN` 14, `I2S_DATA_PIN` 13 in `config.h`. It follows the
   Bluetooth toggle: off = `lineActive` (set after the link is down, cleared before Bluetooth starts,
   so only one reader of `pcmBuf`), on = I2S stopped. `outputUp()` (line out or Bluetooth link)
   replaces the link check in `PcmSink`, `resetPipeline()` and `decodeTask`. Display status
   "Line out  buf NN s  AAC", `lineOut` in `/api/status`, Diagnostics "Output". Test endpoint
-  `/api/linetest` (tone=0/1: 440 Hz at about -12 dB, ignores the volume; fmt=i2s/msb; bits=16/32;
+  `/api/linetest` (tone=0/1: 440 Hz at about -12 dB, ignores the volume; fmt=i2s/msb; bits=16/32,
+  32 = slots of 64 x fs via `i2s_write_expand`;
   not stored). Module: GeeDIY PCM5102MK 2.0 (header VCC GND GND LRCK DATA BCK; three AMS1117-3.3,
   so VCC = 5 V; SCK and XSMT handled on the board; FMT jumper on I2S; FLT solder bridge N/L as
   shipped); its maker's site has no page for it. First test 2026-10-14: only crackling until the
@@ -284,7 +287,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.30 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.32 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
