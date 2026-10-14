@@ -178,8 +178,8 @@ Hardware:
   `GPIO_IN1_REG`); a detent counts when A and B are back at rest (both high) with a net of 2+
   steps in one direction since the last rest, which keeps the count exact despite bounce and
   missed edges (raw / 4 drifted in the v1.24 test). `ENC_REVERSE` makes clockwise positive on
-  this wiring. Button debounced 30 ms in `encoderLoop()`. Test 2026-10-14: 20 clicks right and
-  20 left came back to exactly 0; ~10 bounce steps per minute of turning without RC filter.
+  this wiring. Button debounced 30 ms in `encoderLoop()`. Test 2026-10-14: 20 clicks right by hand
+  read 19, 20 left came back to exactly 0; ~10 bounce steps per minute of turning without RC filter.
 - `src/power.h` - `powerBrownouts()` for the diagnostics (guard itself lives in `main.cpp`).
 - `src/display.*` - status screen on the 1.69" ST7789 IPS (`Adafruit_ST7789::init(240, 280)`:
   generic init with INVON - IPS panels need it - and the 20-row offset; rotation 1, or 3 when
