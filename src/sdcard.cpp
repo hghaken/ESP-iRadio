@@ -1,5 +1,6 @@
 #include "sdcard.h"
 #include <SD.h>
+#include <sd_diskio.h>
 #include <SPI.h>
 #include <Update.h>
 #include <WiFi.h>
@@ -98,14 +99,43 @@ static void prune(const char* dir, const char* ext, size_t keep) {
 // format: let the library run f_mkfs when the card has no valid FAT volume (FatFs error 13).
 // A card that already has FAT is only mounted, never wiped. ESP-IDF 4.4's FatFs has no exFAT,
 // so it makes FAT32 (FAT16 on small cards).
+// Defined in the SD library's sd_diskio.cpp (C++ linkage, not in its header).
+unsigned char ff_sd_initialize(uint8_t pdrv);
+
+// After a failed mount: initialise the card by hand and log what it reports and what sector 0
+// (and the first partition's boot sector) holds, so "no valid FAT volume" can be told apart
+// from a wrong card type, an exFAT card or a bad connection.
+static void cardDiag() {
+  uint8_t pdrv = sdcard_init(SD_CS, &SPI, 1000000);
+  if (pdrv == 0xFF) { Log.println("[sd] diag: no free drive slot"); return; }
+  unsigned st = ff_sd_initialize(pdrv);
+  Log.printf("[sd] diag: init status %u, card type %u (2 SD, 3 SDHC), %lu sectors\n", st,
+             (unsigned)sdcard_type(pdrv), (unsigned long)sdcard_num_sectors(pdrv));
+  uint8_t* b = (uint8_t*)malloc(512);
+  if (b && st == 0 && sd_read_raw(pdrv, b, 0)) {
+    uint32_t lba = b[0x1C6] | b[0x1C7] << 8 | b[0x1C8] << 16 | (uint32_t)b[0x1C9] << 24;
+    Log.printf("[sd] diag: sector 0 sig %02X%02X, oem '%.8s', part type %02X at %lu\n",
+               b[510], b[511], (const char*)b + 3, b[0x1C2], (unsigned long)lba);
+    if (lba && sd_read_raw(pdrv, b, lba))
+      Log.printf("[sd] diag: boot sector sig %02X%02X, oem '%.8s', fat32 label '%.8s'\n",
+                 b[510], b[511], (const char*)b + 3, (const char*)b + 0x52);
+  } else {
+    Log.println("[sd] diag: sector 0 not readable");
+  }
+  free(b);
+  sdcard_uninit(pdrv);
+}
+
 static bool mount(bool format) {
   // The card shares VSPI with the TFT. Arduino's SPI transactions take the bus lock (HAL
   // locks are on), so the display task and the card take turns. 4 MHz: safe for any breakout
-  // and jumper wires (the Robot LCD slot, used until 2026-10-10, worked at that speed).
+  // and jumper wires (the Robot LCD slot until 2026-10-10 and the breakout since 2026-10-14).
+  // Cards that hide the SDHC bit are fixed in the library (scripts/patch_sd_sdhc.py).
   mounted = SD.begin(SD_CS, SPI, 4000000, "/sd", 3, format);
   if (!mounted) {
     info = "no card (or not readable)";
     Log.println("[sd] no card or not readable");
+    if (!format) cardDiag();
     return false;
   }
   uint8_t type = SD.cardType();

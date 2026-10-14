@@ -11,8 +11,8 @@
 #define TFT_BL   26   // backlight via a transistor on the module: high = on, PWM for dimming
 #define SD_CS    4    // microSD on the same bus, see sdcard.cpp
 // 0 while no card reader is wired (the ST7789 module has no slot; a separate microSD breakout
-// is planned on SD_CS): sdBegin() then skips the card and every SD feature stays idle.
-#define SD_ENABLED 0
+// on SD_CS, wired since 2026-10-14): sdBegin() then skips the card and every SD feature stays idle.
+#define SD_ENABLED 1
 
 // Olimex battery sense (470k/470k divider, needs BAT_SENS_E1 + BAT_PWR_E1 bridged) and
 // external power sense (needs PWR_SENS_E1 bridged). Both ADC1, input-only pins.

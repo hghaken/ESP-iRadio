@@ -21,13 +21,13 @@ USB voltage, SD card section. The 1.69" IPS display (ST7789, 280x240) shows a st
 station, artist and song (scrolling when too long, Title Case), a status line "BT good  buf NN s
 AAC", IP + WiFi dBm and battery, updated live without flicker; 180-degree flip; brightness,
 night mode and idle dimming. SD card support (log, measurements, settings backup, logos, firmware
-copies) is built in but off (`SD_ENABLED 0`) until the ordered microSD breakout is wired. Calibrated battery measurement (~14 h measured on the former 2500 mAh cell; a 5000 mAh cell since 2026-10-11, expected ~28 h), power guard against brownout
+copies) runs again since 2026-10-14 on a separate microSD breakout (16 GB card). Calibrated battery measurement (~14 h measured on the former 2500 mAh cell; a 5000 mAh cell since 2026-10-11, expected ~28 h), power guard against brownout
 loops. Station list up to 60 entries (NVS blob); about 25 public Dutch stations verified and in
 use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbps AAC is fine,
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.17 (2026-10-11 evening). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.21 (2026-10-14: microSD breakout; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -88,6 +88,13 @@ Hardware:
   `ESP_LOGE` "(diag) a2dp stream: peer mtu ..." line where the stream starts (v1.11). The self-built
   IDF logs at level error (`CONFIG_LOG_DEFAULT_LEVEL` 1): `ESP_LOGW`/`ESP_LOGI` inside IDF
   components compile to nothing (v1.10 lost its line that way).
+- `scripts/patch_sd_sdhc.py` - both envs, before every build: fixes the Arduino SD library
+  (`libraries/SD/src/sd_diskio.cpp` in the framework-arduinoespressif32 package) for cards that
+  come out of the init as byte-addressed SDSC although they are SDHC: a card with more than
+  4,194,304 sectors (> 2 GB) is switched to block addressing, with a log line. Without it the
+  16 GB card of 2026-10-14 read sector 0 only ("no valid FAT volume") and every write failed
+  (CMD13 R1 0x33), also at 1 MHz. `sdcard.cpp` logs `[sd] diag:` lines (card type, sectors,
+  partition and boot sector) after a failed mount.
 - `scripts/patch_a2dp_reconnect.py` - reapplies six patches onto the git-ignored ESP32-A2DP
   copy (cancel a stuck page; do not page when auto-reconnect is off; publish the RSSI delta; start
   the media stream right after connecting instead of on the next 10 s heartbeat; diag log lines
@@ -193,8 +200,9 @@ Hardware:
   restore in `sdcard.cpp`): "Updating firmware", source, progress bar, kB and percent, then
   "Klaar - de radio herstart" or "Mislukt" (red, back to normal after 10 s); it wakes a dimmed
   screen. Seen working on the radio for an OTA upload (2026-10-10). GPIO4 (SD chip select) is held high in `displayBegin()`.
-- `src/sdcard.*` - microSD card (CS GPIO4, shares VSPI with the display; `SD_ENABLED 0` in
-  `config.h` until the planned separate breakout is wired; until 2026-10-10 the card sat in the
+- `src/sdcard.*` - microSD card (CS GPIO4, shares VSPI with the display; `SD_ENABLED 1` in
+  `config.h`; since 2026-10-14 a plain 3.3 V breakout without regulator (4x 10k pull-ups) on
+  breadboard wires, 16 GB SDHC card formatted by the radio; until 2026-10-10 the card sat in the
   Robot LCD's slot, where everything below was verified; Arduino's
   SPI transactions take the bus lock, so the display task and the card take turns). Mounted at
   4 MHz in `setup()` right after the display; everything else runs in `sdLoop()` from `loop()`
@@ -241,7 +249,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.17 on 2026-10-11),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.21 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -753,9 +761,9 @@ before editing and commit small steps, so agents do not overwrite each other.
 | DC  | GPIO22 | |
 | CS  | GPIO5  | strapping pin, fine for CS |
 | BLK | GPIO26 | backlight, high = on, LEDC PWM |
-Planned microSD breakout on the same bus (until then `SD_ENABLED 0` in `config.h`): CS GPIO4,
-SCK GPIO18, MOSI GPIO23, MISO GPIO19, VCC 3V3 (or 5V for a module with its own regulator and
-level shifter), GND. Then set `SD_ENABLED 1`.
+microSD breakout on the same bus (since 2026-10-14, `SD_ENABLED 1`): CS GPIO4, SCK GPIO18,
+MOSI GPIO23, MISO GPIO19, VCC 3V3 (the module has no regulator; a module with an AMS1117 and
+level shifter needs 5V), GND. Module pin order: 3V3, CS, MOSI, CLK, MISO, GND.
 
 Former displays (Robot LCD, e-paper) used the same CS/DC/RST/BL pins; the e-paper had BUSY on
 GPIO4, the Robot LCD its SD chip select there.
@@ -859,8 +867,7 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   `docs/display-research.md`. Backlight dimming, night mode and idle dimming are done; the
   encoder should also count as activity (`displayWake()`).
 - SD card (done 2026-10-10: log, measurements, settings backup, logos, firmware copies). The user
-  does not want music files on it. Since the ST7789 replaced the Robot LCD there is no card
-  reader: `SD_ENABLED 0` in `config.h` until the planned microSD breakout (CS GPIO4) is wired. Possible next: song history ("wat was dat liedje?"),
+  does not want music files on it. Card reader again since 2026-10-14 (separate breakout). Possible next: song history ("wat was dat liedje?"),
   `stations.txt` import from the card.
 - Repeat the battery run (now with the 5000 mAh cell; the SD measurement files will show the
   discharge curve once the card reader is in) with the power guard in place and read `/api/status` `diag` (underruns,
