@@ -21,7 +21,8 @@ USB voltage, SD card section. The 1.69" IPS display (ST7789, 280x240) shows a st
 station, artist and song (scrolling when too long, Title Case), a status line "BT good  buf NN s
 AAC", IP + WiFi dBm and battery, updated live without flicker; 180-degree flip; brightness,
 night mode and idle dimming. SD card support (log, measurements, settings backup, logos, firmware
-copies) runs again since 2026-10-14 on a separate microSD breakout (16 GB card). Calibrated battery measurement (~14 h measured on the former 2500 mAh cell; a 5000 mAh cell since 2026-10-11, expected ~28 h), power guard against brownout
+copies) runs again since 2026-10-14 on a separate microSD breakout (the 128 GB card; 27 station
+logos on it). Calibrated battery measurement (~14 h measured on the former 2500 mAh cell; a 5000 mAh cell since 2026-10-11, expected ~28 h), power guard against brownout
 loops. Station list up to 60 entries (NVS blob); about 25 public Dutch stations verified and in
 use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbps AAC is fine,
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
@@ -92,7 +93,7 @@ Hardware:
   (`libraries/SD/src/sd_diskio.cpp` in the framework-arduinoespressif32 package) for cards that
   come out of the init as byte-addressed SDSC although they are SDHC: a card with more than
   4,194,304 sectors (> 2 GB) is switched to block addressing, with a log line. Without it the
-  16 GB card of 2026-10-14 read sector 0 only ("no valid FAT volume") and every write failed
+  faulty 16 GB card of 2026-10-14 read sector 0 only ("no valid FAT volume") and every write failed
   (CMD13 R1 0x33), also at 1 MHz. `sdcard.cpp` logs `[sd] diag:` lines (card type, sectors,
   partition and boot sector) after a failed mount.
 - `scripts/patch_a2dp_reconnect.py` - reapplies six patches onto the git-ignored ESP32-A2DP
@@ -202,7 +203,11 @@ Hardware:
   screen. Seen working on the radio for an OTA upload (2026-10-10). GPIO4 (SD chip select) is held high in `displayBegin()`.
 - `src/sdcard.*` - microSD card (CS GPIO4, shares VSPI with the display; `SD_ENABLED 1` in
   `config.h`; since 2026-10-14 a plain 3.3 V breakout without regulator (4x 10k pull-ups) on
-  breadboard wires, 16 GB SDHC card formatted by the radio; until 2026-10-10 the card sat in the
+  breadboard wires with the 128 GB card. A new 16 GB card tried first is faulty: it reports no
+  SDHC bit (OCR), and after the addressing fix every write left it busy (`sdWait(): Wait
+  Failed`, CRC/token errors), while the 128 GB card on the same wiring wrote 27 logos without
+  an error. Station logos come from the TuneIn catalogue (`opml.radiotime.com/Search.ashx`,
+  `logoq` images), scaled to 64x64 RGB565 on the PC and posted to `/api/logo?i=N`; until 2026-10-10 the card sat in the
   Robot LCD's slot, where everything below was verified; Arduino's
   SPI transactions take the bus lock, so the display task and the card take turns). Mounted at
   4 MHz in `setup()` right after the display; everything else runs in `sdLoop()` from `loop()`
