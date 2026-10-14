@@ -1,5 +1,13 @@
 # Speaker and line output: PCM5102A DAC + PAM8403 amplifier (plan, 2026-10-09)
 
+**Status 2026-10-14:** the line output works (firmware v1.30, `lineTask` in `src/player.cpp`).
+The module that arrived is a GeeDIY "PCM5102MK 2.0", not the purple GY-PCM5102 described below:
+6-pin header VCC, GND, GND, LRCK, DATA, BCK; VCC = 5 V (three AMS1117-3.3 on the board); SCK
+and XSMT are handled on the board; FMT is a jumper (set to I2S), FLT a solder bridge (N/L, left
+as shipped); RCA and 3.5 mm outputs. Wiring: VCC 5V, GND, BCK GPIO27, LRCK GPIO14, DATA GPIO13.
+The firmware uses 32-bit I2S slots (64 x fs). Test tone: `curl -X POST
+http://radio.local/api/linetest -d "tone=1"` (back with `tone=0`). The PAM8403 is not wired yet.
+
 Goal: besides the Bluetooth headphones, add (1) a line output on RCA/3.5 mm for an amplifier or active
 speakers and (2) a small speaker directly on the radio. The Bluetooth switch in the GUI chooses:
 Bluetooth on = headphones, off = DAC output (line + speaker).

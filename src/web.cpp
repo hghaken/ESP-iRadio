@@ -130,7 +130,8 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
  $('wifi').textContent=s.wifi.mode=='ap'?'Setup mode (access point). Choose your network below.':'Connected to '+s.wifi.ssid+' ('+s.wifi.ip+', '+s.wifi.rssi+' dBm'+(s.diag.channel?', channel '+s.diag.channel:'')+(s.diag.bssid?', ..'+s.diag.bssid.slice(-5):'')+(s.wifi.roam<0?', roam below '+s.wifi.roam+' dBm':'')+')';
  const d=s.diag,rows=[
   ['Stream input',d.inKBps+' KB/s ('+(s.codec=='MP3'?'320 kbps needs 40':'96 kbps needs 12')+')'],
-  ['Bluetooth pull',d.btKBps+' KB/s (176 = real time)'+(d.silenceKBps?', silence padding '+d.silenceKBps+' KB/s':'')],
+  ['Output',s.lineOut?'line out (PCM5102A, I2S)':'Bluetooth'],
+  ['Audio pull',d.btKBps+' KB/s (176 = real time)'+(d.silenceKBps?', silence padding '+d.silenceKBps+' KB/s':'')],
   ['Network buffer',d.bufferKB+' / '+d.bufferMaxKB+' kB (~'+(s.codec=='MP3'?Math.round(d.bufferKB/40):Math.round(d.bufferKB/12))+' s)'],
   ['PCM buffer',d.pcmKB+' kB'],
   ['Decoder',(s.codec||'-')+(s.sampleRate?' '+s.sampleRate+' Hz'+(s.sampleRate!=44100?' (resampled to 44.1 kHz)':''):'')],
@@ -301,6 +302,7 @@ static void handleStatus() {
        "\",\"version\":\"" + String(firmwareVersion) + "\"}";
   j += ",\"bt\":" + String(p.btConnected ? "true" : "false");
   j += ",\"btEnabled\":" + String(p.btEnabled ? "true" : "false");
+  j += ",\"lineOut\":" + String(p.lineOut ? "true" : "false");
   j += ",\"btLead\":" + String(settings.btLead ? "true" : "false");
   j += ",\"coexWanted\":" + String(playerCoexWifiWanted() ? "true" : "false") + ",\"coexActive\":" +
        String(playerCoexWifiActive() ? "true" : "false");
@@ -716,6 +718,11 @@ void webBegin(bool setupMode) {
   server.on("/api/btuse", HTTP_POST, handleBtUse);
   server.on("/api/btpair", HTTP_POST, handleBtPair);
   server.on("/api/btdel", HTTP_POST, handleBtDel);
+  server.on("/api/linetest", HTTP_POST, [] {  // test: tone=0/1 fmt=i2s/msb bits=16/32
+    playerLineTest(server.arg("tone") == "1", server.arg("fmt") == "msb",
+                   server.hasArg("bits") ? server.arg("bits").toInt() : 32);
+    server.send(200, "text/plain", "ok");
+  });
   server.on("/api/btpause", HTTP_POST, [] {  // test: s = seconds without Bluetooth audio
     bool ok = playerBtPause(server.hasArg("s") ? server.arg("s").toInt() : 10);
     server.send(ok ? 200 : 409, "text/plain", ok ? "ok" : "not possible now");

@@ -19,6 +19,12 @@
 #define ENC_B_PIN  33
 #define ENC_SW_PIN 25
 
+// Line output: PCM5102A DAC module (GeeDIY PCM5102MK 2.0: VCC 5 V, its own 3.3 V regulators;
+// SCK and XSMT handled on the module; FMT jumper = I2S), I2S master, 44.1 kHz 16-bit stereo.
+#define I2S_BCK_PIN  27
+#define I2S_LRCK_PIN 14
+#define I2S_DATA_PIN 13
+
 // Olimex battery sense (470k/470k divider, needs BAT_SENS_E1 + BAT_PWR_E1 bridged) and
 // external power sense (needs PWR_SENS_E1 bridged). Both ADC1, input-only pins.
 #define BAT_SENSE_PIN 35

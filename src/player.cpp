@@ -9,6 +9,7 @@
 #include <esp_coexist.h>
 #include <esp_bt.h>
 #include <esp_gap_bt_api.h>
+#include <driver/i2s.h>
 
 // audio-tools pulls in <iostream> when HAS_IOSTRAM is set (Collections/BitVector.h),
 // which costs ~100 KB of flash for the C++ locale machinery we never use - flash is
@@ -31,7 +32,9 @@ using namespace audio_tools;
 
 // Pipeline: netTask reads the HTTP stream into netBuf (PSRAM); decodeTask decodes
 // netBuf through Helix into pcmBuf (PSRAM, 44.1 kHz 16-bit stereo); the Bluetooth
-// stack pulls PCM from pcmBuf in btData() and gets silence when it is empty.
+// stack pulls PCM from pcmBuf in btData() and gets silence when it is empty. With the
+// Bluetooth toggle off, lineTask pulls it instead and writes it to the PCM5102A over I2S.
+// Only one of the two reads pcmBuf at a time (lineActive is set after the link is down).
 // A station change bumps `generation`; the decoder acknowledges it before the
 // net task resets the shared buffers, so no task is inside a buffer call then.
 //
@@ -41,6 +44,8 @@ using namespace audio_tools;
 // Writes decoded PCM into pcmBuf; used as the decoder's output. A2DP runs at
 // 44.1 kHz; streams with another rate (48 kHz MP3) are resampled here with linear
 // interpolation (stereo 16-bit), otherwise they play too slow/fast.
+static bool outputUp();  // someone drains pcmBuf: the Bluetooth link or the line output
+
 class PcmSink : public AudioOutput {
  public:
   explicit PcmSink(BufferRTOS<uint8_t>& buf) : buf(buf) {
@@ -97,7 +102,7 @@ class PcmSink : public AudioOutput {
       written += buf.writeArray(data + written, len - written);  // waits up to writeMaxWait
       // Link gone: nobody drains pcmBuf. Drop the rest instead of waiting forever, so
       // the decoder reaches its no-headphones path and stale audio does not pile up.
-      if (abortWrites || !playerBtConnected()) break;
+      if (abortWrites || !outputUp()) break;
     }
   }
   BufferRTOS<uint8_t>& buf;
@@ -334,9 +339,10 @@ static volatile uint32_t playStartAt = 0;  // last station request (millis | 1)
 // a fraction of a second of the previous station behind.
 static volatile bool pcmFlush = false;
 
-// Called by the Bluetooth stack (~ every 20 ms) for the next PCM block.
-// Must never block: take what is there and pad with silence.
-static int32_t btData(uint8_t* data, int32_t len) {
+// The next PCM block for the output (Bluetooth or line out), with the software volume applied.
+// Never blocks: takes what is there and pads with silence. btPulled / btSilence count both
+// outputs (the [stat] line's "pull" is 176 KB/s in real time either way).
+static void pullPcm(uint8_t* data, int32_t len) {
   if (pcmFlush) {
     pcmFlush = false;
     // Bounded: the decoder may already be writing the new station.
@@ -345,7 +351,6 @@ static int32_t btData(uint8_t* data, int32_t len) {
   }
   int got = pcmBuf->readArray(data, len);  // readMaxWait is 0
   btPulled += len;
-  btLastPullMs = millis();
   if (got < len) {
     memset(data + got, 0, len - got);
     btSilence += len - got;
@@ -355,7 +360,113 @@ static int32_t btData(uint8_t* data, int32_t len) {
     int16_t* s = (int16_t*)data;
     for (int i = 0; i < len / 2; i++) s[i] = (int32_t)s[i] * vol / 100;
   }
+}
+
+// Called by the Bluetooth stack (~ every 20 ms) for the next PCM block.
+static int32_t btData(uint8_t* data, int32_t len) {
+  pullPcm(data, len);
+  btLastPullMs = millis();
   return len;
+}
+
+// ---------------------------------------------------------------- line output (PCM5102A, I2S)
+
+static volatile bool lineActive = false;  // the line output plays (Bluetooth switched off)
+
+static bool outputUp() { return lineActive || btLinkUp(); }
+
+// Writes pcmBuf to I2S while lineActive. i2s_write blocks until the DMA has room, so the
+// DMA clock paces this task. 32-bit slots (BCK = 64 x fs), the usual choice for PCM5102A boards
+// without a master clock (the chip's PLL runs from BCK); i2s_write_expand widens the 16-bit
+// samples. (The crackling of the first test, 2026-10-14, was a DATA wire on the wrong pin, so
+// 16-bit slots were never tried again; /api/linetest can switch them.) The driver is installed on first use
+// (4 x 256 frames x 8 bytes = 8 KB of internal DMA RAM); with Bluetooth on, I2S is stopped.
+// Test settings from /api/linetest (not stored): 440 Hz tone instead of the stream, I2S or
+// left-justified format, 16 or 32-bit slots. A change reinstalls the driver.
+static volatile bool lineTone = false;
+static volatile bool lineMsb = false;
+static volatile int lineBits = 32;
+static volatile uint32_t lineCfgGen = 0;
+
+void playerLineTest(bool tone, bool msb, int bits) {
+  lineTone = tone;
+  lineMsb = msb;
+  lineBits = bits == 16 ? 16 : 32;
+  lineCfgGen = lineCfgGen + 1;
+  Log.printf("[line] test: %s, %s, %d-bit slots\n", tone ? "440 Hz tone" : "stream",
+             msb ? "left-justified" : "I2S", lineBits);
+}
+
+static void lineTask(void*) {
+  static uint8_t block[1024];  // 256 frames, 5.8 ms
+  bool installed = false, running = false;
+  uint32_t cfgGen = 0;
+  uint32_t phase = 0;  // tone phase in Q16 turns
+  for (;;) {
+    if (installed && cfgGen != lineCfgGen) {
+      i2s_driver_uninstall(I2S_NUM_0);
+      installed = running = false;
+    }
+    if (!lineActive) {
+      if (running) {
+        i2s_zero_dma_buffer(I2S_NUM_0);
+        i2s_stop(I2S_NUM_0);
+        running = false;
+        Log.println("[line] output stopped");
+      }
+      vTaskDelay(pdMS_TO_TICKS(50));
+      continue;
+    }
+    if (!installed) {
+      cfgGen = lineCfgGen;
+      i2s_config_t cfg = {};
+      cfg.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX);
+      cfg.sample_rate = 44100;
+      cfg.bits_per_sample = lineBits == 16 ? I2S_BITS_PER_SAMPLE_16BIT : I2S_BITS_PER_SAMPLE_32BIT;
+      cfg.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT;
+      cfg.communication_format = lineMsb ? I2S_COMM_FORMAT_STAND_MSB : I2S_COMM_FORMAT_STAND_I2S;
+      cfg.intr_alloc_flags = 0;
+      cfg.dma_buf_count = 4;
+      cfg.dma_buf_len = 256;
+      cfg.use_apll = true;          // exact 44.1 kHz
+      cfg.tx_desc_auto_clear = true;  // silence instead of a repeating buffer on an underrun
+      i2s_pin_config_t pins = {};
+      pins.mck_io_num = I2S_PIN_NO_CHANGE;
+      pins.bck_io_num = I2S_BCK_PIN;
+      pins.ws_io_num = I2S_LRCK_PIN;
+      pins.data_out_num = I2S_DATA_PIN;
+      pins.data_in_num = I2S_PIN_NO_CHANGE;
+      esp_err_t e = i2s_driver_install(I2S_NUM_0, &cfg, 0, nullptr);
+      if (e == ESP_OK) e = i2s_set_pin(I2S_NUM_0, &pins);
+      if (e != ESP_OK) {
+        Log.printf("[line] I2S setup failed (%d), line output off\n", (int)e);
+        lineActive = false;
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        continue;
+      }
+      installed = running = true;
+      Log.printf("[line] I2S output on (BCK %d, LRCK %d, DATA %d, %s, %d-bit slots)\n", I2S_BCK_PIN,
+                 I2S_LRCK_PIN, I2S_DATA_PIN, lineMsb ? "left-justified" : "I2S", lineBits);
+    } else if (!running) {
+      i2s_start(I2S_NUM_0);
+      running = true;
+      Log.println("[line] output started");
+    }
+    if (lineTone) {
+      int16_t* s = (int16_t*)block;
+      for (int i = 0; i < 256; i++) {  // 440 Hz, about -12 dB, same on both channels
+        int16_t v = (int16_t)(8000 * sinf(phase * (6.2831853f / 65536.0f)));
+        s[2 * i] = s[2 * i + 1] = v;
+        phase = (phase + (uint32_t)(440.0f * 65536.0f / 44100.0f)) & 0xFFFF;
+      }
+      btPulled += sizeof(block);
+    } else {
+      pullPcm(block, sizeof(block));
+    }
+    size_t written = 0;
+    if (lineBits == 16) i2s_write(I2S_NUM_0, block, sizeof(block), &written, portMAX_DELAY);
+    else i2s_write_expand(I2S_NUM_0, block, sizeof(block), 16, 32, &written, portMAX_DELAY);
+  }
 }
 
 static bool isMp3(const String& u, const String& mime) {
@@ -373,7 +484,7 @@ static void resetPipeline() {
   for (int i = 0; i < 200 && decoderAck != generation; i++) vTaskDelay(pdMS_TO_TICKS(10));
   sink->abortWrites = false;
   netBuf->reset();
-  if (playerBtConnected()) pcmFlush = true;  // the reader is live: let it drain
+  if (outputUp()) pcmFlush = true;  // the reader is live: let it drain
   else pcmBuf->reset();                       // nobody reads: safe to reset here
 }
 
@@ -545,7 +656,7 @@ static void decodeTask(void*) {
       continue;
     }
 
-    if (!btLinkUp()) {
+    if (!outputUp()) {
       // No headphones: discard only the overflow, so the buffer stays ~3/4 full and
       // playback can start immediately once they connect.
       if (netBuf->available() > NET_BUFFER_BYTES * 3 / 4) netBuf->readArray(chunk, sizeof(chunk));
@@ -1065,13 +1176,15 @@ void playerBegin(const char* btName, int volume) {
     a2dp->start_raw(btTarget.c_str(), btData);  // returns at once; discovery runs in the background
     btStackStarted = true;
   } else {
-    Log.println("[bt] disabled by the web toggle; stack not started");
+    Log.println("[bt] disabled by the web toggle; stack not started, line output plays");
+    lineActive = true;
   }
   esp_bredr_tx_power_set(ESP_PWR_LVL_P9, ESP_PWR_LVL_P9);  // max BR/EDR TX power for a sturdier link
   logMem("bluetooth");
 
   xTaskCreatePinnedToCore(netTask, "net", 4096, nullptr, 3, nullptr, 1);
   xTaskCreatePinnedToCore(decodeTask, "decode", 8192, nullptr, 4, nullptr, 1);
+  xTaskCreatePinnedToCore(lineTask, "line", 3072, nullptr, 5, nullptr, 1);
 }
 
 void playerPlay(int stationIndex) {
@@ -1122,6 +1235,7 @@ void playerSetBluetoothEnabled(bool on) {
   if (!lock) return;
   btEnabled = on;
   if (on) {
+    lineActive = false;  // the line task lets go of pcmBuf before Bluetooth starts pulling
     if (!btStackStarted) {
       a2dp->set_auto_reconnect(true);
       applySelection();
@@ -1138,7 +1252,8 @@ void playerSetBluetoothEnabled(bool on) {
       a2dp->set_auto_reconnect(false);
       sourceDisconnect();
     }
-    Log.println("[bt] disabled");
+    lineActive = true;  // after the link is down: one reader of pcmBuf at a time
+    Log.println("[bt] disabled, line output plays");
   }
 }
 
@@ -1252,6 +1367,7 @@ PlayerStatus playerStatus() {
   xSemaphoreGive(lock);
   s.btConnected = btLinkUp();
   s.btEnabled = btEnabled;
+  s.lineOut = lineActive;
   s.muted = muted;
   s.btRole = btRole;
   s.btBonds = btStackStarted ? esp_bt_gap_get_bond_device_num() : -1;

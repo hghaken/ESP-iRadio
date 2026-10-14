@@ -9,6 +9,7 @@ struct PlayerStatus {
   PlayState state = PlayState::Stopped;
   bool btConnected = false;
   bool btEnabled = true;   // Bluetooth switched on (web toggle)
+  bool lineOut = false;    // line output (PCM5102A over I2S) plays: Bluetooth switched off
   int station = -1;  // index into settings.stations
   String stationName;
   String title;      // ICY StreamTitle
@@ -54,6 +55,9 @@ void playerHoldBluetooth(bool hold);
 // Web toggle. Off: auto-reconnect off and the source link dropped, so no paging and
 // no paging windows. On: the stack is started if it never was, then one quiet page.
 void playerSetBluetoothEnabled(bool on);
+// Line output test (not stored): 440 Hz tone instead of the stream, left-justified
+// instead of I2S, 16 or 32-bit slots.
+void playerLineTest(bool tone, bool msb, int bits);
 bool playerBluetoothEnabled();
 // Consecutive failed Bluetooth connection attempts (0 once connected).
 // A failed inquiry does not increment this: inquiry never raises DISCONNECTED.
