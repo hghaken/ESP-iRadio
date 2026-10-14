@@ -39,8 +39,8 @@ static const uint32_t SPI_HZ = 27000000;         // ESP32 rounds to 26.7 MHz (80
 
 // Layout (pixels). Header bar and its text.
 static const int HEADER_H = 28, HEADER_BASELINE = 19, MARGIN = 18;
-// Station logo (SD card), left of the station and artist strips.
-static const int LOGO_X = 14, LOGO_Y = 34, LOGO_SIZE = 64, LOGO_GAP = 10;
+// Station logo (SD card), left of the three text strips and centred on them (rows 32..138).
+static const int LOGO_X = 14, LOGO_SIZE = 64, LOGO_Y = (32 + 138 - LOGO_SIZE) / 2, LOGO_GAP = 10;
 // Status, network and battery lines (FreeSans 9 pt baselines) and their side margin.
 static const int STATUS_Y = 162, NET_Y = 190, POWER_Y = 216, INFO_MARGIN = 20;
 
@@ -290,7 +290,7 @@ static void drawLine(const ScrollLine& L) {
   }
   // GFX has no clipping: text scrolled to the left ran over the logo column. Clear that
   // column and put the logo back (rows outside this strip get the same pixels again).
-  if (logoShown && L.s.top < LOGO_Y + LOGO_SIZE) {
+  if (logoShown && L.s.top < LOGO_Y + LOGO_SIZE && L.s.bottom > LOGO_Y) {
     canvas->fillRect(0, L.s.top, L.left, L.s.bottom - L.s.top, L.s.bg);
     canvas->drawRGBBitmap(LOGO_X, LOGO_Y, logoPix, LOGO_SIZE, LOGO_SIZE);
   }
@@ -339,7 +339,7 @@ static void drawScreen(const Screen& s) {
   // Station logo (SD card) and the text areas next to it.
   logoShown = s.logo && logoPix && sdCopyLogo(logoPix, LOGO_SIZE);
   int textLeft = LOGO_X + LOGO_SIZE + LOGO_GAP;
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 3; i++)
     setArea(lines[i], logoShown ? textLeft : MARGIN, logoShown ? W - textLeft - MARGIN : W - 2 * MARGIN);
   if (logoShown) canvas->drawRGBBitmap(LOGO_X, LOGO_Y, logoPix, LOGO_SIZE, LOGO_SIZE);
 

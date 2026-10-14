@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.21 (2026-10-14: microSD breakout; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.22 (2026-10-14: microSD breakout, logo layout; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -182,8 +182,8 @@ Hardware:
   artist (FreeSans 12 pt, yellow), song (FreeSans 12 pt, cyan) on a dark blue bar (`COL_BAR`, rows 70-141, centred between the station line and the status line), each a `ScrollLine` strip: text
   wider than its area scrolls (2 s pause, ~25 px/s to the end, 2 s pause, back) and only that
   strip (~18 KB) is pushed every 40 ms; scrolling can be switched off (NVS `scroll`,
-  `/api/scroll`). A 64x64 station logo from the SD card sits left of station and artist (those
-  strips narrow; GFX has no clipping, so `drawLine()` clears the logo column and redraws the
+  `/api/scroll`). A 64x64 station logo from the SD card sits left of station, artist and song,
+  centred vertically on the three lines (x 14, rows 53-116, since v1.22; all three strips narrow; GFX has no clipping, so `drawLine()` clears the logo column and redraws the
   logo after scrolled text). Then status "BT good  buf NN s  AAC" (green, red on error; buffer
   seconds in 5 s steps so the frame is not re-sent every second), IP + WiFi dBm and battery
   (white, FreeSans 9 pt). Only full-intensity colours on black (mid greys faded on the earlier
@@ -226,8 +226,8 @@ Hardware:
     station name (the page computes the same hash). The browser scales the chosen image on a
     canvas and uploads raw pixels (`/api/logo?i=N`, multipart), so the radio decodes no
     JPG/PNG. `sdLoop()` loads the current station's logo into a PSRAM buffer (mutex);
-    `display.cpp` copies it and draws it at x 3, y 19, with station and artist strips narrowed to
-    the right of it (song strip full width). GFX has no clipping, so `drawLine()` clears the
+    `display.cpp` copies it and draws it at x 14, y 53 (centred on the three text lines), with the
+    station, artist and song strips narrowed to the right of it. GFX has no clipping, so `drawLine()` clears the
     logo column and redraws the logo after drawing scrolled text.
   - `/firmware/<build>.bin`: copy of the running image (`ESP.getSketchSize()` bytes,
     `esp_partition_read` into a 4 KB internal buffer, 4 KB per `sdLoop()` pass, ~6 s) made
@@ -254,7 +254,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.21 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.22 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
