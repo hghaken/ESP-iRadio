@@ -115,6 +115,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 <div class="row"><label><input type="checkbox" id="ngt" onchange="blSave()"> Night mode from</label><input type="time" id="ngtf" onchange="blSave()"><span>to</span><input type="time" id="ngtt" onchange="blSave()"><span>at</span><select id="ngtl" onchange="blSave()" style="flex:0 0 auto"><option value="0">off</option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="50">50%</option></select></div>
 <div class="row"><span>Dim after</span><select id="idlm" onchange="blSave()" style="flex:0 0 auto"><option value="0">never</option><option value="1">1 min</option><option value="2">2 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option></select><span>to</span><select id="idll" onchange="blSave()" style="flex:0 0 auto"><option value="0">off</option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="50">50%</option></select></div>
 <div class="mut"><span id="blnow"></span>The lowest level that applies wins. A new song, another station or a Bluetooth change makes the screen bright again, as does a change here. Night mode works once the clock is set.</div>
+<div class="row"><label><input type="checkbox" id="batf" onchange="post('/api/batfitted','on='+(this.checked?'1':'0'))"> Battery fitted (off: no voltage or percentage, no low-battery shutdown)</label></div>
 <div class="row"><label><input type="checkbox" id="scroll" onchange="post('/api/scroll','on='+(this.checked?'1':'0'))"> Scroll long station and title lines</label></div>
 <div class="row"><button class="sec" onclick="if(confirm('Restart?'))post('/api/restart','')">Restart</button></div>
 <div class="row" style="margin-top:14px"><input type="file" id="fw" accept=".bin" style="flex:1;min-width:0"><button class="sec" onclick="upload()">Firmware update</button></div>
@@ -140,16 +141,16 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
   ['Interruptions',d.underruns+' buffer empty, '+d.reconnects+' reconnects'],
   ['WiFi',s.wifi.mode=='ap'?'setup mode':s.wifi.rssi+' dBm, access point '+d.bssid+', channel '+d.channel+(s.wifi.roam<0?', threshold '+s.wifi.roam+' dBm':'')],
   ['Memory','internal '+Math.round(s.heap/1024)+' kB free (min '+Math.round(d.minHeap/1024)+'), PSRAM '+Math.round(s.psram/1024)+' kB (min '+Math.round(d.psramMin/1024)+')'],
-  ['Battery',(s.batteryMv?(s.batteryMv/1000).toFixed(2)+' V, '+s.batteryPct+'%':'no reading')+' (pin '+d.batRawMv+' mV), '+(s.usbMv?'USB '+(s.usbMv/1000).toFixed(2)+' V':'no USB')+' (pin '+d.pwrRawMv+' mV)'],
+  ['Battery',(s.batteryMv?(s.batteryMv/1000).toFixed(2)+' V, '+s.batteryPct+'%':s.batFitted?'no reading':'not fitted')+' (pin '+d.batRawMv+' mV), '+(s.usbMv?'USB '+(s.usbMv/1000).toFixed(2)+' V':'no USB')+' (pin '+d.pwrRawMv+' mV)'],
   ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)')+(d.btRole==0?', radio leads the link':d.btRole==1?', the device leads the link':''):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)+(d.btRefreshes?', reconnected '+d.btRefreshes+'x for WiFi':'')],
   ['Firmware',(d.version||'')+', built '+d.build+', running from slot '+d.partition],
   ['SD card',d.sd||'-'],
   ['Encoder',d.enc||'-'],
   ['Uptime',Math.floor(s.uptime/3600)+' h '+Math.floor(s.uptime%3600/60)+' min, last reset: '+({1:'power on',3:'software',4:'crash',5:'watchdog',6:'watchdog',7:'watchdog',8:'deep sleep',9:'voltage dip (brownout)'}[d.resetReason]||('code '+d.resetReason))+(d.brownouts?', '+d.brownouts+'x brownout in a row':'')]];
  $('diag').innerHTML=rows.map(r=>'<tr><td class="mut" style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top">'+r[0]+'</td><td style="padding:3px 0">'+r[1]+'</td></tr>').join('');
- if(s.backlight)$('blnow').textContent='Now '+s.backlight.now+'%. ';$('sys').textContent=(s.batteryMv?'Battery '+(s.batteryMv/1000).toFixed(2)+' V ('+s.batteryPct+'%)':'Battery: no reading (jumper open?)')+(s.usb?', USB power present':'')+'. Uptime '+Math.floor(s.uptime/60)+' min, heap '+Math.round(s.heap/1024)+' kB free (min '+Math.round(s.minHeap/1024)+' kB), PSRAM '+Math.round(s.psram/1024)+' kB free';
+ if(s.backlight)$('blnow').textContent='Now '+s.backlight.now+'%. ';$('sys').textContent=(s.batteryMv?'Battery '+(s.batteryMv/1000).toFixed(2)+' V ('+s.batteryPct+'%)':s.batFitted?'Battery: no reading (jumper open?)':'No battery fitted')+(s.usb?', USB power present':'')+'. Uptime '+Math.floor(s.uptime/60)+' min, heap '+Math.round(s.heap/1024)+' kB free (min '+Math.round(s.minHeap/1024)+' kB), PSRAM '+Math.round(s.psram/1024)+' kB free';
  if(first){first=false;stList=s.stations;lastSt=s.station>=0?s.station:s.last;setTimeout(sdRefresh,300);const sel=$('sel');sel.innerHTML='';s.stations.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;sel.appendChild(o)});
-  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('line32').checked=!!s.line32;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
+  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('line32').checked=!!s.line32;$('batf').checked=!!s.batFitted;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
  {const c=s.station>=0?s.station:s.last;if(c!=selShown&&document.activeElement!==$('sel'))$('sel').value=c;selShown=c}
  if(s.btDevices)btRender(s.btDevices,!!s.btAuto);if(document.activeElement!==$('coexwifi'))$('coexwifi').checked=!!s.coexWanted;$('coexstat').textContent=s.coexWanted?(s.coexActive?'active':'waiting for streaming'):'';document.querySelectorAll('input[type=range]').forEach(rangeFill);considerAutoScan(s);
 })}
@@ -323,6 +324,7 @@ static void handleStatus() {
   j += ",\"volume\":" + String(settings.volume);
   j += ",\"batteryMv\":" + String(b.millivolts);
   j += ",\"batteryPct\":" + String(b.percent);
+  j += ",\"batFitted\":" + String(settings.batteryFitted ? "true" : "false");
   j += ",\"usb\":" + String(b.usb ? "true" : "false");
   j += ",\"usbMv\":" + String(b.usbMv);
   j += ",\"uptime\":" + String(millis() / 1000);
@@ -721,6 +723,12 @@ void webBegin(bool setupMode) {
   server.on("/api/btuse", HTTP_POST, handleBtUse);
   server.on("/api/btpair", HTTP_POST, handleBtPair);
   server.on("/api/btdel", HTTP_POST, handleBtDel);
+  server.on("/api/batfitted", HTTP_POST, [] {  // a Li-Po is connected (stored)
+    settings.batteryFitted = server.arg("on") == "1";
+    settingsSave();
+    batteryRefresh();  // the display shows the change at once
+    server.send(200, "text/plain", "ok");
+  });
   server.on("/api/line32", HTTP_POST, [] {  // line output slot width, stored
     settings.line32 = server.arg("on") == "1";
     settingsSave();

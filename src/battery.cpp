@@ -1,6 +1,7 @@
 #include "battery.h"
 
 #include "config.h"
+#include "settings.h"
 
 static const int SAMPLES = 16;
 
@@ -31,12 +32,20 @@ static int percentFromMillivolts(int mv) {
   return 0;
 }
 
+static volatile bool refreshWanted = false;
+void batteryRefresh() { refreshWanted = true; }
+bool batteryTakeRefresh() {
+  bool r = refreshWanted;
+  refreshWanted = false;
+  return r;
+}
+
 BatteryInfo batteryRead() {
   BatteryInfo b;
   b.rawBatMv = readMilliVolts(BAT_SENSE_PIN);
   b.rawPwrMv = readMilliVolts(PWR_SENSE_PIN);
   b.millivolts = b.rawBatMv * 2 * BAT_CAL_PERMILLE / 1000;  // 470k/470k divider + calibration
-  b.valid = b.millivolts >= 2800 && b.millivolts <= 4350;
+  b.valid = settings.batteryFitted && b.millivolts >= 2800 && b.millivolts <= 4350;
   b.percent = b.valid ? percentFromMillivolts(b.millivolts) : -1;
   if (!b.valid) b.millivolts = 0;
   b.usb = b.rawPwrMv > 1000;

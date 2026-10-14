@@ -4,6 +4,9 @@
 // Both need their SMT solder jumpers bridged (BAT_SENS_E1 and BAT_PWR_E1 for the
 // battery, PWR_SENS_E1 for USB sense); with an open jumper the pin floats and the
 // reading is garbage - batteryValid() reports that.
+// Without a cell the pin reads the charger's output (~3.96 V on USB), which cannot be told
+// apart from a real cell (measured 2026-10-14: the same 30-125 mV ADC noise with and without),
+// so the web page has a "Battery fitted" setting (settings.batteryFitted): off = no reading.
 #pragma once
 #include <Arduino.h>
 
@@ -19,3 +22,5 @@ struct BatteryInfo {
 
 void batteryBegin();
 BatteryInfo batteryRead();  // takes ~16 ADC samples, a few ms
+void batteryRefresh();      // ask loop() for a new reading now (e.g. a setting changed)
+bool batteryTakeRefresh();  // true once after batteryRefresh()

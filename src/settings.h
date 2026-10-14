@@ -18,6 +18,7 @@ struct Settings {
   bool displayFlip = false; // screen rotated 180 degrees (web toggle, NVS `flip`)
   bool scrollTitles = true; // scroll station/artist/song lines that do not fit (NVS `scroll`)
   bool line32 = false;      // line output with 32-bit I2S slots instead of 16 (NVS `l32`)
+  bool batteryFitted = true; // a Li-Po is connected; off = no battery reading (NVS `batf`)
   // Backlight (display.cpp picks the lowest that applies, fading ~1 s). Percent of full.
   int backlight = 100;      // normal level, 5..100 (NVS `bl`)
   bool nightDim = false;    // night mode on (NVS `ngt`), needs the SNTP clock

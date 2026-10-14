@@ -366,14 +366,14 @@ void loop() {
   // Battery: read every 30 s; the display text shows the voltage and the percentage.
   static uint32_t lastBattery = 0;
   static String shownPower;
-  if (millis() - lastBattery > 30000 || lastBattery == 0) {
+  if (millis() - lastBattery > 30000 || lastBattery == 0 || batteryTakeRefresh()) {
     lastBattery = millis();
     BatteryInfo b = batteryRead();
     String text;
     if (b.valid) text = String(b.millivolts / 1000.0f, 1) + "V " + String(b.percent) + "%";
     if (b.usb) text += text.length() ? " USB" : "USB";
-    Log.printf("[battery] %d mV, %d %%, usb %d (pins: bat %d mV, pwr %d mV)\n", b.millivolts, b.percent,
-                  b.usb, b.rawBatMv, b.rawPwrMv);
+    Log.printf("[battery] %d mV, %d %%, usb %d (pins: bat %d mV, pwr %d mV)%s\n", b.millivolts, b.percent,
+               b.usb, b.rawBatMv, b.rawPwrMv, settings.batteryFitted ? "" : ", no battery fitted");
     if (text != shownPower) {
       shownPower = text;
       displaySetPower(text);

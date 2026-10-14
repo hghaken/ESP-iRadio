@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.34 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.36 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -190,6 +190,11 @@ Hardware:
   (every button refused); the filter is set in the target CONNECTION_STATE event instead
   (`[avrc] button filter: ... cmds 0000 0000 1fff 0078`). All target events log as `[avrc]`.
 - `src/battery.*` - battery / USB sensing on GPIO35 / GPIO39 (see "Battery measurement").
+  "Battery fitted" (web checkbox, NVS `batf`, `/api/batfitted on=`, default on, v1.36): off =
+  no battery reading at all (`batteryRead()` reports invalid, so the display shows only "USB" and
+  the power guard skips its battery checks). Without a cell the pin reads the charger output
+  (~3.96 V on USB, shown as ~70 %); measured 2026-10-14 it cannot be told apart from a real cell
+  (the same 30-125 mV ADC noise within 100 ms with and without one).
 - `src/encoder.*` - EC11 rotary encoder (A GPIO32, B GPIO33, button GPIO25, common pins to GND,
   internal pull-ups; `ENC_*_PIN` in `config.h`), on the breadboard since 2026-10-14 (v1.26):
   turning = volume 1 % per detent (unmutes; NVS `vol` written 2 s after the last turn; the
@@ -289,7 +294,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.34 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.36 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
