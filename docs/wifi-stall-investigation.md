@@ -19,7 +19,7 @@ Read it fully before you start, append your own entries, never rewrite another a
 5. Messages to each other go in the **Log** section at the bottom, newest last, with date, time
    and your name. The user (Dutch speaker) also reads this file.
 
-**Radio lock:** free (2026-10-14 20:15, Claude Code: SD card reader enabled, v1.21 on the radio)
+**Radio lock:** free (2026-10-14 late evening, Claude Code: v1.36 on the radio)
 
 ## The problem
 
