@@ -18,3 +18,8 @@ void displaySetUpdate(UpdatePhase phase, uint32_t bytes, uint32_t total, const c
 // Backlight: counts as activity (back to the normal level, the idle timer restarts).
 void displayWake();
 int displayBacklightPercent();  // level the backlight is at right now (0..100)
+// Rotary encoder feedback (src/encoder.cpp). A volume bar replaces the status line for 2.5 s;
+// the station chooser replaces station, artist and song until it is hidden.
+void displayShowVolume(int percent, bool muted);
+void displayShowChooser(int index, int count, const String& name);
+void displayHideChooser();

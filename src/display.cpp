@@ -75,9 +75,15 @@ struct Screen {
   bool flip = false;
   bool scroll = true;  // in the key so switching it redraws the lines from the start
   int logo = 0;        // sdLogoGeneration(): 0 = no logo for this station
+  int vol = -1;        // volume bar instead of the status line (-1 = none)
+  bool volMuted = false;
+  bool chooser = false;  // station chooser instead of station, artist and song
+  int chIndex = 0, chCount = 0;
+  String chName;
   String key() const {
     return station + "|" + title + "|" + status + "|" + net + "|" + power + "|" + (bt ? "1" : "0") +
-           (btOn ? "b" : "-") + (error ? "E" : "") + (flip ? "F" : "") + (scroll ? "S" : "") + "L" + String(logo);
+           (btOn ? "b" : "-") + (error ? "E" : "") + (flip ? "F" : "") + (scroll ? "S" : "") + "L" + String(logo) +
+           "V" + String(vol) + (volMuted ? "m" : "") + (chooser ? "C" + String(chIndex) + "/" + String(chCount) + chName : "");
   }
 };
 
@@ -97,6 +103,40 @@ void displaySetPower(const String& text) {
   xSemaphoreTake(netLock, portMAX_DELAY);
   powerText = text;
   xSemaphoreGive(netLock);
+}
+
+// Encoder feedback. poke makes the task look at once instead of at its next 250 ms check.
+static volatile int volShown = -1;
+static volatile bool volMuted = false;
+static volatile uint32_t volUntil = 0;
+static bool chooserOn = false;  // guarded by netLock, like chooserIndex/Count/Name
+static int chooserIndex = 0, chooserCount = 0;
+static String chooserName;
+static volatile bool poke = false;
+static bool chooserShown = false;  // the frame on the panel is the chooser (no scrolling then)
+
+void displayShowVolume(int percent, bool muted) {
+  volShown = percent;
+  volMuted = muted;
+  volUntil = millis() + 2500;
+  poke = true;
+}
+
+void displayShowChooser(int index, int count, const String& name) {
+  xSemaphoreTake(netLock, portMAX_DELAY);
+  chooserOn = true;
+  chooserIndex = index;
+  chooserCount = count;
+  chooserName = name;
+  xSemaphoreGive(netLock);
+  poke = true;
+}
+
+void displayHideChooser() {
+  xSemaphoreTake(netLock, portMAX_DELAY);
+  chooserOn = false;
+  xSemaphoreGive(netLock);
+  poke = true;
 }
 
 // The GFX fonts only have ASCII: fold common UTF-8 Latin-1 letters, drop the rest.
@@ -296,6 +336,7 @@ static void drawLine(const ScrollLine& L) {
 
 // One scroll tick for every strip whose text does not fit; pushes only the strips that moved.
 static void scrollTick() {
+  if (chooserShown) return;  // the strips are not on the panel
   uint32_t now = millis();
   for (ScrollLine& L : lines) {
     if (L.textW <= L.width || (int32_t)(now - L.pauseUntil) < 0) continue;
@@ -317,21 +358,36 @@ static void scrollTick() {
 
 // ---------------------------------------------------------------- screen
 
-static void drawScreen(const Screen& s) {
-  canvas->fillScreen(COL_BG);
+static void centered(const String& text, int baseline, const GFXfont* font, uint16_t color);
 
-  // Header bar
-  canvas->fillRect(0, 0, W, HEADER_H, COL_HEADER);
-  canvas->setTextSize(1);
-  canvas->setTextColor(ST77XX_WHITE);
-  canvas->setFont(&FreeSansBold9pt7b);
-  String btText = !s.btOn ? "BT: off" : s.bt ? "BT: on" : "BT: searching";
-  canvas->setCursor(MARGIN, HEADER_BASELINE);
-  canvas->print("ESP iRadio");
-  canvas->setCursor(W - MARGIN - textWidth(btText), HEADER_BASELINE);
-  canvas->print(btText);
+// Volume bar in the status line: "Vol", a bar and the percentage (or "Muted").
+static void drawVolume(int percent, bool muted) {
+  canvas->setFont(&FreeSans9pt7b);
+  canvas->setTextColor(COL_INFO);
+  canvas->setCursor(INFO_MARGIN, STATUS_Y);
+  canvas->print("Vol");
+  String right = muted ? "Muted" : String(percent) + "%";
+  int rw = textWidth(right);
+  const int bx = INFO_MARGIN + 38, by = STATUS_Y - 13, bh = 14;
+  int bw = W - INFO_MARGIN - rw - 10 - bx;
+  canvas->drawRect(bx, by, bw, bh, COL_INFO);
+  int fill = (bw - 4) * percent / 100;
+  if (fill > 0) canvas->fillRect(bx + 2, by + 2, fill, bh - 4, muted ? COL_ERROR : COL_STATUS);
+  canvas->setTextColor(muted ? COL_ERROR : COL_INFO);
+  canvas->setCursor(W - INFO_MARGIN - rw, STATUS_Y);
+  canvas->print(right);
+}
 
-  // Station logo (SD card) and the text areas next to it.
+static void drawChooser(const Screen& s) {
+  centered("Choose station", 56, &FreeSansBold9pt7b, COL_STATUS);
+  canvas->setFont(&FreeSansBold12pt7b);
+  centered(fit(s.chName, W - 2 * MARGIN), 94, &FreeSansBold12pt7b, COL_STATION);
+  centered(String(s.chIndex + 1) + " / " + String(s.chCount), 122, &FreeSans9pt7b, COL_ARTIST);
+  centered("press: play   hold: cancel", 144, &FreeSans9pt7b, COL_SONG);
+}
+
+// Station logo (SD card), then station, artist and song next to it.
+static void drawStationLines(const Screen& s) {
   logoShown = s.logo && logoPix && sdCopyLogo(logoPix, LOGO_SIZE);
   int textLeft = LOGO_X + LOGO_SIZE + LOGO_GAP;
   for (int i = 0; i < 3; i++)
@@ -349,10 +405,31 @@ static void drawScreen(const Screen& s) {
   setLine(lines[1], artist);
   setLine(lines[2], song);
   for (const ScrollLine& L : lines) drawLine(L);
+}
 
-  // Status, network, power
+static void drawScreen(const Screen& s) {
+  canvas->fillScreen(COL_BG);
+
+  // Header bar
+  canvas->fillRect(0, 0, W, HEADER_H, COL_HEADER);
+  canvas->setTextSize(1);
+  canvas->setTextColor(ST77XX_WHITE);
+  canvas->setFont(&FreeSansBold9pt7b);
+  String btText = !s.btOn ? "BT: off" : s.bt ? "BT: on" : "BT: searching";
+  canvas->setCursor(MARGIN, HEADER_BASELINE);
+  canvas->print("ESP iRadio");
+  canvas->setCursor(W - MARGIN - textWidth(btText), HEADER_BASELINE);
+  canvas->print(btText);
+
+  chooserShown = s.chooser;
+  if (s.chooser) drawChooser(s);
+  else drawStationLines(s);
+
+  // Status (or the volume bar), network, power
   canvas->setFont(&FreeSans9pt7b);
-  drawLeft(s.status, STATUS_Y, s.error ? COL_ERROR : COL_STATUS);
+  if (s.vol >= 0) drawVolume(s.vol, s.volMuted);
+  else drawLeft(s.status, STATUS_Y, s.error ? COL_ERROR : COL_STATUS);
+  canvas->setFont(&FreeSans9pt7b);
   drawLeft(s.net, NET_Y, COL_INFO);
   if (s.power.length()) drawRight(s.power, POWER_Y, COL_INFO);
   canvas->setTextColor(COL_INFO);
@@ -405,7 +482,7 @@ static Screen current() {
   } else if (p.state == PlayState::Stopped) {
     s.status = "Stopped";
   } else if (p.muted) {
-    s.status = "Muted (play button)";
+    s.status = "Muted";
   } else if (!p.btEnabled || !p.btConnected) {
     s.status = "";  // the header already says off / searching
   } else {
@@ -424,6 +501,16 @@ static Screen current() {
   s.scroll = settings.scrollTitles;
   xSemaphoreGive(netLock);
   s.logo = sdLogoGeneration();
+  if ((int32_t)(volUntil - millis()) > 0) {
+    s.vol = volShown;
+    s.volMuted = volMuted;
+  }
+  xSemaphoreTake(netLock, portMAX_DELAY);
+  s.chooser = chooserOn;
+  s.chIndex = chooserIndex;
+  s.chCount = chooserCount;
+  s.chName = toAscii(chooserName);
+  xSemaphoreGive(netLock);
   return s;
 }
 
@@ -434,7 +521,8 @@ static void displayTask(void*) {
     vTaskDelay(pdMS_TO_TICKS(TICK_MS));
     backlightTick();
     if (shownKey.length() && !shownKey.startsWith("U") && settings.scrollTitles) scrollTick();
-    if (millis() - lastCheck < 250) continue;  // fields are compared 4 times a second
+    if (!poke && millis() - lastCheck < 250) continue;  // fields are compared 4 times a second
+    poke = false;  // encoder feedback is drawn at once
     lastCheck = millis();
     UpdatePhase phase = updPhase;
     if (phase == UpdatePhase::Failed && millis() - updFailedAt > 10000) updPhase = phase = UpdatePhase::None;
