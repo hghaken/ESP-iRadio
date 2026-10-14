@@ -913,9 +913,12 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
 (2026-10-11) about twice that is expected, not measured yet.
 
 ## Open points
-- Speaker: PAM8403 (or the PCM's line out into a powered speaker) with shutdown on GPIO2, off
-  while Bluetooth is on (see `docs/speaker-output.md`). The line output itself works (v1.30).
-  Maybe a separate output choice instead of the Bluetooth toggle.
+- Speaker (2026-10-14, not wired yet): two boards on hand, a PAM8403 mini board with volume pot
+  (analog, no shutdown pin) and a MAX98357A I2S mono amplifier (recommended: shares the I2S lines
+  27/14/13 with the PCM5102A, SD on GPIO2 driven low = off, released = on, never high). Planned:
+  web checkbox "Speaker" for the MAX98357A, both outputs silent while Bluetooth is on. Details
+  and wiring in `docs/speaker-output.md`. The line output itself works (v1.30+). Maybe a
+  separate output choice instead of the Bluetooth toggle.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
   the space under the battery line is still free (e.g. a volume or buffer bar). The EC11 rotary
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see

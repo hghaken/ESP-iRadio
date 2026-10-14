@@ -8,6 +8,32 @@ as shipped); RCA and 3.5 mm outputs. Wiring: VCC 5V, GND, BCK GPIO27, LRCK GPIO1
 The firmware uses 16-bit I2S slots (32-bit slots sounded the same). Test tone: `curl -X POST
 http://radio.local/api/linetest -d "tone=1"` (back with `tone=0`). The PAM8403 is not wired yet.
 
+**Speaker amplifier, 2026-10-14: two boards on hand, nothing wired yet.**
+
+1. *PAM8403 mini board with volume pot* (green, "rout - +, lout + -, power - +, input L G B"):
+   analog input from the DAC's line output (tap the 3.5 mm plug: tip L, ring R, sleeve ground,
+   or the RCA pins), power + to 5V, power - to GND, speaker 4-8 ohm on lout +/- (bridged outputs:
+   never a speaker wire to ground, never both channels on one speaker; for true mono feed L and
+   R each through 10k into input L). **No shutdown pin**, so the ESP32 cannot switch it off
+   (~10 mA idle; silent while Bluetooth is on because I2S stops).
+2. *MAX98357A I2S mono amplifier* (Adafruit-style breakout, pins LRC BCLK DIN GAIN SD GND Vin,
+   speaker +/- on top, "default 9 dB gain & (L+R)/2 out"): digital input, its own DAC. It can
+   share the I2S lines with the PCM5102A (one transmitter, two receivers; both play the same,
+   the software volume applies to both, the 16/32-bit slot setting suits both):
+   LRC -> GPIO14, BCLK -> GPIO27, DIN -> GPIO13, Vin -> 5V (2.5-5.5 V), GND -> GND, GAIN open
+   (9 dB; to GND 12 dB, to Vin 6 dB), speaker 4-8 ohm >= 3 W on +/- (never to ground).
+   SD: the board pulls it up through 1 Mohm, which with the chip's internal pull-down gives the
+   "(L+R)/2, on" level. Plan: SD -> GPIO2, firmware drives GPIO2 **low** = amplifier off and
+   releases it (**input**) = on; never drive it high with 3.3 V (that selects the left channel
+   only). GPIO2 is low at boot, so no pop at power-on. Peak current with speaker and DAC on 5V up
+   to ~0.5-1 A (fine on the power bank, maybe not on a PC port).
+
+Recommendation given: the MAX98357A for a single built-in speaker (no analog wiring, can be
+switched off). Next step (not built yet): a web checkbox "Speaker" (on = the MAX98357A plays
+with the line output, off = line output only; both silent while Bluetooth is on), once SD is
+wired to GPIO2. The KiCad design still has the analog route (PCM5102APWR + PAM8302A); a
+MAX98357A there would save the PAM8302A and its input network.
+
 Goal: besides the Bluetooth headphones, add (1) a line output on RCA/3.5 mm for an amplifier or active
 speakers and (2) a small speaker directly on the radio. The Bluetooth switch in the GUI chooses:
 Bluetooth on = headphones, off = DAC output (line + speaker).
