@@ -10,6 +10,7 @@
 #include "battery.h"
 #include "config.h"
 #include "display.h"
+#include "encoder.h"
 #include "memlog.h"
 #include "player.h"
 #include "power.h"
@@ -299,6 +300,7 @@ void setup() {
   displayBegin();
   displaySetFlip(settings.displayFlip);
   sdBegin();
+  encoderBegin();
   powerGuard();
   logMem("display");
 
@@ -359,6 +361,7 @@ void loop() {
   webLoop();
   serialUpdateLoop();  // firmware update over USB (scripts/usb_update.py)
   playerLoop();  // remembers a Bluetooth device that just connected
+  encoderLoop();  // test stage: logs turns and button presses only
 
   // Battery: read every 30 s; the display text shows the voltage and the percentage.
   static uint32_t lastBattery = 0;

@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.23 (2026-10-14: microSD breakout, logo layout; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.25 (2026-10-14: microSD breakout, logo layout, encoder test; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -171,6 +171,15 @@ Hardware:
   (every button refused); the filter is set in the target CONNECTION_STATE event instead
   (`[avrc] button filter: ... cmds 0000 0000 1fff 0078`). All target events log as `[avrc]`.
 - `src/battery.*` - battery / USB sensing on GPIO35 / GPIO39 (see "Battery measurement").
+- `src/encoder.*` - EC11 rotary encoder (A GPIO32, B GPIO33, button GPIO25, common pins to GND,
+  internal pull-ups; `ENC_*_PIN` in `config.h`), wired on the breadboard since 2026-10-14. Test
+  stage (v1.24/v1.25): it only logs `[enc]` lines and shows `diag.enc` (Diagnostics "Encoder");
+  nothing reacts to it yet. Quadrature in an IRAM interrupt on both edges (pins read from
+  `GPIO_IN1_REG`); a detent counts when A and B are back at rest (both high) with a net of 2+
+  steps in one direction since the last rest, which keeps the count exact despite bounce and
+  missed edges (raw / 4 drifted in the v1.24 test). `ENC_REVERSE` makes clockwise positive on
+  this wiring. Button debounced 30 ms in `encoderLoop()`. Test 2026-10-14: 20 clicks right and
+  20 left came back to exactly 0; ~10 bounce steps per minute of turning without RC filter.
 - `src/power.h` - `powerBrownouts()` for the diagnostics (guard itself lives in `main.cpp`).
 - `src/display.*` - status screen on the 1.69" ST7789 IPS (`Adafruit_ST7789::init(240, 280)`:
   generic init with INVON - IPS panels need it - and the 20-row offset; rotation 1, or 3 when
@@ -254,7 +263,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.23 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.25 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -867,8 +876,8 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
 - Planned: line + speaker output with PCM5102A + PAM8403 (ordered; see `docs/speaker-output.md`):
   `PcmSink` writes to I2S when the Bluetooth toggle is off; decoder must then run without a link.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
-  the space under the battery line is still free (e.g. a volume or buffer bar). Add the EC11 rotary
-  encoder (GPIO32/33, button GPIO25, PCNT via ESP32Encoder) with a menu; see
+  the space under the battery line is still free (e.g. a volume or buffer bar). Give the EC11 rotary
+  encoder (wired and tested, `src/encoder.*`) its functions, maybe a menu; see
   `docs/display-research.md`. Backlight dimming, night mode and idle dimming are done; the
   encoder should also count as activity (`displayWake()`).
 - SD card (done 2026-10-10: log, measurements, settings backup, logos, firmware copies). The user

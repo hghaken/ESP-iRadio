@@ -14,6 +14,11 @@
 // on SD_CS, wired since 2026-10-14): sdBegin() then skips the card and every SD feature stays idle.
 #define SD_ENABLED 1
 
+// EC11 rotary encoder (common pins to GND, internal pull-ups; on the PCB 10k + 100 nF each).
+#define ENC_A_PIN  32
+#define ENC_B_PIN  33
+#define ENC_SW_PIN 25
+
 // Olimex battery sense (470k/470k divider, needs BAT_SENS_E1 + BAT_PWR_E1 bridged) and
 // external power sense (needs PWR_SENS_E1 bridged). Both ADC1, input-only pins.
 #define BAT_SENSE_PIN 35

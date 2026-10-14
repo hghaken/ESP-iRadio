@@ -8,6 +8,7 @@
 #include "battery.h"
 #include "config.h"
 #include "display.h"
+#include "encoder.h"
 #include "player.h"
 #include "power.h"
 #include <SD.h>
@@ -140,6 +141,7 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
   ['Bluetooth',(s.bt?'connected, signal '+(d.btRssiDelta==127?'?':(d.btRssiDelta>=-5?'good':d.btRssiDelta>=-15?'fair':'weak')+' ('+d.btRssiDelta+' dB vs. ideal)')+(d.btRole==0?', radio leads the link':d.btRole==1?', the device leads the link':''):'not connected')+', identity '+d.btIdentity+', pairings on the radio: '+(d.btBonds<0?'-':d.btBonds)+(d.btRefreshes?', reconnected '+d.btRefreshes+'x for WiFi':'')],
   ['Firmware',(d.version||'')+', built '+d.build+', running from slot '+d.partition],
   ['SD card',d.sd||'-'],
+  ['Encoder',d.enc||'-'],
   ['Uptime',Math.floor(s.uptime/3600)+' h '+Math.floor(s.uptime%3600/60)+' min, last reset: '+({1:'power on',3:'software',4:'crash',5:'watchdog',6:'watchdog',7:'watchdog',8:'deep sleep',9:'voltage dip (brownout)'}[d.resetReason]||('code '+d.resetReason))+(d.brownouts?', '+d.brownouts+'x brownout in a row':'')]];
  $('diag').innerHTML=rows.map(r=>'<tr><td class="mut" style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top">'+r[0]+'</td><td style="padding:3px 0">'+r[1]+'</td></tr>').join('');
  if(s.backlight)$('blnow').textContent='Now '+s.backlight.now+'%. ';$('sys').textContent=(s.batteryMv?'Battery '+(s.batteryMv/1000).toFixed(2)+' V ('+s.batteryPct+'%)':'Battery: no reading (jumper open?)')+(s.usb?', USB power present':'')+'. Uptime '+Math.floor(s.uptime/60)+' min, heap '+Math.round(s.heap/1024)+' kB free (min '+Math.round(s.minHeap/1024)+' kB), PSRAM '+Math.round(s.psram/1024)+' kB free';
@@ -288,6 +290,7 @@ static void handleStatus() {
   j += ",\"batRawMv\":" + String(b.rawBatMv) + ",\"pwrRawMv\":" + String(b.rawPwrMv);
   j += ",\"minHeap\":" + String(ESP.getMinFreeHeap()) + ",\"psramMin\":" + String(ESP.getMinFreePsram());
   j += ",\"btIdentity\":" + String(settings.btIdentity);
+  j += ",\"enc\":\"" + jsonEscape(encoderStatus()) + "\"";
   j += ",\"sd\":\"" + jsonEscape(sdInfo()) + "\",\"sdFormat\":\"" + jsonEscape(sdFormatResult()) + "\"";
   j += ",\"sdFirmware\":\"" + jsonEscape(sdFirmwareResult()) + "\"";
   j += ",\"resetReason\":" + String((int)esp_reset_reason()) + ",\"brownouts\":" + String(powerBrownouts());
