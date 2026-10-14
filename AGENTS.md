@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.33 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.34 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -289,7 +289,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.33 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.34 on 2026-10-14),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -409,8 +409,12 @@ Run from the project root:
   esptool: app to app0 (0x10000), otadata (0xe000) erased so app0 boots, reset (1.5 MB in 13 s,
   no progress on the display: the ROM loader runs then). Settings and pairings in NVS stay
   either way. A WiFi upload had timed out because the radio kept opening paging windows with no
-  device paired. Seen 2026-10-11: the firmware path sometimes times out at the start ("radio:
-  timeout") while WiFi starves; run it again, or let it fall back to esptool (also fine).
+  device paired. Seen 2026-10-11..14: the firmware path often timed out in the first KB ("radio:
+  timeout"): a byte lost at 921600 baud through the CH340 left a chunk incomplete and the radio
+  waited 10 s. Since v1.34 an incomplete chunk is dropped after 1 s and acknowledged at the old
+  position again, so the PC resends it (up to 10 times per chunk); three updates in a row then
+  went through with the progress bar. esptool (`-Rom`) shows no progress on the display (the ROM
+  loader runs then).
 - Full flash over USB (bootloader + partition table + app; ask the user first): `pio run -e usb -t
   upload` (COM7). Only for the first install of the OTA partition table.
 - Live log without USB: web page, section "Log", "Show live log", or

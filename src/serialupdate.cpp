@@ -48,22 +48,34 @@ static void runUpdate(size_t size, const String& md5) {
   Serial.flush();
   Serial.updateBaudRate(DATA_BAUD);
 
+  // A chunk that does not arrive complete within 1 s lost bytes on the way (921600 baud through
+  // the CH340; seen 2026-10-14 within the first few KB of most updates): drop it and acknowledge
+  // the old position again, which makes the PC send the same chunk once more.
   size_t done = 0;
   bool ok = true;
   const char* why = "";
+  int resent = 0;
   while (done < size) {
     size_t want = size - done < CHUNK ? size - done : CHUNK;
     size_t got = 0;
     uint32_t last = millis();
+    int tries = 0;
     while (got < want) {
       int n = Serial.available();
       if (n > 0) {
         got += Serial.read(buf + got, (size_t)n < want - got ? (size_t)n : want - got);
         last = millis();
-      } else if (millis() - last > 10000) {
-        ok = false;
-        why = "timeout";
-        break;
+      } else if (millis() - last > 1000) {
+        if (++tries > 10) {
+          ok = false;
+          why = "timeout";
+          break;
+        }
+        while (Serial.available()) Serial.read();
+        got = 0;
+        resent++;
+        Serial.printf("#K %u\n", (unsigned)done);  // send this chunk again
+        last = millis();
       } else {
         delay(1);
       }
@@ -89,6 +101,7 @@ static void runUpdate(size_t size, const String& md5) {
   }
   Serial.print("#D\n");
   Serial.flush();
+  Log.printf("[usb] update received, %d chunk(s) sent again\n", resent);
   displaySetUpdate(UpdatePhase::Done, size, size, "via USB");
   delay(1500);  // let the display show it
   ESP.restart();
