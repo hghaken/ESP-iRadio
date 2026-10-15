@@ -255,6 +255,7 @@ encoder stay.
 | HS20S010B display module 2.0" 320x240 | C5329586 | 113 | loose part in the same order, plugged in (D8) |
 | socket 1x10 2.54 mm, 8.5 mm (PM254-1-10-Z-8.5) | C2897373 | 17742 | 2x, J3/J7, assembled |
 | pin header 1x10 2.54 mm (PZ254V-11-10P) | C492409 | 38097 | 2x loose, soldered to the module if it comes without |
+| 2.4 GHz FPC antenna with IPEX (U.FL) cable, 50 x 15 mm, 3 dBi (ZIISOR TX2400-FPC-5015) | C454912 | 2610 | loose; the WROVER-IE comes without an antenna. Stuck to the case wall; check the cable length (~10-15 cm) |
 | MMBT3904 | C7420353 | 5024877 | preferred; auto-reset |
 | USBLC6-2SC6 | C2827654 | 105627 | USB ESD |
 | SMAJ5.0A | C113952 | 602831 | VBUS TVS |
@@ -270,7 +271,7 @@ encoder stay.
 
 Stock is a snapshot; JLCPCB Tools checks it again when the BOM is made. Not assembled: the display
 module (plugged in), the cell, the speaker, the antenna. Stock database of 2026-10-11; the
-HS20S010B, socket and header rows were checked on 2026-10-16.
+HS20S010B, socket, header and antenna rows were checked on 2026-10-16.
 
 ## Sources
 
