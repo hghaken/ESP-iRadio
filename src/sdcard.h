@@ -7,6 +7,12 @@
 //   /backup/settings.txt, /backup/stations.txt   settings and station list (no WiFi password)
 //   /logos/<hash>.565       64x64 (older: 40x40) station logo, RGB565, made by the web page
 //   /firmware/<build>.bin   copies of firmware that ran 10 min without trouble (newest 5)
+//   /events/YYYY-MM.log     events: boot and reset reason, WiFi, Bluetooth, stream trouble,
+//                           station changes, updates, crashes (a year kept)
+//   /stations/YYYY-MM-DD.csv, /stations/months/YYYY-MM.csv   per station: minutes listened and
+//                           streamed, input, underruns, reconnects, failed connects (a year kept)
+//   /crash/YYYY-MM-DD_HHMMSS.elf   core dump of a crash, copied from flash at the next boot
+//                           (a year kept); its summary goes to the events
 // All card work runs in loop() (sdLoop) in small steps; no extra task, no internal RAM held.
 #pragma once
 #include <Arduino.h>
@@ -36,6 +42,11 @@ bool sdLogoDelete(int station);
 int sdLogoGeneration();  // changes when the logo for the current station changes; 0 = none
 // Scaled to size x size pixels (the panel's logo size, at most SD_LOGO_MAX); false when none.
 bool sdCopyLogo(uint16_t* dst, int size);
+
+// Event for /events/YYYY-MM.log, printf style, one line. Callable from any task (not from an
+// interrupt); lines wait in a PSRAM buffer (8 KB) until sdLoop() writes them with their time.
+void sdEvent(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
+void sdFlushEvents();  // write waiting events now (before a planned restart)
 
 // Firmware copies.
 void sdRequestFirmwareSave();

@@ -178,6 +178,8 @@ static bool hopTo(const uint8_t* bssid, int channel) {
   if (WiFi.status() == WL_CONNECTED) {
     rememberAp();
     Log.printf("[wifi] roam done, %d dBm\n", WiFi.RSSI());
+    sdEvent("WiFi moved to access point %s, %d dBm, channel %d", WiFi.BSSIDstr().c_str(), (int)WiFi.RSSI(),
+            (int)WiFi.channel());
     return memcmp(currentBssid, WiFi.BSSID(), 6) != 0;
   }
   return false;
@@ -258,6 +260,7 @@ static void powerGuard() {
   } else if (brownout) {
     int wait = min(brownouts, 3) * 60;  // 1, 2, 3 minutes
     Log.printf("[power] brownout reset: waiting %d s before starting the radios\n", wait);
+    sdEvent("power: brownout reset (%d in a row), waiting %d s", brownouts, wait);
     displaySetNetwork("Waiting after a brownout (" + String(wait / 60) + " min)");
     for (int i = 0; i < wait; i++) delay(1000);
   }
@@ -344,6 +347,7 @@ void setup() {
     if (connectWifi(true)) {
       shownIp = WiFi.localIP().toString();
       Log.printf("[wifi] connected, IP %s\n", shownIp.c_str());
+      sdEvent("WiFi connected: %s, %d dBm, channel %d", WiFi.BSSIDstr().c_str(), (int)WiFi.RSSI(), (int)WiFi.channel());
       startMdns();
       shownRssi = WiFi.RSSI();
       displaySetNetwork(shownIp + "  WiFi " + String(shownRssi) + " dBm");
@@ -435,6 +439,7 @@ void loop() {
   if (!setupMode && wifiOffAt == 0 && (!wifiUp || zombie) && (int32_t)(millis() - wifiRetryAt) > 0) {  // wrap-safe
     wifiRetryAt = millis() + 20000;
     Log.printf("[wifi] %s, reconnecting\n", zombie ? "associated but unreachable" : "not connected");
+    sdEvent("WiFi %s, reconnecting", zombie ? "associated but unreachable" : "not connected");
     if (zombie) {
       WiFi.disconnect(true, false);
       delay(200);

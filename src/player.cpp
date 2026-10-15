@@ -25,6 +25,7 @@
 #include "display.h"
 #include "icystream.h"
 #include "memlog.h"
+#include "sdcard.h"
 #include "settings.h"
 #include "weblog.h"
 
@@ -277,6 +278,7 @@ static void onBtState(esp_a2d_connection_state_t state, void*) {
   esp_bd_addr_t* peer = a2dp->get_last_peer_address();
   Log.printf("[bt] %s (%s)\n", a2dp->to_str(state), peer ? a2dp->to_str(*peer) : "?");
   if (state == ESP_A2D_CONNECTION_STATE_CONNECTED) {
+    sdEvent("Bluetooth connected: %s", peer ? a2dp->to_str(*peer) : "?");
     btConnects = btConnects + 1;
     linkWasUp = true;
     autoHold = false;  // a planned disconnect (e.g. the starvation refresh) is over
@@ -298,6 +300,7 @@ static void onBtState(esp_a2d_connection_state_t state, void*) {
     // A link that drops (often WiFi's connect burst right after a fresh link) is paged again
     // first; only a failed page moves on to the next device.
     if (linkWasUp) {
+      sdEvent("Bluetooth link down: %s", peer ? a2dp->to_str(*peer) : "?");
       linkWasUp = false;
       Log.println("[bt] auto: link dropped, trying the same device again first");
     } else {
@@ -327,7 +330,8 @@ bool playerTakeQuietPage() {
 static volatile uint32_t btPulled = 0;    // bytes handed to Bluetooth (diagnostics)
 static volatile uint32_t btSilence = 0;   // bytes of padding because pcmBuf was empty
 static volatile int statInKBps = 0, statBtKBps = 0, statSilenceKBps = 0;  // last 10 s averages
-static volatile int underrunCount = 0, reconnectCount = 0;
+static volatile int underrunCount = 0, reconnectCount = 0, connectFailCount = 0;
+static volatile uint32_t inBytesTotal = 0;  // for the station statistics on the SD card
 // Stream stalls while the Bluetooth link plays (see checkStarvation()).
 static volatile uint32_t stallAt = 0, prevStallAt = 0;
 static volatile int btRefreshCount = 0;
@@ -573,6 +577,8 @@ static void netTask(void*) {
       status.codec = "";
       xSemaphoreGive(lock);
       setState(station >= 0 ? PlayState::Connecting : PlayState::Stopped);
+      if (station >= 0) sdEvent("play: %s", settings.stations[station].name.c_str());
+      else sdEvent("stop");
       fresh = true;
       retries = 0;
       retryAt = 0;
@@ -590,6 +596,7 @@ static void netTask(void*) {
         readyGen = generation;
         streaming = true;
         lastData = millis();
+        if (retries > 0) sdEvent("stream: connected again after %d failed attempt(s)", retries);
         retries = 0;
         connBytes = 0;
         // streamFailures is cleared once this connection has delivered real data (below), not
@@ -601,6 +608,8 @@ static void netTask(void*) {
       } else {
         url->end();
         retries++;
+        connectFailCount = connectFailCount + 1;
+        if (retries == 1) sdEvent("stream: connect failed (WiFi %s)", WiFi.status() == WL_CONNECTED ? "up" : "down");
         // Only count failures while WiFi claims to be up: that is the "zombie" signal
         // (associated, IP, nothing reachable). Failures inside a paging window are expected.
         if (WiFi.status() == WL_CONNECTED) streamFailures = streamFailures + 1;
@@ -615,6 +624,7 @@ static void netTask(void*) {
       if (n > 0) {
         lastData = millis();
         totalIn += n;
+        inBytesTotal = inBytesTotal + n;
         connBytes += n;
         if (connBytes >= HEALTHY_BYTES) streamFailures = 0;  // this connection really works
         size_t written = 0;
@@ -629,6 +639,7 @@ static void netTask(void*) {
         // timeout. (WiFiClient::connected() is not used here: it reads a stale errno.)
         Log.printf("[player] stream lost, reconnecting (buffer %d KB)\n", netBuf->available() / 1024);
         reconnectCount = reconnectCount + 1;
+        sdEvent("stream: lost (incomplete metadata), reconnecting");
         url->end();
         streaming = false;
         retryAt = millis() + 200;
@@ -638,6 +649,8 @@ static void netTask(void*) {
         Log.printf("[player] stream stalled, reconnecting (buffer %d KB, %u KB on this connection)\n",
                    netBuf->available() / 1024, (unsigned)(connBytes / 1024));
         reconnectCount = reconnectCount + 1;
+        sdEvent("stream: stalled after %u KB on this connection, buffer %d KB, reconnecting", (unsigned)(connBytes / 1024),
+                netBuf->available() / 1024);
         // A connection that stalls before delivering real data counts as a failure: three in a
         // row make loop() re-associate WiFi (the "zombie" check in main.cpp).
         if (connBytes < HEALTHY_BYTES && WiFi.status() == WL_CONNECTED) streamFailures = streamFailures + 1;
@@ -711,6 +724,7 @@ static void decodeTask(void*) {
     if (n <= 0) {
       threshold = min((size_t)PREBUFFER_MAX_BYTES, threshold * 2);
       underrunCount = underrunCount + 1;
+      sdEvent("stream: buffer underrun, re-buffering");
       Log.printf("[player] buffer underrun, re-buffering (threshold now %u KB)\n", threshold / 1024);
       prebuffering = true;
       setState(PlayState::Buffering);
@@ -1055,6 +1069,7 @@ static void checkStarvation() {
   prevStallAt = stallAt = 0;
   slowPeriods = 0;
   btRefreshCount = btRefreshCount + 1;
+  sdEvent("Bluetooth reconnected to give WiFi air (%s)", stalls ? "2 stream stalls" : "starved input for 30 s");
   if (stalls)
     Log.printf("[bt] WiFi starved next to the link (2 stalls in %u s): reconnecting %s\n",
                (unsigned)((b - a) / 1000), bdaText(addr).c_str());
@@ -1276,6 +1291,7 @@ void playerSetBluetoothEnabled(bool on) {
     }
     playerRequestQuietPage();
     Log.println("[bt] enabled");
+    sdEvent("Bluetooth switched on");
   } else {
     if (btStackStarted) {
       a2dp->set_auto_reconnect(false);
@@ -1283,6 +1299,7 @@ void playerSetBluetoothEnabled(bool on) {
     }
     lineActive = true;  // after the link is down: one reader of pcmBuf at a time
     Log.println("[bt] disabled, line output plays");
+    sdEvent("Bluetooth switched off, line output plays");
   }
 }
 
@@ -1410,6 +1427,8 @@ PlayerStatus playerStatus() {
   s.pcmBufferKB = pcmBuf->available() / 1024;
   s.underruns = underrunCount;
   s.reconnects = reconnectCount;
+  s.inBytes = inBytesTotal;
+  s.connectFails = connectFailCount;
   s.bitrateKbps = url->bitrateKbps();
   s.btRssiDelta = s.btConnected ? g_bt_rssi_delta : 127;
   // Ask the controller for the link RSSI now and then; the answer lands in g_bt_rssi_delta.

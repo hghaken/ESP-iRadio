@@ -24,6 +24,8 @@ struct PlayerStatus {
   int silenceKBps = 0;   // PCM padded with silence (buffer was empty)
   int bufferKB = 0;
   int underruns = 0;     // decoder found the net buffer empty
+  uint32_t inBytes = 0;  // stream bytes received since boot (station statistics)
+  int connectFails = 0;  // failed stream connects since boot
   int reconnects = 0;    // stream stalls -> reconnect
   int pcmBufferKB = 0;
   int bitrateKbps = 0;     // stream bitrate (icy-br), 0 if unknown

@@ -5,6 +5,7 @@
 
 #include "display.h"
 #include "player.h"
+#include "sdcard.h"
 #include "settings.h"
 #include "weblog.h"
 
@@ -18,6 +19,7 @@ static void finishFailed(const char* why) {
   Serial.updateBaudRate(115200);
   weblogSerialMute(false);
   Log.printf("[usb] update failed: %s\n", why);
+  sdEvent("update over USB failed: %s", why);
   displaySetUpdate(UpdatePhase::Failed, 0, 0, "via USB");
   playerHoldBluetooth(false);
   playerPlay(settings.lastStation);
@@ -29,6 +31,7 @@ static void runUpdate(size_t size, const String& md5) {
     return;
   }
   Log.printf("[usb] update over USB: %u bytes\n", (unsigned)size);
+  sdEvent("update over USB started (%u bytes)", (unsigned)size);
   weblogSerialMute(true);  // keep our own log lines out of the data channel
   playerShutdown();
   playerHoldBluetooth(true);
@@ -102,6 +105,8 @@ static void runUpdate(size_t size, const String& md5) {
   Serial.print("#D\n");
   Serial.flush();
   Log.printf("[usb] update received, %d chunk(s) sent again\n", resent);
+  sdEvent("update over USB done, %d chunk(s) sent again", resent);
+  sdFlushEvents();
   displaySetUpdate(UpdatePhase::Done, size, size, "via USB");
   delay(1500);  // let the display show it
   ESP.restart();

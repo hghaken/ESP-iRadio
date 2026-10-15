@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.37 (2026-10-15: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.38 (2026-10-15: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -281,6 +281,34 @@ Hardware:
     `display.cpp` copies it and draws it at x 14, y 53 (centred on the three text lines), with the
     station, artist and song strips narrowed to the right of it. GFX has no clipping, so `drawLine()` clears the
     logo column and redraws the logo after drawing scrolled text.
+  - History (v1.38, 2026-10-15; everything kept a year, `pruneBefore()` removes files whose
+    date name is older than a year):
+    - `/events/YYYY-MM.log`: one line per event with its wall-clock time: boot with firmware and
+      reset reason (crashes named), WiFi connected / reconnecting / moved to another access
+      point, Bluetooth connected / link down / switched on or off / reconnected for WiFi
+      (starvation refresh), play / stop, stream stalled / lost / underrun / connect failed (first
+      of a series) / connected again, updates over WiFi and USB (start, done, failed), firmware
+      restore, brownout waits, crash dumps. `sdEvent(fmt, ...)` (in `sdcard.h`) can be called
+      from any task: lines go into an 8 KB PSRAM buffer under a spinlock (`millis()` + text) and
+      `writeEvents()` writes them every 30 s, the time worked out from `millis()` once the clock
+      is set (before that it waits up to 3 min, then "uptime N s"). `sdFlushEvents()` writes them
+      before a planned restart (web restart, updates, firmware restore).
+    - `/stations/YYYY-MM-DD.csv` and `/stations/months/YYYY-MM.csv`: per station minutes
+      listened (playing, sound on an output, not muted), minutes streamed, KB in, stream kbps,
+      underruns, reconnects, failed connects. `stMinute()` counts once a minute from the player's
+      running totals (`PlayerStatus` `inBytes`, `connectFails`, `underruns`, `reconnects`); the
+      day file is rewritten every 10 minutes (and read back after a restart), the month file is
+      summed from that month's day files.
+    - `/crash/YYYY-MM-DD_HHMMSS.elf`: ESP-IDF's ELF core dump (coredump partition, sdkconfig
+      `CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH`), copied once the clock is set (or after 3 min), its
+      summary (task, PC, cause, backtrace, ELF SHA) written to the events, then erased from
+      flash. First run 2026-10-15 found an old dump from the 2026-10-10 display-task crash
+      (task display, cause 28 LoadProhibited). Decode with `xtensa-esp32-elf-gdb` / `idf.py
+      coredump-info` against the matching firmware ELF.
+    Web page, section SD card: "Stations: listening and stream quality" (today, a month, the last
+    12 months or one of the last 30 days: table with listened, streamed, average input KB/s
+    against what the stream needs, underruns, reconnects, failed connects), "Events" (per month,
+    newest first) and download links for the events, station months and crash dumps.
   - `/firmware/<build>.bin`: copy of the running image (`ESP.getSketchSize()` bytes,
     `esp_partition_read` into a 4 KB internal buffer, 4 KB per `sdLoop()` pass, ~6 s) made
     automatically after 10 min uptime or with "Keep current firmware"; newest 5 kept;
@@ -306,7 +334,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.37 on 2026-10-15),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.38 on 2026-10-15),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -938,9 +966,10 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see
   `docs/display-research.md`. Backlight dimming, night mode and idle dimming are done; the
   encoder should also count as activity (`displayWake()`).
-- SD card (done 2026-10-10: log, measurements, settings backup, logos, firmware copies). The user
-  does not want music files on it. Card reader again since 2026-10-14 (separate breakout). Possible next: song history ("wat was dat liedje?"),
-  `stations.txt` import from the card.
+- SD card (done 2026-10-10: log, measurements, settings backup, logos, firmware copies; history
+  of events, station statistics and crash dumps since 2026-10-15). The user does not want music
+  files on it. Card reader again since 2026-10-14 (separate breakout). Possible next: song
+  history ("wat was dat liedje?") and favourites, `stations.txt` import from the card.
 - Repeat the battery run (now with the 5000 mAh cell; the SD measurement files will show the
   discharge curve once the card reader is in) with the power guard in place and read `/api/status` `diag` (underruns,
   reconnects, min heap) before the battery runs out.

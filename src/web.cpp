@@ -104,6 +104,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 <div class="sub">Chart</div>
 <div class="row"><select id="statday" onchange="statLoad()"></select><select id="statkey" onchange="drawChart()"><option value="battery_mV">Battery (V)</option><option value="in_kBps">Input (KB/s)</option><option value="buffer_kB">Buffer (KB)</option><option value="wifi_rssi">WiFi (dBm)</option><option value="underruns">Interruptions (total)</option><option value="bt_rssi_delta">Bluetooth signal (dB)</option><option value="heap">Free internal memory (bytes)</option></select></div>
 <canvas id="chart" style="width:100%;height:200px;display:block;margin-top:8px"></canvas>
+<div class="sub">Stations: listening and stream quality</div>
+<div class="row"><select id="stper" onchange="stLoad()"></select></div>
+<div style="overflow-x:auto"><table id="sttab" style="border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap"></table></div>
+<div class="mut">Listened: playing with sound on an output. Input: average KB/s while streaming, after the slash what the stream needs. Kept for a year.</div>
+<div class="sub">Events</div>
+<div class="row"><select id="evmon" onchange="evLoad()"></select><label><input type="checkbox" id="evrev" onchange="evLoad()" checked> Newest first</label></div>
+<pre id="evtext" style="max-height:320px;overflow:auto;font-size:12px;white-space:pre-wrap;margin:6px 0 0"></pre>
+<div class="mut">Boot and reset reason (also crashes), WiFi, Bluetooth, stream trouble, station changes and updates. Kept for a year.</div>
 <div class="sub">Files</div>
 <div id="sdfiles" class="mut">-</div>
 <div class="row"><button class="sec" onclick="sdPost('/api/fwsave','','fwstat',1)">Keep current firmware</button><span class="mut" id="fwstat"></span></div>
@@ -177,8 +185,11 @@ function sdRefresh(){fetch('/api/sd',{cache:'no-store'}).then(r=>r.json()).then(
  $('sdbkinfo').textContent=j.backup?'Last backup: '+(j.backupTime||'?')+'. The radio writes it 10 s after every change (without the WiFi password).':'No backup on the card yet.';
  const ls=$('logost'),cur=ls.value;ls.innerHTML='';(stList||[]).forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n+(j.logos.includes(i)?'  (logo)':'');ls.appendChild(o)});ls.value=cur||(lastSt>=0?lastSt:0);logoShow();
  const sdd=$('statday'),cd=sdd.value;sdd.innerHTML='';j.stats.slice().reverse().forEach(f=>{const o=document.createElement('option');o.value=f.n;o.textContent=f.n.replace('.csv','');sdd.appendChild(o)});if(cd)sdd.value=cd;statLoad();
+ const sp=[];if((j.months||[]).length)sp.push(['year','Last 12 months']);(j.stdays||[]).slice().reverse().slice(0,1).forEach(f=>sp.push([f.n,'Today ('+f.n.replace('.csv','')+')']));(j.months||[]).slice().reverse().forEach(f=>sp.push(['months/'+f.n,'Month '+f.n.replace('.csv','')]));(j.stdays||[]).slice().reverse().slice(1,31).forEach(f=>sp.push([f.n,f.n.replace('.csv','')]));
+ selFill('stper',sp,1);if(!$('stper').dataset.set&&sp.length>1){$('stper').value=sp[1][0];$('stper').dataset.set=1}stLoad();
+ selFill('evmon',(j.events||[]).slice().reverse().map(f=>[f.n,f.n.replace('.log','')]),1);evLoad();
  const a=(dir,f)=>'<a href="/api/sdfile?p=/'+dir+'/'+encodeURIComponent(f.n)+'" download="'+f.n+'">'+f.n+'</a> ('+kb(f.s)+')';
- let h='<b>Log:</b> '+(j.log.length?j.log.slice().reverse().map(f=>a('log',f)).join(', '):'nothing yet')+'<br><b>Measurements:</b> '+(j.stats.length?j.stats.slice().reverse().map(f=>a('stats',f)).join(', '):'nothing yet')+'<br><b>Firmware:</b> ';
+ let h='<b>Log:</b> '+(j.log.length?j.log.slice().reverse().map(f=>a('log',f)).join(', '):'nothing yet')+'<br><b>Measurements:</b> '+(j.stats.length?j.stats.slice().reverse().map(f=>a('stats',f)).join(', '):'nothing yet')+'<br><b>Events:</b> '+((j.events||[]).length?j.events.slice().reverse().map(f=>a('events',f)).join(', '):'nothing yet')+'<br><b>Stations:</b> '+((j.months||[]).length?j.months.slice().reverse().map(f=>a('stations/months',f)).join(', '):'nothing yet')+'<br><b>Crash dumps:</b> '+((j.crash||[]).length?j.crash.slice().reverse().map(f=>a('crash',f)).join(', '):'none')+'<br><b>Firmware:</b> ';
  h+=j.fw.length?j.fw.slice().reverse().map(f=>a('firmware',f)+(f.n==j.current?' (running now)':' <button class="sec" style="padding:2px 8px" onclick="fwBack(\''+f.n+'\')">Restore</button>')).join('<br>'):'no copy yet';
  $('sdfiles').innerHTML=h})}
 function sdPost(u,b,id,poll){$(id).textContent='Working...';fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:b}).then(r=>r.text()).then(t=>{$(id).textContent=t=='ok'?'Done':t;if(poll)fwPoll(id);else sdRefresh()}).catch(()=>{$(id).textContent='Radio not reachable'})}
@@ -191,6 +202,16 @@ function logoPick(){const f=$('logofile').files[0];if(!f)return;const img=new Im
 function logoSave(){if(!$('logofile').files[0]){$('logostat').textContent='Choose a picture first';return}const d=$('logoprev').getContext('2d').getImageData(0,0,64,64).data,a=new Uint16Array(4096);for(let i=0;i<4096;i++)a[i]=(d[i*4]>>3<<11)|(d[i*4+1]>>2<<5)|(d[i*4+2]>>3);
  const fd=new FormData();fd.append('logo',new Blob([a.buffer]),'logo.565');$('logostat').textContent='Saving...';fetch('/api/logo?i='+$('logost').value,{method:'POST',body:fd}).then(r=>r.text()).then(t=>{$('logostat').textContent=t=='ok'?'Saved':t;$('logofile').value='';sdRefresh()})}
 function logoDel(){if(!confirm('Delete the logo of this station?'))return;fetch('/api/logodel',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'i='+$('logost').value}).then(r=>r.text()).then(t=>{$('logostat').textContent=t=='ok'?'Deleted':t;sdRefresh()})}
+function stLoad(){const v=$('stper').value,t=$('sttab');if(!v){t.innerHTML='';return}
+ const files=v=='year'?(sd.months||[]).map(f=>'months/'+f.n):[v];t.innerHTML='<tr><td class="mut">Loading...</td></tr>';
+ Promise.all(files.map(f=>fetch('/api/sdfile?p=/stations/'+f,{cache:'no-store'}).then(r=>r.ok?r.text():'').catch(()=>''))).then(ts=>{const m={};
+  ts.forEach(x=>x.trim().split('\n').slice(1).forEach(l=>{const c=l.split(',');if(c.length<8)return;const e=m[c[0]]||(m[c[0]]={n:c[0],l:0,s:0,k:0,b:0,u:0,r:0,f:0});e.l+=+c[1];e.s+=+c[2];e.k+=+c[3];if(+c[4])e.b=+c[4];e.u+=+c[5];e.r+=+c[6];e.f+=+c[7]}));
+  const hm=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0'),td=s=>'<td style="padding:3px 10px 3px 0">'+s+'</td>',th=s=>'<th style="text-align:left;padding:3px 10px 3px 0" class="mut">'+s+'</th>';
+  const rows=Object.values(m).sort((a,b)=>b.l-a.l||b.s-a.s);
+  t.innerHTML=rows.length?'<tr>'+['Station','Listened','Streamed','Input KB/s','Underruns','Reconnects','Failed connects'].map(th).join('')+'</tr>'+rows.map(e=>'<tr>'+td(e.n.replace(/</g,'&lt;'))+td(hm(e.l))+td(hm(e.s))+td((e.s?(e.k/e.s/60).toFixed(1):'-')+(e.b?' / '+(e.b/8).toFixed(0):''))+td(e.u)+td(e.r)+td(e.f)+'</tr>').join(''):'<tr><td class="mut">Nothing yet.</td></tr>'})}
+function evLoad(){const v=$('evmon').value,p=$('evtext');if(!v){p.textContent='No events yet.';return}p.textContent='Loading...';
+ fetch('/api/sdfile?p=/events/'+v,{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{let L=t.trim().split('\n');if($('evrev').checked)L=L.reverse();p.textContent=L.join('\n')||'No events yet.'})}
+function selFill(id,items,keep){const s=$(id),cur=s.value;s.innerHTML='';items.forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;s.appendChild(o)});if(keep&&cur&&items.some(i=>i[0]==cur))s.value=cur}
 function statLoad(){const f=$('statday').value;if(!f){statRows=[];drawChart();return}fetch('/api/sdfile?p=/stats/'+f,{cache:'no-store'}).then(r=>r.text()).then(t=>{const L=t.trim().split('\n');statHdr=L.shift().split(',');statRows=L.map(l=>l.split(','));drawChart()})}
 function drawChart(){const c=$('chart'),r=window.devicePixelRatio||1,W=c.clientWidth*r,H=c.clientHeight*r;c.width=W;c.height=H;const x=c.getContext('2d');x.clearRect(0,0,W,H);
  const cs=getComputedStyle(document.body),fg=cs.getPropertyValue('--fg')||'#000',mut=cs.getPropertyValue('--mut')||'#888',acc=cs.getPropertyValue('--acc')||'#c00';
@@ -487,6 +508,8 @@ static void otaGuardTask(void*) {
     vTaskDelay(pdMS_TO_TICKS(1000));
     if (uploadActivity && millis() - uploadActivity > 30000) {
       Log.println("[ota] upload stalled for 30 s, restarting");
+      sdEvent("update over WiFi stalled, restarting");
+      sdFlushEvents();
       Update.abort();
       ESP.restart();
     }
@@ -499,6 +522,7 @@ static void handleUpdateUpload() {
   HTTPUpload& up = server.upload();
   if (up.status == UPLOAD_FILE_START) {
     Log.printf("[ota] start: %s\n", up.filename.c_str());
+    sdEvent("update over WiFi started: %s", up.filename.c_str());
     // Free the radio for the transfer: with A2DP audio streaming the WiFi link is
     // too weak for a 1.8 MB upload. The headphones reconnect after the restart.
     playerShutdown();
@@ -522,10 +546,12 @@ static void handleUpdateUpload() {
     updateOk = Update.end(true);
     if (updateOk) Log.printf("[ota] done: %u bytes\n", up.totalSize);
     else Update.printError(Serial);
+    sdEvent("update over WiFi %s (%u bytes)", updateOk ? "done" : "failed", up.totalSize);
   } else if (up.status == UPLOAD_FILE_ABORTED) {
     Update.abort();
     updateOk = false;
     Log.println("[ota] aborted");
+    sdEvent("update over WiFi aborted");
   }
 }
 
@@ -829,6 +855,8 @@ void webLoop() {
   if (captive) dns.processNextRequest();
   server.handleClient();
   if (restartAt && (int32_t)(millis() - restartAt) > 0) {  // wrap-safe
+    sdEvent("restart (web page or update)");
+    sdFlushEvents();
     playerShutdown();
     ESP.restart();
   }

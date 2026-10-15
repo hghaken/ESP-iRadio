@@ -1,5 +1,8 @@
 #include "sdcard.h"
 #include <SD.h>
+#include <esp_core_dump.h>
+#include <esp_system.h>
+#include <stdarg.h>
 #include <sd_diskio.h>
 #include <SPI.h>
 #include <Update.h>
@@ -20,6 +23,7 @@
 #include "weblog.h"
 
 static bool mounted = false;
+static const char* resetReasonText(esp_reset_reason_t r);
 static const char* BACKUP_SETTINGS = "/backup/settings.txt";
 static const char* BACKUP_STATIONS = "/backup/stations.txt";
 static String info = "not checked";
@@ -143,13 +147,16 @@ static bool mount(bool format) {
   // Free space is not asked for: f_getfree can scan the whole FAT (tens of seconds on a
   // 128 GB card) when the FSInfo sector is stale after a power cut.
   info = String(typeName) + ", " + sizeText(SD.totalBytes());
-  for (const char* d : {"/log", "/stats", "/backup", "/logos", "/firmware"})
+  for (const char* d : {"/log", "/stats", "/backup", "/logos", "/firmware", "/events", "/stations", "/stations/months",
+                        "/crash"})
     if (!SD.exists(d)) SD.mkdir(d);
   Log.printf("[sd] %s card, %llu MB filesystem\n", typeName, SD.totalBytes() / (1024 * 1024));
   return true;
 }
 
 bool sdBegin() {
+  sdEvent("boot: firmware %s (%s), reset reason: %s", FIRMWARE_VERSION, buildStamp,
+          resetReasonText(esp_reset_reason()));
 #if !SD_ENABLED
   info = "disabled (no card reader wired yet)";
   Log.println("[sd] disabled (SD_ENABLED 0 in config.h)");
@@ -558,6 +565,7 @@ static void fwCopyStep() {
 // Flashes a copy from the card into the other OTA slot and restarts. Blocks for ~30 s; audio
 // stops first, as with an update over WiFi.
 static void fwRestore(const String& name) {
+  sdEvent("firmware restore from the card: %s", name.c_str());
   if (name.indexOf('/') >= 0 || !name.endsWith(".bin")) {
     fwResult = "Invalid name.";
     return;
@@ -592,6 +600,8 @@ static void fwRestore(const String& name) {
   if (ok) {
     Log.println("[sd] firmware restored, restarting");
     displaySetUpdate(UpdatePhase::Done, size, size, "from the SD card");
+    sdEvent("firmware restored from the card, restarting");
+    sdFlushEvents();
     delay(1500);  // let the display show it
     ESP.restart();
   }
@@ -600,6 +610,295 @@ static void fwRestore(const String& name) {
   fwResult = "Restore failed: " + String(Update.errorString());
   Log.printf("[sd] %s\n", fwResult.c_str());
   playerPlay(settings.lastStation);
+}
+
+// ---------------------------------------------------------------- history: shared
+
+// Removes files in `dir` ending in `ext` whose name starts with a date (YYYY-MM-DD or YYYY-MM)
+// that sorts before `cutoff` (the same form): a year is kept whatever the gaps in between.
+static void pruneBefore(const char* dir, const char* ext, const String& cutoff) {
+  for (const FileEntry& e : listDir(dir)) {
+    if (!e.name.endsWith(ext) || e.name.length() < cutoff.length() || !isdigit((uint8_t)e.name[0])) continue;
+    if (e.name.substring(0, cutoff.length()) < cutoff) {
+      SD.remove(String(dir) + "/" + e.name);
+      Log.printf("[sd] removed old %s/%s\n", dir, e.name.c_str());
+    }
+  }
+}
+
+static String yearAgo(bool monthOnly) {
+  String d = timeText(DAY, time(nullptr) - 365L * 86400);
+  return monthOnly ? d.substring(0, 7) : d;
+}
+
+// ---------------------------------------------------------------- events
+
+static const size_t EV_BYTES = 8192;
+static char* evBuf = nullptr;  // PSRAM, "<millis>\t<text>\n" lines
+static size_t evLen = 0;
+static uint32_t evDropped = 0;
+static portMUX_TYPE evMux = portMUX_INITIALIZER_UNLOCKED;
+static String evMonth;
+
+void sdEvent(const char* fmt, ...) {
+  if (!evBuf) {  // first call happens at boot, before other tasks log events
+    evBuf = (char*)heap_caps_malloc(EV_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (!evBuf) return;
+  }
+  char line[200];
+  int n = snprintf(line, sizeof(line), "%lu\t", (unsigned long)millis());
+  size_t room = sizeof(line) - n - 1;  // keep one byte for the line end
+  va_list ap;
+  va_start(ap, fmt);
+  int m = vsnprintf(line + n, room, fmt, ap);
+  va_end(ap);
+  if (m < 0) return;
+  n += m < (int)room ? m : (int)room - 1;
+  for (int i = 0; i < n; i++)
+    if (line[i] == '\n' || line[i] == '\r') line[i] = ' ';
+  line[n++] = '\n';
+  portENTER_CRITICAL(&evMux);
+  if (evLen + n <= EV_BYTES) {
+    memcpy(evBuf + evLen, line, n);
+    evLen += n;
+  } else {
+    evDropped++;
+  }
+  portEXIT_CRITICAL(&evMux);
+}
+
+// Writes the waiting events with their wall-clock time (worked out from millis() once the clock
+// is set; before that "uptime N s" after a 3-minute wait).
+static void writeEvents() {
+  if (!evBuf || !evLen) return;
+  bool known = timeKnown();
+  if (!known && millis() < 180000) return;
+  char* copy = (char*)malloc(EV_BYTES + 1);  // PSRAM
+  if (!copy) return;
+  portENTER_CRITICAL(&evMux);
+  size_t len = evLen;
+  memcpy(copy, evBuf, len);
+  evLen = 0;
+  uint32_t dropped = evDropped;
+  evDropped = 0;
+  portEXIT_CRITICAL(&evMux);
+  copy[len] = 0;
+  uint32_t nowMs = millis();
+  time_t nowT = time(nullptr);
+  String month = known ? timeText(DAY).substring(0, 7) : String("no-date");
+  if (month != evMonth) {
+    evMonth = month;
+    if (known) pruneBefore("/events", ".log", yearAgo(true));
+  }
+  File f = SD.open("/events/" + month + ".log", FILE_APPEND);
+  if (f) {
+    for (char* p = copy; *p;) {
+      char* end = strchr(p, '\n');
+      if (!end) break;
+      *end = 0;
+      char* tab = strchr(p, '\t');
+      if (tab) {
+        *tab = 0;
+        uint32_t ms = strtoul(p, nullptr, 10);
+        String ts = known ? timeText(STAMP, nowT - (time_t)((nowMs - ms) / 1000)) : "uptime " + String(ms / 1000) + " s";
+        f.printf("%s  %s\n", ts.c_str(), tab + 1);
+      }
+      p = end + 1;
+    }
+    if (dropped) f.printf("%s  (%lu events lost: buffer full)\n", known ? timeText(STAMP).c_str() : "?",
+                          (unsigned long)dropped);
+    f.close();
+  }
+  free(copy);
+}
+
+void sdFlushEvents() {
+  if (mounted) writeEvents();
+}
+
+static const char* resetReasonText(esp_reset_reason_t r) {
+  switch (r) {
+    case ESP_RST_POWERON: return "power on";
+    case ESP_RST_EXT: return "reset pin";
+    case ESP_RST_SW: return "restart";
+    case ESP_RST_PANIC: return "CRASH (panic)";
+    case ESP_RST_INT_WDT: return "CRASH (interrupt watchdog)";
+    case ESP_RST_TASK_WDT: return "CRASH (task watchdog)";
+    case ESP_RST_WDT: return "CRASH (watchdog)";
+    case ESP_RST_DEEPSLEEP: return "wake from deep sleep";
+    case ESP_RST_BROWNOUT: return "brownout";
+    default: return "other";
+  }
+}
+
+// ---------------------------------------------------------------- station statistics
+
+// Per station and day: minutes listened (playing, sound on an output, not muted), minutes
+// streamed, bytes in, the stream bitrate, underruns, reconnects and failed connects. Counted
+// once a minute from the player's running totals; the day file is rewritten every 10 minutes
+// and the month file is summed from that month's day files.
+struct StationStat {
+  String name;
+  uint32_t listenMin = 0, streamMin = 0;
+  uint64_t inBytes = 0;
+  uint32_t underruns = 0, reconnects = 0, fails = 0;
+  int kbps = 0;
+};
+static std::vector<StationStat> stToday;
+static String stDayName;
+static bool stBase = false;
+static uint32_t stLastIn = 0;
+static int stLastUnder = 0, stLastRecon = 0, stLastFail = 0;
+static uint32_t stLastWrite = 0;
+static bool stDirty = false;
+
+static StationStat& stFind(std::vector<StationStat>& v, const String& name) {
+  for (StationStat& s : v)
+    if (s.name == name) return s;
+  v.push_back(StationStat());
+  v.back().name = name;
+  return v.back();
+}
+
+// Adds the rows of a station CSV (day or month file) to `v`.
+static void stParse(const String& text, std::vector<StationStat>& v) {
+  int pos = text.indexOf('\n');
+  while (pos >= 0 && pos + 1 < (int)text.length()) {
+    int end = text.indexOf('\n', pos + 1);
+    String line = text.substring(pos + 1, end < 0 ? text.length() : end);
+    pos = end;
+    line.trim();
+    String c[8];
+    int n = 0, from = 0;
+    while (n < 8) {
+      int comma = line.indexOf(',', from);
+      c[n++] = line.substring(from, comma < 0 ? line.length() : comma);
+      if (comma < 0) break;
+      from = comma + 1;
+    }
+    if (n < 8 || c[0].isEmpty()) continue;
+    StationStat& s = stFind(v, c[0]);
+    s.listenMin += c[1].toInt();
+    s.streamMin += c[2].toInt();
+    s.inBytes += (uint64_t)c[3].toInt() * 1024;
+    if (c[4].toInt() > 0) s.kbps = c[4].toInt();
+    s.underruns += c[5].toInt();
+    s.reconnects += c[6].toInt();
+    s.fails += c[7].toInt();
+  }
+}
+
+static String stCsv(std::vector<StationStat> v) {
+  std::sort(v.begin(), v.end(), [](const StationStat& a, const StationStat& b) { return a.listenMin > b.listenMin; });
+  String t = "station,listen_min,stream_min,in_kB,kbps,underruns,reconnects,connect_fails\n";
+  for (const StationStat& s : v)
+    t += s.name + "," + String(s.listenMin) + "," + String(s.streamMin) + "," + String((uint32_t)(s.inBytes / 1024)) +
+         "," + String(s.kbps) + "," + String(s.underruns) + "," + String(s.reconnects) + "," + String(s.fails) + "\n";
+  return t;
+}
+
+static void stWriteDay() {
+  writeText(("/stations/" + stDayName + ".csv").c_str(), stCsv(stToday));
+  String month = stDayName.substring(0, 7);
+  std::vector<StationStat> m;
+  for (const FileEntry& e : listDir("/stations"))
+    if (e.name.startsWith(month) && e.name.endsWith(".csv")) stParse(readText(("/stations/" + e.name).c_str()), m);
+  writeText(("/stations/months/" + month + ".csv").c_str(), stCsv(m));
+  stDirty = false;
+  stLastWrite = millis();
+}
+
+static void stMinute() {
+  if (!timeKnown()) return;
+  String day = timeText(DAY);
+  if (day != stDayName) {
+    if (stDayName.length() && stDirty) stWriteDay();  // close the previous day
+    stToday.clear();
+    stDayName = day;
+    stParse(readText(("/stations/" + day + ".csv").c_str()), stToday);  // continue after a restart
+    pruneBefore("/stations", ".csv", yearAgo(false));
+    pruneBefore("/stations/months", ".csv", yearAgo(true));
+  }
+  PlayerStatus p = playerStatus();
+  uint32_t dIn = p.inBytes - stLastIn;
+  int dU = p.underruns - stLastUnder, dR = p.reconnects - stLastRecon, dF = p.connectFails - stLastFail;
+  stLastIn = p.inBytes;
+  stLastUnder = p.underruns;
+  stLastRecon = p.reconnects;
+  stLastFail = p.connectFails;
+  if (!stBase) {  // the first minute only sets the baseline
+    stBase = true;
+    return;
+  }
+  if (p.stationName.isEmpty()) return;  // stopped
+  String name = p.stationName;
+  name.replace(",", ";");  // keep the CSV plain
+  StationStat& s = stFind(stToday, name);
+  if (p.state == PlayState::Playing || p.state == PlayState::Buffering) s.streamMin++;
+  if (p.state == PlayState::Playing && (p.btConnected || p.lineOut) && !p.muted) s.listenMin++;
+  s.inBytes += dIn;
+  if (dU > 0) s.underruns += dU;
+  if (dR > 0) s.reconnects += dR;
+  if (dF > 0) s.fails += dF;
+  if (p.bitrateKbps > 0) s.kbps = p.bitrateKbps;
+  stDirty = true;
+  if (millis() - stLastWrite > 600000) stWriteDay();
+}
+
+// ---------------------------------------------------------------- crash dumps
+
+// After a crash ESP-IDF leaves an ELF core dump in the coredump partition. The next boot copies
+// it to /crash (once the clock is set, or after 3 minutes), writes its summary (task, PC,
+// backtrace) to the events and erases it from flash.
+static bool crashChecked = false;
+
+static void saveCrashDump() {
+  crashChecked = true;
+#if CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH
+  size_t addr = 0, size = 0;
+  if (esp_core_dump_image_get(&addr, &size) != ESP_OK || size == 0) return;
+  const esp_partition_t* part =
+      esp_partition_find_first(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_COREDUMP, nullptr);
+  if (!part || addr < part->address) return;
+  String stamp = timeKnown() ? timeText(STAMP) : String("no-date ") + String(millis() / 1000);
+  stamp.replace(" ", "_");
+  stamp.replace(":", "");
+  String path = "/crash/" + stamp + ".elf";
+  File f = SD.open(path, FILE_WRITE);
+  uint8_t* buf = (uint8_t*)heap_caps_malloc(4096, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+  bool ok = f && buf;
+  for (size_t off = 0; ok && off < size; off += 4096) {
+    size_t n = size - off < 4096 ? size - off : 4096;
+    ok = esp_partition_read(part, addr - part->address + off, buf, n) == ESP_OK && f.write(buf, n) == n;
+  }
+  if (buf) free(buf);
+  if (f) f.close();
+  String summary = "no summary";
+#if CONFIG_ESP_COREDUMP_DATA_FORMAT_ELF
+  esp_core_dump_summary_t* sum = (esp_core_dump_summary_t*)malloc(sizeof(esp_core_dump_summary_t));
+  if (sum && esp_core_dump_get_summary(sum) == ESP_OK) {
+    char pc[12];
+    snprintf(pc, sizeof(pc), "0x%08lx", (unsigned long)sum->exc_pc);
+    summary = "task " + String(sum->exc_task) + ", PC " + String(pc) + ", cause " + String(sum->ex_info.exc_cause) +
+              ", backtrace";
+    for (uint32_t i = 0; i < sum->exc_bt_info.depth && i < 8; i++) {
+      snprintf(pc, sizeof(pc), " 0x%08lx", (unsigned long)sum->exc_bt_info.bt[i]);
+      summary += pc;
+    }
+    summary += ", elf " + String((const char*)sum->app_elf_sha256).substring(0, 8);
+  }
+  if (sum) free(sum);
+#endif
+  if (ok) {
+    esp_core_dump_image_erase();
+    sdEvent("crash dump saved: %s (%u KB): %s", path.c_str(), (unsigned)(size / 1024), summary.c_str());
+    Log.printf("[sd] crash dump saved: %s (%u bytes): %s\n", path.c_str(), (unsigned)size, summary.c_str());
+    pruneBefore("/crash", ".elf", yearAgo(false));
+  } else {
+    SD.remove(path);
+    Log.println("[sd] crash dump could not be copied");
+  }
+#endif
 }
 
 // ---------------------------------------------------------------- listing
@@ -631,6 +930,10 @@ String sdListJson() {
     j += ",\"log\":" + filesJson("/log", ".log");
     j += ",\"stats\":" + filesJson("/stats", ".csv");
     j += ",\"fw\":" + filesJson("/firmware", ".bin");
+    j += ",\"events\":" + filesJson("/events", ".log");
+    j += ",\"stdays\":" + filesJson("/stations", ".csv");
+    j += ",\"months\":" + filesJson("/stations/months", ".csv");
+    j += ",\"crash\":" + filesJson("/crash", ".elf");
     j += ",\"current\":\"" + fwName() + "\"";
     File b = SD.open(BACKUP_SETTINGS);
     j += ",\"backup\":" + String(b ? "true" : "false");
@@ -660,7 +963,8 @@ String sdListJson() {
 bool sdPathAllowed(const String& p) {
   if (!mounted || p.indexOf("..") >= 0) return false;
   return p.startsWith("/log/") || p.startsWith("/stats/") || p.startsWith("/backup/") ||
-         p.startsWith("/logos/") || p.startsWith("/firmware/");
+         p.startsWith("/logos/") || p.startsWith("/firmware/") || p.startsWith("/events/") ||
+         p.startsWith("/stations/") || p.startsWith("/crash/");
 }
 
 // ---------------------------------------------------------------- loop
@@ -706,10 +1010,13 @@ void sdLoop() {
   if (now - lastLog > 30000) {
     lastLog = now;
     writeLog();
+    writeEvents();
   }
   static uint32_t lastStats = 0;
   if (now - lastStats > 60000) {
     lastStats = now;
     writeStats();
+    stMinute();
   }
+  if (!crashChecked && (timeKnown() || now > 180000)) saveCrashDump();
 }
