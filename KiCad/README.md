@@ -115,9 +115,8 @@ the carrier: their banners say what still applies.
   `python tools/intcheck.py esp-iradio.net` (expected connections of the integrated board)
 - Schematic PDF/SVG: `kicad-cli sch export pdf esp-iradio.kicad_sch` (or `export svg -o <dir>`)
 - DRC: `kicad-cli pcb drc esp-iradio.kicad_pcb`
-- Gerbers/drill: `kicad-cli pcb export gerbers esp-iradio.kicad_pcb -o fab/`,
-  `kicad-cli pcb export drill esp-iradio.kicad_pcb -o fab/`; JLCPCB BOM/CPL via the JLCPCB Tools
-  plugin in the KiCad GUI.
+- JLCPCB order files (Gerber zip, BOM, CPL): `"C:/Program Files/KiCad/9.0/bin/python.exe"
+  tools/jlcfab.py` writes them to `esp-iradio/jlcpcb/` (see the README there).
 - STEP for the case: `kicad-cli pcb export step esp-iradio.kicad_pcb -o case/esp-iradio.step`
 
 Close the schematic/board in KiCad (or reload afterwards) before an agent edits the files: KiCad

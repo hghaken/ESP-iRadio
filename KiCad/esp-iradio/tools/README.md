@@ -39,6 +39,7 @@ Expected: ERC 1 warning (the MAX98357A exposed pad, pin type unspecified, on GND
 | `silk.py` | silkscreen: references only on connectors, ICs, switches, LEDs and transistors; fields hidden; polarity and function markings, title |
 | `touchup.py` | hand edits on the routed board (review round 5): fifth BQ24074 thermal via, vias in the WROVER ground land, charge-LED labels "C"/"P"; checks every via against other-net copper and holes; idempotent |
 | `bridge.py` | joins a pad the router left unconnected: `bridge.py REF PAD`, straight/L track on F.Cu or a stub + new via + B.Cu/In2.Cu to a via of the net, every candidate checked against other-net copper and holes (not needed on the current board) |
+| `jlcfab.py` | JLCPCB order files in `../jlcpcb/`: BOM (LCSC field, else the basic part for plain R/C from its table), CPL (pad centre, Y up, the JLCPCB Tools plugin's rotation corrections for KiCad footprints, none for the EasyEDA `lcsc` ones) and a Gerber + drill zip made with kicad-cli |
 | `relink.py` | points every footprint at its schematic symbol again (path from the netlist) without touching the layout |
 | `fplib.py`, `netparse.py` | footprint loading and netlist reading for the board scripts |
 
@@ -58,6 +59,7 @@ python pcbrules.py
 %KP% stitch.py
 %KP% silk.py
 %KP% touchup.py
+%KP% jlcfab.py
 kicad-cli pcb drc --schematic-parity --severity-all -o drc.rpt ../esp-iradio.kicad_pcb
 ```
 

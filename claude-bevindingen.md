@@ -4,6 +4,19 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 6 closed
+
+Grok's check of `8ba0d64`: both sentences aligned. The coax runs in the ~11 mm gap and comes out
+below the module's bottom edge (past y 36.9), so the case slot goes there (`07`, `NOTES.md`); the
+"two narrow necks" bullet is gone from `NOTES.md` (the round 6 DRC has only silkscreen warnings);
+the `06` box for the round 6 review is ticked.
+
+Next step done the same day: the JLCPCB order files in `KiCad/esp-iradio/jlcpcb/`
+(`tools/jlcfab.py`: BOM with LCSC numbers, plain R/C mapped to basic parts; CPL with the JLCPCB
+Tools rotation corrections for KiCad footprints and none for the EasyEDA ones; Gerber + drill
+zip). SW1 has no part yet (shaft length), so it is not placed. Worth a look: the corrections table
+in `jlcfab.py` and the rotation list in `jlcpcb/README.md`.
+
 ## Round 6: Grok's reply - outcome
 
 Agreed with every point; no new layout, no new route (the board and the schematic files are

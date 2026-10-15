@@ -35,6 +35,8 @@ KiCad/esp-iradio/ref/
 # JLCPCB Tools output (regenerated); its project.db (LCSC assignments) is committed
 KiCad/esp-iradio/jlcpcb/gerber/
 KiCad/esp-iradio/jlcpcb/production_files/
+# loose Gerbers of tools/jlcfab.py (the zip next to them is committed)
+KiCad/esp-iradio/jlcpcb/gerbers/
 
 # STEP models of the LCSC parts (26 MB); recreate with easyeda2kicad, see KiCad/esp-iradio/NOTES.md
 KiCad/esp-iradio/lib/lcsc.3dshapes/*.step

@@ -23,13 +23,16 @@ Layout:
 - [x] BQ24074 5 thermal vias, WROVER ground-land vias (`tools/touchup.py`); LED labels "C"/"P".
 - [x] 2026-10-16: board 90 x 60 mm for the HS20S010B module on sockets, encoder beside it, U2
       turned 180 degrees; DRC 0 errors, 0 unconnected, 0 parity issues.
-- [ ] Review of the 90 x 60 board by Grok and Claude (round 6).
+- [x] Review of the 90 x 60 board by Grok and Claude (round 6): no layout change.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:
-- [ ] DRC clean with the JLCPCB 4-layer rules after the hand changes.
-- [ ] Every part has an `LCSC` field and is in stock (JLCPCB Tools), BOM and CPL exported, the
-      rotation of every part checked in JLCPCB's preview (QFNs, SOT-23, the USB-C connector).
+- [x] DRC clean with the JLCPCB 4-layer rules after the hand changes.
+- [x] BOM, CPL and Gerbers in `esp-iradio/jlcpcb/` (`tools/jlcfab.py`, 2026-10-16): every placed
+      part has an LCSC number and is in stock; plain R/C mapped to basic parts in the script.
+- [ ] SW1: the EC11 part (shaft length) chosen and its `LCSC` field set (not placed until then).
+- [ ] The rotation of every part checked in JLCPCB's placement preview (list in
+      `esp-iradio/jlcpcb/README.md`).
 - [ ] STEP and DXF exported for the case; knob, display window and connectors line up.
 
 Bring-up (new board):

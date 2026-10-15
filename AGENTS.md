@@ -982,10 +982,11 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). First
   layout done the same night (80 x 60 mm), reviewed by Grok and Claude. 2026-10-16: display
   changed to the HS20S010B module on sockets (one JLCPCB/LCSC order for everything), board 90 x
-  60 mm, DRC 0 errors / 0 unconnected / 0 parity issues; review round 6 pending. Still open
+  60 mm, DRC 0 errors / 0 unconnected / 0 parity issues; review round 6 done (no layout change). Still open
   (`KiCad/esp-iradio/NOTES.md`, "Layout"): a last look at the routing by the owner,
   PJ-320D pin order and MSK12C02 ON position on samples, the EC11 shaft length for a front panel
-  ~15 mm above the board, the module's pin 1 and pin headers, then JLCPCB BOM/CPL and STEP/DXF
+  ~15 mm above the board, the module's pin 1 and pin headers, the rotation check in JLCPCB's
+  preview (BOM, CPL and Gerbers in `KiCad/esp-iradio/jlcpcb/`, made by `tools/jlcfab.py`) and STEP/DXF
   for the case. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
   charge state on GPIO34/36, backlight PWM >= 20 kHz, the 320 x 240 display, a 16 MB partition
   table); pins stay.

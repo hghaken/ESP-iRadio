@@ -153,8 +153,9 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   module and goes to the case wall. Keep the U.FL connector reachable (no tall parts next to it,
   room for the plug); never transmit without an antenna connected. On the 90 x 60 board the U.FL
   lies under the display module: the module does not shield the antenna (that is on the cable),
-  but the plug is only reachable with the module unplugged, and the coax leaves through the
-  ~11 mm gap under the module. Put the antenna on the case wall, >= 10-15 mm from the module, the
+  but the plug is only reachable with the module unplugged, and the coax runs in the
+  ~11 mm gap under the module and comes out below its bottom edge (past y 36.9; the module
+  starts at x 0.5, so not past the left edge): cut the case slot there. Put the antenna on the case wall, >= 10-15 mm from the module, the
   cell and the speaker magnet.
 - Strapping (reviewed): GPIO12 (MTDI) **must be low at boot** (high selects 1.8 V flash): nothing
   connected (optionally burn the VDD_SDIO eFuse to 3.3 V). GPIO0 10k up; GPIO2 low at reset (its

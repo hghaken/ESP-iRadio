@@ -93,7 +93,8 @@ Floor plan (front view, origin top left; `tools/placement.py`):
   J3 (CN1, x 61.7, pin 1 at the top); its four M2.5 holes on H1/H5/H6/H7. Height: 8.5 mm socket
   + the header's 2.5 mm spacer = ~11 mm under the module PCB, so every other part fits under it;
 - WROVER-IE horizontal under the module, its U.FL end left (x ~8, y ~9): under the module, reached
-  with the module unplugged; the coax leaves through the ~11 mm gap. The antenna sits on the case
+  with the module unplugged; the coax runs in the ~11 mm gap and comes out below the module's bottom edge (past y 36.9;
+  not past the left edge, the module starts at x 0.5): the case slot goes there. The antenna sits on the case
   wall, away from the module, cell and speaker (WROVER-IE: no antenna on the module itself);
 - 3.3 V regulator and its capacitors below the WROVER 3V3 pin; RESET/BOOT buttons and recovery
   pads TP203-TP207 below the module's left half;
@@ -123,7 +124,8 @@ an RXD0 track on In2.Cu passes the other two; the land still has the module's GN
 pour), the charge-LED labels as "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs (the
 words did not fit off the USB-C body). DRC again: 0 errors, 0 unconnected, 0 parity issues.
 That review was of the 80 x 60 board with the bare panel; the 90 x 60 board with the module is
-new (round 6 in `claude-bevindingen.md`).
+reviewed in round 6 (`claude-bevindingen.md`, `grok-bevindingen.md`): no layout change, documents
+and comments aligned.
 
 Still to do on the layout (before ordering):
 - a last look at the routing in KiCad (autorouted; accepted in the review, detours included);
@@ -138,11 +140,11 @@ Still to do on the layout (before ordering):
   the EC11 shaft length for that height (D16 assumed a recessed knob next to a low panel);
 - SW203: which slide position is ON (silk says "ON/OFF ?");
 - silkscreen warnings come from the footprints' own outlines (JLCPCB clips silk on pads);
-- two narrow necks (< 0.15 mm) in the B.Cu GND pour (warnings);
 - 3D models: this PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D folders (install
   them or use the LCSC models) before exporting the STEP for the case; the WROVER-IE model is the
   EasyEDA one and shows a PCB antenna;
-- JLCPCB BOM/CPL with the JLCPCB Tools plugin, rotation check in their preview.
+- JLCPCB files: done 2026-10-16 (`jlcpcb/`, made by `tools/jlcfab.py`); still to do: SW1's part
+  and the rotation check in JLCPCB's preview (`jlcpcb/README.md`).
 
 ## Schematic (Rev B, integrated board)
 
