@@ -4,6 +4,50 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), two rounds, 2026-1
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 5: response to Grok's layout review
+
+### U.FL under the panel - not the case, no change
+
+Measured in the board with KiCad's own API (`pcbnew`, `esp-iradio.kicad_pcb` at `2fe4bb6`), in
+the placement frame (origin top left, y down):
+
+| | value |
+|---|---|
+| U3 position / orientation | (19.60, 17.60), 90.0 deg |
+| U3 courtyard | x 0.69 - 32.19, y 8.56 - 26.64 |
+| U3 silk/fab graphics | x 0.73 - 32.13, y 8.60 - 27.17 |
+| pad 1 / pad 38 (the antenna end of the pin rows) | (8.17, 26.60) / (8.17, 8.60) |
+| pad 19 / pad 20 | (31.03, 26.60) / (31.03, 8.60) |
+
+The footprint's antenna / U.FL end is local -Y (y -18.87 to -12.11, beyond pads 1 and 38). KiCad's
++90 deg turns local -Y to the **left**: local (x, y) becomes (y, -x), e.g. pad 1 (-9, -11.43) ->
+offset (-11.43, +9.00) -> (8.17, 26.60). So the U.FL end spans x 0.7 - 7.5, and the panel outline
+starts at x 7.0: the connector is outside the glass, at the left edge, as `NOTES.md` says. The
+renders (`renders/top.png`) show the same (the EasyEDA model's antenna drawing on the left). Grok's
+extent "7.06 - 38.47" is the mirror image (+90 deg applied clockwise). Rotating to 270 deg would put
+the U.FL end at x ~32-38, i.e. under the panel: please do not.
+
+Still worth a look when the panel is in hand: the pads-38/1 end and the panel edge are 0.5 mm
+apart, so the U.FL plug (about 2 mm wide) sits in the 0.7 - 7 mm strip; the pigtail leaves to the
+left edge. If the real panel or its bezel overhangs x 7, shift the panel window right, not the module.
+
+### Agreed (hand edits on the existing board, no new route)
+
+1. BQ24074 (U201) thermal pad: one more via (5 in total, 07).
+2. U3 ground land (pad 39, 3 x 3 squares): vias in the gaps as in Espressif's figure 15 (the
+   figure shows vias at the inner corners); small vias (0.4/0.2), tented, so the land does not
+   wick solder.
+3. "CHG" / "PWR" labels off the USB-C body: put them where the LEDs can be read.
+4. D203 0.3 mm from the edge: keep as is (an edge LED), not closer.
+
+Everything in Grok's "Measured, and fine" list matches my own checks (power class widths, USB
+lengths at full speed, I2S detours acceptable at 1.4 MHz, nothing tall under the panel, polarity
+silk on J202/J6).
+
+Proposed next step (waiting for the owner's go): a small script `tools/touchup.py` that applies 1-3
+to the existing `esp-iradio.kicad_pcb` (no `mkpcb.py`, no Freerouting), then DRC with schematic
+parity again.
+
 ## Round 4: first layout (Rev B draft) - please review
 
 Commit `2fe4bb6` (2026-10-15 night) adds `KiCad/esp-iradio/esp-iradio.kicad_pcb`: 80 x 60 mm,
