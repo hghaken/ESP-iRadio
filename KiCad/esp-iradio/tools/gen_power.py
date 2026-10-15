@@ -73,24 +73,18 @@ def tp(ref, at, val, side='right'):
 
 # ================================================================ USB-C input (top left)
 s.text('USB-C INPUT: 5 V, no PD; ESD and surge protection', (20.32, 30.48), 1.8, True)
-JX, JY = 35.56, 63.5
-s.add('lcsc:TYPE-C-31-M-12', 'J201', JX, JY, 0, 'USB-C TYPE-C-31-M-12', 'lcsc:USB-C_SMD-TYPE-C-31-M-12_1',
-      mirror='y', extra={'LCSC': 'C165948'}, fields={'ref': (JX, JY - 19.05, 0, None), 'val': (JX, JY - 16.51, 0, None)})
-# shield tabs (left after the mirror) to GND
-EH = [P('J201', n) for n in ('1', '2', '3', '4')]
-for p in EH:
-    W(p, (21.59, p[1]))
-W((21.59, EH[3][1]), (21.59, EH[2][1]), (21.59, EH[1][1]), (21.59, EH[0][1]))
-gnd((21.59, EH[0][1]))
-flag('#FLG204', (21.59, EH[2][1]), 90)
-gnd_pins = [P('J201', 'A1B12'), P('J201', 'B1A12')]
-for p in gnd_pins:
-    W(p, (p[0] + 2.54, p[1]))
-    gnd((p[0] + 2.54, p[1]), 'right')
-for pn in ('A4B9', 'B4A9'):
-    p = P('J201', pn)
-    W(p, (p[0] + 5.08, p[1]))
-    s.label('VBUS', (p[0] + 5.08, p[1]))
+JX, JY = 26.67, 68.58
+# KiCad's USB 2.0 receptacle symbol with the matching KiCad footprint of the HRO TYPE-C-31-M-12
+# (the EasyEDA footprint had VBUS pads 0.1 mm from the next pad); stacked GND and VBUS pins
+s.add('Connector:USB_C_Receptacle_USB2.0_16P', 'J201', JX, JY, 0, 'USB-C TYPE-C-31-M-12',
+      'Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12', extra={'LCSC': 'C165948'},
+      fields={'ref': (JX - 11.43, JY - 24.13, 0, 'left'), 'val': (JX - 11.43, JY - 26.67, 0, 'left')})
+W(P('J201', 'S1'), P('J201', 'A1'))
+gnd(P('J201', 'A1'))
+flag('#FLG204', P('J201', 'S1'), 180)
+p = P('J201', 'A4')
+W(p, (p[0] + 5.08, p[1]))
+s.label('VBUS', (p[0] + 5.08, p[1]))
 for pn in ('A8', 'B8'):
     s.nc(P('J201', pn))
 for pn, net in (('A6', 'USB_D+'), ('B6', 'USB_D+'), ('A7', 'USB_D-'), ('B7', 'USB_D-')):
@@ -98,11 +92,13 @@ for pn, net in (('A6', 'USB_D+'), ('B6', 'USB_D+'), ('A7', 'USB_D-'), ('B7', 'US
     W(p, (p[0] + 5.08, p[1]))
     s.label(net, (p[0] + 5.08, p[1]))
 # CC pull-downs: one 5.1k per pin
-for pn, ref in (('A5', 'R201'), ('B5', 'R202')):
+for pn, ref, dx in (('A5', 'R201', 12.7), ('B5', 'R202', 27.94)):
     p = P('J201', pn)
-    R(ref, p[0] + 20.32, p[1], '5.1k', 90)
+    R(ref, p[0] + dx, p[1], '5.1k', 90)
     W(p, P(ref, 1))
-    gnd(P(ref, 2), 'right')
+    q = P(ref, 2)
+    W(q, (q[0] + 2.54, q[1]), (q[0] + 2.54, q[1] - 2.54))
+    gnd((q[0] + 2.54, q[1] - 2.54), 'up')
 
 # VBUS -> polyfuse -> TVS -> VIN rail (y 40.64): fuse first, so a wrong adapter opens the fuse
 # instead of burning the TVS

@@ -396,7 +396,9 @@ Hardware:
   netlist check `intcheck.py`; stop regenerating once the board is edited by hand); project
   libraries in `lib/` incl. `lcsc` parts made with easyeda2kicad (STEP models git-ignored);
   status, decisions and open checks in its `NOTES.md`; Rev A, the carrier board for the Olimex
-  module, is in git history; no board layout yet) and the design input: `README.md` (overview, phase 1
+  module, is in git history; first layout of Rev B on 2026-10-15: 80 x 60 mm, 4 layers, generated
+  and autorouted by the scripts in `tools/` (Freerouting), DRC clean, renders in `renders/`, not
+  yet reviewed by hand) and the design input: `README.md` (overview, phase 1
   carrier board for the Olimex board with display, EC11 encoder, microSD, PCM5102A line out and
   MAX98357A speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
@@ -430,7 +432,9 @@ Hardware:
   radio) 73.8%. With `SD_ENABLED 1` the SD code links in fully (~+45 KB more). See "Flash
   budget" under Pitfalls and `docs/framework-build.md`.
 - Control: web page, the rotary encoder and the Bluetooth device's buttons; no Home Assistant integration.
-- Tools on the dev PC: PlatformIO 6.1.19 (`pio`), Python 3.13, esptool 5.3.1, git, gh (GitHub CLI).
+- Tools on the dev PC: PlatformIO 6.1.19 (`pio`), Python 3.13, esptool 5.3.1, git, gh (GitHub CLI);
+  KiCad 9.0.9 with kicad-cli; for the PCB autorouter Freerouting 1.9.0 on a portable Java 21 in
+  `C:\Users\Admin\tools\` (see `KiCad/esp-iradio/tools/README.md`).
 
 ## Commands
 Run from the project root:
@@ -973,11 +977,11 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   sheets, ERC and netlist checked), reviewed the same evening by Grok and Claude
   (`grok-bevindingen.md`, `claude-bevindingen.md` in the repository root) and the agreed changes
   worked in. The board must be powered from a USB source of at least 1.5 A (owner's choice: the
-  charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). Before the
-  layout: the checks listed in `KiCad/esp-iradio/NOTES.md` (PJ-320D pin order and MSK12C02 ON
-  position on samples, short-shaft EC11, display FPC pin 1 and backlight resistor from the real
-  panel), then board outline
-  (~60 x 80 mm, 4 layers), placement, routing, DRC, JLCPCB BOM/CPL, STEP/DXF for the case. The
+  charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). First
+  layout done the same night (80 x 60 mm, 4 layers, autorouted, DRC 0 errors / 0 unconnected / 0
+  parity issues). Still open (`KiCad/esp-iradio/NOTES.md`, "Layout"): review the routing by hand,
+  PJ-320D pin order and MSK12C02 ON position on samples, short-shaft EC11, display FPC pin 1 and
+  backlight resistor from the real panel, then JLCPCB BOM/CPL and STEP/DXF for the case. The
   firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500, charge state on
   GPIO34/36, backlight PWM >= 20 kHz, a 16 MB partition table); pins stay.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);

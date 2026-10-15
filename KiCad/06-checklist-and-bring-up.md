@@ -13,9 +13,14 @@ Before the layout (details in `esp-iradio/NOTES.md`):
 - [ ] Display panel ordered; FPC pin 1 and contact side with a paper mock-up; R22 from its Vf.
 - [ ] TS-1187A pads 1 and 4 diagonal (LCSC drawing).
 
+Layout:
+- [x] First layout (Rev B draft, 2026-10-15): DRC 0 errors, 0 unconnected, 0 schematic parity
+      issues; "+"/"-" silk at J202 and J6; recovery pads labelled; U.FL at the left edge.
+- [ ] Routing reviewed by eye in KiCad (autorouted); USB pair short and parallel.
+- [ ] BQ24074 >= 5 thermal vias (the footprint has 4), WROVER ground-land vias.
+
 Before ordering:
-- [ ] DRC clean with the JLCPCB 4-layer rules; BQ24074 >= 5 thermal vias, WROVER ground-land
-      vias, U.FL reachable; "+"/"-" silk at J202 and J6; recovery pads labelled.
+- [ ] DRC clean with the JLCPCB 4-layer rules after the hand changes.
 - [ ] Every part has an `LCSC` field and is in stock (JLCPCB Tools), BOM and CPL exported, the
       rotation of every part checked in JLCPCB's preview (QFNs, SOT-23, the USB-C connector).
 - [ ] STEP and DXF exported for the case; knob, display window and connectors line up.

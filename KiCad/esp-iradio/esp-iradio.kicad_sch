@@ -4073,11 +4073,11 @@
 	)
 	(no_connect
 		(at 185.42 142.24)
-		(uuid "3fe02989-5688-4929-a527-75fabf8ec297")
+		(uuid "8968069a-efca-449c-980c-27a864c55cae")
 	)
 	(no_connect
 		(at 215.9 149.86)
-		(uuid "808c9449-c4b0-4f67-a705-f691fd826a00")
+		(uuid "0b76031a-155e-4f69-80f5-b905849834db")
 	)
 	(global_label "ESP_EN"
 		(shape bidirectional)
@@ -4088,7 +4088,7 @@
 			)
 			(justify left)
 		)
-		(uuid "185b2607-e74a-49da-8bca-b0ab656231a8")
+		(uuid "effe90ed-a5c4-4616-9119-d42016c8c64b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 195.58 104.14 0)
 			(effects
@@ -4108,7 +4108,7 @@
 			)
 			(justify left)
 		)
-		(uuid "48b94b63-314e-427e-9072-6d1bcf0f0da5")
+		(uuid "f3649c87-12cf-4926-abe9-9c9291639d4b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 198.12 104.14 0)
 			(effects
@@ -4128,7 +4128,7 @@
 			)
 			(justify left)
 		)
-		(uuid "bc150d2f-089d-4bb4-aecc-d18c3449d227")
+		(uuid "97ab8989-fda8-46d1-b578-454b9803f690")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 200.66 104.14 0)
 			(effects
@@ -4148,7 +4148,7 @@
 			)
 			(justify left)
 		)
-		(uuid "591275b0-8210-48cf-934f-3b4f2aab42aa")
+		(uuid "543cab34-4d97-429f-aeb4-952970c8b806")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 203.2 104.14 0)
 			(effects
@@ -4168,7 +4168,7 @@
 			)
 			(justify left)
 		)
-		(uuid "b70eb29c-5fa8-424e-b7a9-c687dee2405c")
+		(uuid "22c634bd-9cbe-4792-92e0-f2aba15c6995")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 205.74 104.14 0)
 			(effects
@@ -4188,7 +4188,7 @@
 			)
 			(justify left)
 		)
-		(uuid "b048c98a-0322-46c7-89b1-e0f028eb427c")
+		(uuid "a065aa3c-e747-4d98-a959-a16c4d10390b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 215.9 119.38 0)
 			(effects
@@ -4208,7 +4208,7 @@
 			)
 			(justify left)
 		)
-		(uuid "97f27964-4393-45e6-af9d-ac63215952f1")
+		(uuid "fae6f297-7968-45e2-abd6-ba69f6783b4d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 215.9 121.92 0)
 			(effects
@@ -4228,7 +4228,7 @@
 			)
 			(justify left)
 		)
-		(uuid "4f2d1625-5c9b-4d56-aa5f-6ca0424dd151")
+		(uuid "411646ea-2083-449c-a2c0-d99bbc767695")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 215.9 144.78 0)
 			(effects
@@ -4290,7 +4290,7 @@
 			)
 			(justify left)
 		)
-		(uuid "4f1c5ebc-c0ba-4998-a3c1-3d4fa7046bee")
+		(uuid "7bc4c4e4-4d3b-4126-a877-c12a984eb31b")
 	)
 	(text "cell protection, 3.3 V LDO, +3V3A for the DAC"
 		(exclude_from_sim no)
@@ -4301,7 +4301,7 @@
 			)
 			(justify left)
 		)
-		(uuid "a560fb14-b669-4fba-aba9-5b1aa6a61fe7")
+		(uuid "f73f66fe-8126-44f9-b87a-1f83e5711fbf")
 	)
 	(text "CONTROLS: EC11 encoder (recessed knob)"
 		(exclude_from_sim no)
@@ -4313,7 +4313,7 @@
 			)
 			(justify left)
 		)
-		(uuid "d23f3d78-f9a9-4af3-b742-425f2574ade0")
+		(uuid "a0fa7be8-97b0-4ee0-9bf0-71ad7396dd44")
 	)
 	(text "DISPLAY (ST7789, SPI) AND microSD"
 		(exclude_from_sim no)
@@ -4325,11 +4325,11 @@
 			)
 			(justify left)
 		)
-		(uuid "6dfc5f2a-cda9-4c3f-9a22-3e61ca005221")
+		(uuid "1eee6cd6-9606-44c9-a814-fa0c36e8e5fa")
 	)
 	(no_connect
 		(at 307.34 180.34)
-		(uuid "813fd6dd-83ba-4cd6-8a99-4c730622096c")
+		(uuid "c40be9ca-2736-42f7-a1a3-199aaa9076d6")
 	)
 	(text "GAIN open = 9 dB"
 		(exclude_from_sim no)
@@ -4340,7 +4340,7 @@
 			)
 			(justify left)
 		)
-		(uuid "a57eea84-20d2-44a0-9a04-b453b60fe9b6")
+		(uuid "e6e92767-940e-455a-bbb7-874488ae956b")
 	)
 	(text "AUDIO: PCM5102A DAC, 3.5 mm line out, MAX98357A I2S mono amplifier (VSYS)"
 		(exclude_from_sim no)
@@ -4352,7 +4352,7 @@
 			)
 			(justify left)
 		)
-		(uuid "8c306c43-aded-4283-95b7-e66edb4e6576")
+		(uuid "0a0334af-0800-47ee-92df-6ea00d5f4416")
 	)
 	(wire
 		(pts
@@ -4362,7 +4362,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0c1111a0-94d2-4228-9993-7ac1d518f372")
+		(uuid "58371afd-740d-4603-9d34-9c9d689079ec")
 	)
 	(wire
 		(pts
@@ -4372,7 +4372,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d349343a-bb07-4407-9231-689e8bfd24d4")
+		(uuid "1aeb980c-418a-4e9a-9608-f433c13e740d")
 	)
 	(wire
 		(pts
@@ -4382,7 +4382,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d0bcdd48-f529-40f7-97e4-2c0a85d0c888")
+		(uuid "199db0ec-76d2-477e-9062-931f12c9058a")
 	)
 	(wire
 		(pts
@@ -4392,7 +4392,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9cabfbb4-cc0d-41fa-a0d5-f40ce05a0a79")
+		(uuid "446a11dd-43d3-4d5d-a917-77789dbdcebe")
 	)
 	(wire
 		(pts
@@ -4402,7 +4402,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5becab7c-bf2d-4e93-bf2f-dd70a562d2c0")
+		(uuid "711fc68d-8bbc-41c7-b5a4-8b6f0f448242")
 	)
 	(wire
 		(pts
@@ -4412,7 +4412,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5ac1f799-7656-4c1c-8b7c-e12599635d1c")
+		(uuid "1c459a16-3134-44d3-9acd-ccfb891046ff")
 	)
 	(wire
 		(pts
@@ -4422,7 +4422,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8ac46b04-1682-42b4-aaa0-0a9c9615ab36")
+		(uuid "1d0b771e-e548-4fdf-841d-b2c1ac2c59c7")
 	)
 	(wire
 		(pts
@@ -4432,7 +4432,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "27cde61a-2712-4268-99d8-1b735df87662")
+		(uuid "db85f36e-538a-4d5a-a979-9c91b9967c97")
 	)
 	(wire
 		(pts
@@ -4442,7 +4442,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "84363fee-d5bb-40e3-908e-0eeb934f2ef7")
+		(uuid "901e3626-f2d7-445d-bee8-db01ec20e20d")
 	)
 	(wire
 		(pts
@@ -4452,7 +4452,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "12a3dc42-5c1f-4ca0-ab13-ae59bce5a48e")
+		(uuid "1396f1a8-dfe5-42ff-a679-e20f6193ff90")
 	)
 	(wire
 		(pts
@@ -4462,7 +4462,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9a182bee-698b-40db-b0b6-07272f3ff41b")
+		(uuid "b5cc20bb-59e1-43ef-ab63-c8a4224c34a8")
 	)
 	(wire
 		(pts
@@ -4472,7 +4472,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9ad14683-de8c-4ab4-bd20-93e44a8479ea")
+		(uuid "3737cfa2-1fae-49cf-8267-5b1333b404a5")
 	)
 	(wire
 		(pts
@@ -4482,7 +4482,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8549ce41-17e1-43fb-b6c0-52920ee76134")
+		(uuid "9d02c14a-62a1-4602-a2bf-702880fc4520")
 	)
 	(wire
 		(pts
@@ -4492,7 +4492,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a0ab1b22-4af0-42ff-a323-5c4e39558973")
+		(uuid "e301232c-0ab0-452f-8259-4229576ed1c5")
 	)
 	(wire
 		(pts
@@ -4502,7 +4502,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "48f4ce86-7d20-4771-9bd9-303734e49942")
+		(uuid "f6f277be-147d-488b-8217-84ff2af80a37")
 	)
 	(wire
 		(pts
@@ -4512,7 +4512,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c72343a0-0d93-41d6-9343-2089ebdbc43b")
+		(uuid "3dc3e987-8917-41b0-a044-d78d00e4fd0e")
 	)
 	(wire
 		(pts
@@ -4522,7 +4522,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "336cfd7f-2858-4c17-9cbd-1bed85eacf97")
+		(uuid "788658ce-ac3a-4f72-afe5-c41b17572dc6")
 	)
 	(wire
 		(pts
@@ -4532,7 +4532,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "11d78ccf-130c-4633-b61f-9d8d337a435d")
+		(uuid "5af63ffa-a9c3-4685-a4e9-1f5ac0331609")
 	)
 	(wire
 		(pts
@@ -4542,7 +4542,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d0f3cff0-b4a6-4bbf-bcbb-ad39959d41d9")
+		(uuid "d2da0d70-0992-4c03-a8c3-5ec81c877d97")
 	)
 	(wire
 		(pts
@@ -4552,7 +4552,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6f4bbe40-1296-4530-81b9-9d4652287c18")
+		(uuid "e01fe682-7436-4f15-97d5-49246cecbc28")
 	)
 	(wire
 		(pts
@@ -4562,7 +4562,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "065df183-5b05-476b-9f1b-d20c9f9145b4")
+		(uuid "3027895e-8e36-460b-9dcf-c1c7cbaf5fb5")
 	)
 	(wire
 		(pts
@@ -4572,7 +4572,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5615c260-12fe-4c57-8daf-0d833b17834a")
+		(uuid "e3ec3a39-bc6d-4075-8f5c-d177caf55ad7")
 	)
 	(wire
 		(pts
@@ -4582,7 +4582,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "2ca41c4e-8949-4f4a-ae1c-9e60c0b2a103")
+		(uuid "75162cca-46cd-43c5-921d-e788f2bff55a")
 	)
 	(wire
 		(pts
@@ -4592,7 +4592,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "cc3c1db7-4cad-498e-a258-9f86edc6c55a")
+		(uuid "bc31c604-5c34-4795-ac1b-5b4befd5a3da")
 	)
 	(wire
 		(pts
@@ -4602,7 +4602,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "af3076ee-afac-4ec6-b989-09554bd225f9")
+		(uuid "752982c7-e2dd-47e5-83fb-704eca9a7a3b")
 	)
 	(wire
 		(pts
@@ -4612,7 +4612,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d5fa0f3c-e418-4115-bfe4-01f14a4de545")
+		(uuid "f66e553b-de78-4808-b006-5d92c8eb412c")
 	)
 	(wire
 		(pts
@@ -4622,7 +4622,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3b862ee6-7871-48bd-84e7-06ebb6f1add1")
+		(uuid "338622fa-2a19-43a3-891c-cc08d630886c")
 	)
 	(wire
 		(pts
@@ -4632,7 +4632,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7b0c9800-f54a-4612-ad9e-8f8f65fe94c2")
+		(uuid "37775cf5-c2ac-4485-94d5-ace52c829709")
 	)
 	(wire
 		(pts
@@ -4642,7 +4642,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9046ae1a-7ee3-4ba3-acdb-f09fa020c2e4")
+		(uuid "d856d551-9781-4780-8a94-7b87091e9280")
 	)
 	(wire
 		(pts
@@ -4652,7 +4652,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f31771de-093f-4ea3-89a1-2a2c4f741372")
+		(uuid "a4694103-b126-4a93-9520-f64efda59ff5")
 	)
 	(wire
 		(pts
@@ -4662,7 +4662,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4be0f8d6-2012-4943-b41b-477906d8b5e8")
+		(uuid "68273e77-fac5-46e4-8a83-ec3d84a66483")
 	)
 	(wire
 		(pts
@@ -4672,7 +4672,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "318d9807-a201-4362-b4d7-775eeb907071")
+		(uuid "f217cdd5-016c-48ca-96c5-c7e2f70745f7")
 	)
 	(wire
 		(pts
@@ -4682,7 +4682,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0d8eabfb-76b6-4c6a-b8d7-2b9dc00e3fcd")
+		(uuid "8539d029-db5c-4a14-80c9-2b31b0e28a64")
 	)
 	(wire
 		(pts
@@ -4692,7 +4692,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a67927f4-f158-4f36-abf3-c248295f399b")
+		(uuid "1e892a3c-8986-4895-86e6-52a34e485923")
 	)
 	(wire
 		(pts
@@ -4702,7 +4702,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "073d4ea0-0d39-4900-9f4b-cef7970899a4")
+		(uuid "34d0989e-8198-421e-86c9-93fa71de42f6")
 	)
 	(wire
 		(pts
@@ -4712,7 +4712,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "248e5136-3770-4338-88db-8e68e7d14b19")
+		(uuid "a91bd233-36d7-4eda-bf36-65fc8148d17f")
 	)
 	(wire
 		(pts
@@ -4722,7 +4722,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4299c505-ec4d-4727-8f83-b7dc5954fbc5")
+		(uuid "59ba0983-7e08-48ba-9ef6-60b17c801185")
 	)
 	(wire
 		(pts
@@ -4732,7 +4732,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "bb1ae581-fa5e-4030-a965-da47c2d78f34")
+		(uuid "84df6425-ea72-465f-ad07-e60aa060959a")
 	)
 	(wire
 		(pts
@@ -4742,7 +4742,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3075fc3e-9d7b-4359-af0f-6bdc7daaace3")
+		(uuid "f39a2be4-3b0d-4ff7-b61e-c47e856bb1f6")
 	)
 	(wire
 		(pts
@@ -4752,7 +4752,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f86f679a-06e1-4dce-b340-81482ecb62ed")
+		(uuid "1d97eb82-0b00-41b2-9bb2-17b9c44f7f81")
 	)
 	(wire
 		(pts
@@ -4762,7 +4762,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "abd18d97-797a-455c-b6f3-90b03292d1e4")
+		(uuid "1d90c2d8-9fb5-4f38-a3e0-3d3d37cc99bb")
 	)
 	(wire
 		(pts
@@ -4772,7 +4772,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7341a553-c5a9-4a91-b770-2d5395ebc14b")
+		(uuid "ed763747-1cf5-4d2f-b162-350d58baf660")
 	)
 	(wire
 		(pts
@@ -4782,7 +4782,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6174cea6-bcf6-4102-9c13-e228da6f749d")
+		(uuid "07281cc8-02ec-4505-a17c-bef22d7a8f93")
 	)
 	(wire
 		(pts
@@ -4792,7 +4792,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f1ef5665-0dff-4b35-b186-80f04e2b2810")
+		(uuid "5c17a85d-b7f0-494e-b4ef-f9c06c113825")
 	)
 	(wire
 		(pts
@@ -4802,7 +4802,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "672680a7-8bdd-4dcd-a303-bd8293c0dd37")
+		(uuid "edb5537e-7ccd-4433-a9ae-612e8e9df5d3")
 	)
 	(wire
 		(pts
@@ -4812,7 +4812,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "46da5e68-69b4-4d95-a09b-b30dc2f24e3a")
+		(uuid "a6c1e37c-b416-4cbc-be85-d674e3a8f100")
 	)
 	(wire
 		(pts
@@ -4822,7 +4822,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b218278d-a35b-4d27-9e37-8d322418d796")
+		(uuid "9b4ada05-3612-416c-bbf5-13e4c744e6ba")
 	)
 	(wire
 		(pts
@@ -4832,7 +4832,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a8c5b42b-9c35-4592-b84e-251fea603024")
+		(uuid "4057b649-b58c-4ec1-af32-599d77a5e753")
 	)
 	(wire
 		(pts
@@ -4842,7 +4842,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6da64c4a-f43d-4ab7-a262-041b9674aede")
+		(uuid "dfd438c0-24b0-4aea-8162-77919ab08d0d")
 	)
 	(wire
 		(pts
@@ -4852,7 +4852,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "42518a3a-b672-4a5c-9064-05a945d3363f")
+		(uuid "dec0529d-3151-4a1f-b9d9-765f3864beea")
 	)
 	(wire
 		(pts
@@ -4862,7 +4862,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b0415551-bf95-41e1-9fe0-3b2d2f6e78b5")
+		(uuid "9fccfdf3-d043-4c89-84e6-8f926bcddc4e")
 	)
 	(wire
 		(pts
@@ -4872,7 +4872,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b9eefcc7-e0b1-4103-bf50-2aa99893428f")
+		(uuid "d54ecee6-1d2f-4947-ab56-0b5c37c3b230")
 	)
 	(wire
 		(pts
@@ -4882,7 +4882,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "20cb0870-0c82-4c40-a06b-9e96516bb28e")
+		(uuid "f5930bb5-3874-4bb6-b828-dc6fdd79562e")
 	)
 	(wire
 		(pts
@@ -4892,7 +4892,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1831532b-2aa4-4db3-a7a6-36fae0487820")
+		(uuid "35d09dd9-01bf-4c94-bef7-1a7203c59194")
 	)
 	(wire
 		(pts
@@ -4902,7 +4902,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5476dca7-2050-4386-8dc5-ca8283202bc9")
+		(uuid "558435d3-f505-4e74-b03f-0947787c87df")
 	)
 	(wire
 		(pts
@@ -4912,7 +4912,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "2de100c0-4976-495f-8427-83485eb3630a")
+		(uuid "375ac449-0d95-4ad0-a1af-31d2a8727032")
 	)
 	(wire
 		(pts
@@ -4922,7 +4922,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "53a7885a-2e37-4eee-b4dc-9c9d81c0662c")
+		(uuid "842f1729-befe-445b-9be4-8822084c1b1a")
 	)
 	(wire
 		(pts
@@ -4932,7 +4932,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "df32edf2-23ff-4d07-8e56-f42a6cdf9c85")
+		(uuid "ebbda71e-5d21-4472-af0c-05d0f4dabc46")
 	)
 	(wire
 		(pts
@@ -4942,7 +4942,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e281bdfe-9497-42b0-9f7e-e62fdb8d407e")
+		(uuid "5dcd1e14-ae71-4f4f-8cf3-e77ed2b0ebfd")
 	)
 	(wire
 		(pts
@@ -4952,7 +4952,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e8222573-0974-40d6-b21b-eb227d3bdfc4")
+		(uuid "1f86bcb1-a8f5-4b59-8dde-b7e6a48fb804")
 	)
 	(wire
 		(pts
@@ -4962,7 +4962,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9f191ac3-9ae4-4103-a391-7afbc1309adb")
+		(uuid "92a529de-8acd-41e7-a2ab-c0231f4d7635")
 	)
 	(wire
 		(pts
@@ -4972,7 +4972,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ccd9ffcd-7a84-4fe2-800f-e10413e72cdb")
+		(uuid "2c561df6-b941-4507-b462-d60eaa823a57")
 	)
 	(wire
 		(pts
@@ -4982,7 +4982,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "01fa8125-9a6e-48e5-8c89-6c7ac998155b")
+		(uuid "b6e3455f-1f6e-422b-8185-9f32f5051467")
 	)
 	(wire
 		(pts
@@ -4992,7 +4992,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e74489ff-a7e7-4d94-8971-14f4e3afd6c9")
+		(uuid "9486b133-f6ef-4a55-ade6-e6bd6362d17c")
 	)
 	(wire
 		(pts
@@ -5002,7 +5002,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6655f0dc-a13d-4f9e-b36a-716eac2cf393")
+		(uuid "4f106406-3474-4480-a536-7e565cc841ad")
 	)
 	(wire
 		(pts
@@ -5012,7 +5012,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "634937e3-be43-410a-b693-c9ec475cf8b2")
+		(uuid "01180f20-6a0b-440c-af47-c78f05580e75")
 	)
 	(wire
 		(pts
@@ -5022,7 +5022,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6cc6647d-05fa-4ebb-a664-4d0cf0acdcfc")
+		(uuid "1a37e697-d229-4064-8070-1e68549f4112")
 	)
 	(wire
 		(pts
@@ -5032,7 +5032,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b9002ce9-cdf4-46bf-9fa4-d567c2012e62")
+		(uuid "17581f89-c7b1-45bd-963b-cbd41a0f3c56")
 	)
 	(wire
 		(pts
@@ -5042,7 +5042,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1943e56e-8cc7-4073-afd8-a9825c230d48")
+		(uuid "7f6e590d-8b80-4ac1-88e3-6bbe641b0df7")
 	)
 	(wire
 		(pts
@@ -5052,7 +5052,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8fc72e42-6cd0-49ab-a56d-818dd11af13d")
+		(uuid "9482647e-52b5-4185-a0dd-87f4a0747209")
 	)
 	(wire
 		(pts
@@ -5062,7 +5062,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6b660915-e8ad-4538-b337-3c7c164887c5")
+		(uuid "dea35d4c-00c9-40f6-9925-5abde2389bb0")
 	)
 	(wire
 		(pts
@@ -5072,7 +5072,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c1ec8d2a-4a52-42c5-a38f-66c27699c515")
+		(uuid "d16279cf-0d1e-4d96-aa53-c6712fa7caf2")
 	)
 	(wire
 		(pts
@@ -5082,7 +5082,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "14753df5-b480-428e-a5a5-ec47dbd9e41b")
+		(uuid "6ae4d75b-decb-4c0a-aee4-afad5e330b1c")
 	)
 	(wire
 		(pts
@@ -5092,7 +5092,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "90f1ac38-7ef9-4675-aadc-a8d49746af3a")
+		(uuid "f9f1adf8-d905-4d17-9f75-638e2fd341b1")
 	)
 	(wire
 		(pts
@@ -5102,7 +5102,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "80484899-4322-469d-92f6-35ee08f994da")
+		(uuid "b73c97e2-2bd2-4662-b83b-2e7c5bf7a948")
 	)
 	(wire
 		(pts
@@ -5112,7 +5112,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0c0b7e0e-b815-480d-9ec5-e9062093c9b2")
+		(uuid "d27a553a-cec0-4f66-bfc3-af5b104612f5")
 	)
 	(wire
 		(pts
@@ -5122,7 +5122,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d8f29657-fb69-4d14-86f8-c45836d4e354")
+		(uuid "cfb4ea26-cd8a-4b71-bb2e-a8bcdcc10cea")
 	)
 	(wire
 		(pts
@@ -5132,7 +5132,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8d2a8490-3234-4ae6-b790-9e45d8c984b8")
+		(uuid "2e0d48ed-98d2-47a6-bd62-6ee4d71ea2a8")
 	)
 	(wire
 		(pts
@@ -5142,7 +5142,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "bd4ae317-b5e4-4aa8-bdb3-3e5a23f1b065")
+		(uuid "e64af493-8b6c-47af-b561-ea285c11fabc")
 	)
 	(wire
 		(pts
@@ -5152,7 +5152,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "42078590-65c2-401b-895c-9eb0526b984d")
+		(uuid "be021566-1712-41a6-b337-44542b0d80d6")
 	)
 	(wire
 		(pts
@@ -5162,7 +5162,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b8be167d-a22f-4044-ba8c-28d0141749c1")
+		(uuid "f2775763-8562-41b5-a42b-3ab366112ba4")
 	)
 	(wire
 		(pts
@@ -5172,7 +5172,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "043be181-ba25-4832-9c6b-bfb4b75d727a")
+		(uuid "3e626dde-3203-4a00-b974-d26ea415f168")
 	)
 	(wire
 		(pts
@@ -5182,7 +5182,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c34d8a80-6244-4ac5-86de-54175a61977e")
+		(uuid "9a086e47-7380-4173-88bb-607915ba71de")
 	)
 	(wire
 		(pts
@@ -5192,7 +5192,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "968c68ec-9608-4550-aeb0-e714f1f46e59")
+		(uuid "112a1207-e8c2-4ebd-b8d3-520e966a36dd")
 	)
 	(wire
 		(pts
@@ -5202,7 +5202,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "57968b32-d241-4138-8d83-9f396250794d")
+		(uuid "36875414-3bf9-425a-9f41-e0582cee29f7")
 	)
 	(wire
 		(pts
@@ -5212,7 +5212,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "22fd6bcb-f804-41db-a922-1a7448b36239")
+		(uuid "4dd3551a-6ac0-4ee3-95cd-f4a6d5564846")
 	)
 	(wire
 		(pts
@@ -5222,7 +5222,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6449b86b-61d7-44ee-be4c-7be8582b48ec")
+		(uuid "c23a6e51-7b64-4653-b4ae-b68a3e00f5b0")
 	)
 	(wire
 		(pts
@@ -5232,7 +5232,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "728c1faa-b5f8-4aaa-bcfc-f7ce4c265ea2")
+		(uuid "2daea6a2-c9fd-4a77-a3ec-e4f462ce725e")
 	)
 	(wire
 		(pts
@@ -5242,7 +5242,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b7457636-71a0-4ca4-9f37-35d1c4f8ddfb")
+		(uuid "c8eab24a-cc45-470b-b441-f659a7020527")
 	)
 	(wire
 		(pts
@@ -5252,7 +5252,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "527c299f-d0c9-468d-8af9-21454319169d")
+		(uuid "69b092c4-1a15-4572-835c-caadcdc73783")
 	)
 	(wire
 		(pts
@@ -5262,7 +5262,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b0e090b1-08e3-4c83-9435-ba75cbc8a8e8")
+		(uuid "bfc47554-3464-4e0f-a0b5-2603862483f5")
 	)
 	(wire
 		(pts
@@ -5272,7 +5272,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3d64417e-6b39-4a84-a2d3-99c7a96a68ca")
+		(uuid "b41e440e-b31c-4295-9c97-2908c1be15dc")
 	)
 	(wire
 		(pts
@@ -5282,7 +5282,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b3cc57ff-599c-4949-83b9-c97fd2e840b6")
+		(uuid "f1fd6d89-ad29-4b84-9a01-3300c62769ce")
 	)
 	(wire
 		(pts
@@ -5292,7 +5292,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7b290e2b-d79c-4b84-b800-84eb0e1e563f")
+		(uuid "1148f2e3-457d-4bac-aa0b-b051dfd27595")
 	)
 	(wire
 		(pts
@@ -5302,7 +5302,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c35b97d1-966e-4b4d-9c99-70cbe9fe7758")
+		(uuid "7339046e-ddb6-4833-8112-67abee846abb")
 	)
 	(wire
 		(pts
@@ -5312,7 +5312,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9629de5c-e1c6-416b-ae70-ef403aa5aec6")
+		(uuid "ea5c730f-c88d-4dce-9385-2e5611ccf952")
 	)
 	(wire
 		(pts
@@ -5322,7 +5322,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "91b1a710-4763-49e0-a300-0c52c58c1b91")
+		(uuid "7197ad0b-0f90-4e93-9645-8753e5e67692")
 	)
 	(wire
 		(pts
@@ -5332,7 +5332,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "68f62952-1724-441f-849b-b71fc990352c")
+		(uuid "4f71f13a-7ae2-4e33-828c-c1330067e04e")
 	)
 	(wire
 		(pts
@@ -5342,7 +5342,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0374e442-787b-44e9-a726-d9b20bd7cf69")
+		(uuid "ad53e3bb-e25d-4460-a21a-81367d214147")
 	)
 	(wire
 		(pts
@@ -5352,7 +5352,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8e346e6b-20a9-45bb-a9e3-884022c5fc28")
+		(uuid "080e36a8-5493-4b02-a3f0-cf50b6ac6cf4")
 	)
 	(wire
 		(pts
@@ -5362,7 +5362,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "edc4d098-10ae-49df-80b8-40da696a8e37")
+		(uuid "fdd7e8cf-7c16-45fa-a8d8-11ae7de2750a")
 	)
 	(wire
 		(pts
@@ -5372,7 +5372,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "441ef9f7-9e49-4b6b-acde-176aefe50faa")
+		(uuid "1338f01b-009d-4069-91b7-c790e55822c7")
 	)
 	(wire
 		(pts
@@ -5382,7 +5382,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4582dce0-d9e5-4a90-ba81-5ac79771ac5c")
+		(uuid "fdcbd602-735e-4574-85cf-c622d001d36e")
 	)
 	(wire
 		(pts
@@ -5392,7 +5392,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9580d0e8-f1c1-422b-ad6e-766bf0b501c4")
+		(uuid "0c1c7428-a011-4583-adee-7a7cc95dcb44")
 	)
 	(wire
 		(pts
@@ -5402,7 +5402,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6148e0ed-256f-483c-854e-41539964a7d0")
+		(uuid "6e1d8219-0d8b-4b8a-a840-7b492bec7cf2")
 	)
 	(wire
 		(pts
@@ -5412,7 +5412,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "90016333-0914-48fb-9355-32cb7c3521ba")
+		(uuid "83c957b3-9a67-489c-a2bf-14d324b73e68")
 	)
 	(wire
 		(pts
@@ -5422,7 +5422,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "52877c1a-fe8a-4386-a55b-1c4e72c3fc81")
+		(uuid "b26f0e38-5649-4757-8805-3cd14f70788d")
 	)
 	(wire
 		(pts
@@ -5432,7 +5432,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d12fe7e3-7b3e-49db-bc0e-e582179b1bc2")
+		(uuid "a4a4c228-f80a-44cb-babc-39ad7ab7de7c")
 	)
 	(wire
 		(pts
@@ -5442,7 +5442,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f2fc8fdc-9de6-4336-b948-41e859fc1064")
+		(uuid "bb9688d2-c142-43a6-b34d-828ea59b0180")
 	)
 	(wire
 		(pts
@@ -5452,7 +5452,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "08b0ce61-3fa8-4f3e-b577-4c9c00c23f26")
+		(uuid "e47e3bbd-3908-418b-a534-1b04171e22a6")
 	)
 	(wire
 		(pts
@@ -5462,7 +5462,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b51dd956-2376-4b56-a0e4-a5c027ee09c5")
+		(uuid "51dcbfff-7a0e-4398-965b-bbfe5b119bc7")
 	)
 	(wire
 		(pts
@@ -5472,7 +5472,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "223ae1ae-2d2f-45bb-95c0-db5efd3a8e0c")
+		(uuid "40e2f1ae-7f18-4a5e-95d9-d243b2bf982e")
 	)
 	(wire
 		(pts
@@ -5482,7 +5482,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3a9d7256-9db0-4113-ae76-4d94d152bc29")
+		(uuid "4f57bd0e-3816-4c54-9f3f-15ffe9907962")
 	)
 	(wire
 		(pts
@@ -5492,7 +5492,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e3ad198d-cb1e-45ee-80b2-dea5909fbbf5")
+		(uuid "4f48cd24-5cae-4149-9170-283f379caf23")
 	)
 	(wire
 		(pts
@@ -5502,7 +5502,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ebc6f286-7bc9-4131-ba87-f974a6d6a57c")
+		(uuid "17bc5990-401d-444d-aab3-424c76e8b561")
 	)
 	(wire
 		(pts
@@ -5512,7 +5512,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a40661c3-23a0-4f08-9f92-346d5a7c9224")
+		(uuid "9f7d6385-6ce5-4061-abfe-c4c1856bc2f5")
 	)
 	(wire
 		(pts
@@ -5522,7 +5522,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8f3f4669-bc1b-4e97-a620-7506109638e7")
+		(uuid "85936a6c-d596-4e1c-a381-93d6c0f4ea9c")
 	)
 	(wire
 		(pts
@@ -5532,7 +5532,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3eca5428-ff42-4581-9e35-c52bdabe1b10")
+		(uuid "9f3f6996-7753-4135-92f7-e98366beb0a2")
 	)
 	(wire
 		(pts
@@ -5542,7 +5542,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "91138e78-9f40-4e39-a134-8ee69fbcf567")
+		(uuid "afa7652e-08d3-4065-a6c0-625347067c5d")
 	)
 	(wire
 		(pts
@@ -5552,7 +5552,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0bb61d81-82c4-4c02-937a-c0e136846c75")
+		(uuid "1dce7597-a638-4bba-a3a5-ddf169f5a958")
 	)
 	(wire
 		(pts
@@ -5562,7 +5562,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "eb575251-6479-4d16-8ae0-19fc1d8e5b55")
+		(uuid "f5a35f91-c751-418b-9ce3-73c275a67a85")
 	)
 	(wire
 		(pts
@@ -5572,7 +5572,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1e90ce67-b645-4a80-958d-9b90bd7c6601")
+		(uuid "e6246e78-0741-455d-a5b4-3e28710d674a")
 	)
 	(wire
 		(pts
@@ -5582,7 +5582,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "93c53dc2-ea04-4c83-9fbc-08f0e00e7986")
+		(uuid "4351f60b-ed76-4317-85c7-1393e3ac0c67")
 	)
 	(wire
 		(pts
@@ -5592,7 +5592,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7260be2e-0959-45ba-a76e-b192f4651510")
+		(uuid "40d5f6c4-5f28-4639-aa37-4f3087bf4a66")
 	)
 	(wire
 		(pts
@@ -5602,7 +5602,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e4ed797c-d1e8-4ae4-b44a-1688474f1a32")
+		(uuid "375c452d-6366-4a07-96ff-abdb14cbcf75")
 	)
 	(wire
 		(pts
@@ -5612,7 +5612,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4d5b4e3e-7e09-4b51-b65d-104a8c0473b5")
+		(uuid "8a715fcd-4647-402b-8afd-f33b4ed27795")
 	)
 	(wire
 		(pts
@@ -5622,7 +5622,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0e623774-29e2-4ccd-b548-803835b3c296")
+		(uuid "d702bfc2-5435-404e-b193-eaa97d4af34e")
 	)
 	(wire
 		(pts
@@ -5632,7 +5632,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7421c7b5-d7ce-4a61-a552-c927547ae298")
+		(uuid "b50e769d-6675-41bf-a32f-8ace972e096a")
 	)
 	(wire
 		(pts
@@ -5642,7 +5642,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c4acd1e8-0287-4878-951a-2b578ff5e905")
+		(uuid "0b132f5b-dbc2-4a7f-bdbe-c83e9712d09c")
 	)
 	(wire
 		(pts
@@ -5652,169 +5652,169 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "78cbd9cd-2891-4fcf-8ee1-a6dce596f583")
+		(uuid "8bd74834-cf45-462b-a12d-63b89557e008")
 	)
 	(junction
 		(at 106.68 106.68)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "0b54c1f3-ee8c-42bc-84aa-36d868908264")
+		(uuid "d65f6f41-9569-48ac-ad90-c264b047ee12")
 	)
 	(junction
 		(at 93.98 106.68)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "123e3bb4-2cfd-4776-9f85-4b4a5e7286ef")
+		(uuid "877449ea-2cf6-42e2-9d40-d5126d5dce2f")
 	)
 	(junction
 		(at 111.76 129.54)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "978942e6-46c3-4b98-b1bb-d3bf5a91412f")
+		(uuid "604e51eb-7964-4533-9c8f-5e1048c95c36")
 	)
 	(junction
 		(at 99.06 129.54)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "be5a46b8-8930-4e24-9f7d-a74d7e9d45d2")
+		(uuid "97da686d-c3bd-4673-880e-7190dbdad5fb")
 	)
 	(junction
 		(at 106.68 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "27bb3317-5857-45d5-aaf6-e9bd0697efc9")
+		(uuid "0835062b-01a3-4815-90e9-4df0cf7433e4")
 	)
 	(junction
 		(at 93.98 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "42069fdd-d5b7-4475-8b63-0073ef2103e7")
+		(uuid "84a792df-0fec-49ac-8bbb-33398fad37aa")
 	)
 	(junction
 		(at 337.82 58.42)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c4237760-a03a-4ca7-ba33-12f88673cf43")
+		(uuid "fd56ce70-68f5-47ed-b34a-3b9b234b2fd3")
 	)
 	(junction
 		(at 299.72 48.26)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "29fcb38b-2cf8-4bc6-b437-935d0ba04118")
+		(uuid "01702550-7966-46a1-9866-a930275acd39")
 	)
 	(junction
 		(at 299.72 132.08)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "77a0a9b9-5f88-4f6e-9dc8-af247f61ffc4")
+		(uuid "853a0ff8-0d0a-492c-b6dd-42b2362c77cc")
 	)
 	(junction
 		(at 317.5 132.08)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "1245b8eb-a9e7-4a5a-a185-6ae4ce348201")
+		(uuid "71fc8b6b-b474-4969-a99f-67ae9d39976a")
 	)
 	(junction
 		(at 320.04 114.3)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "80e10efa-1e05-4bbd-acaf-8825124661cf")
+		(uuid "a8681cdd-2c86-4d0c-8247-9c8e65947f41")
 	)
 	(junction
 		(at 302.26 86.36)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "0512d05d-c242-4a24-91f9-8c15cdad07df")
+		(uuid "e9341b3d-3b4c-41f5-a2cf-dd285093b98d")
 	)
 	(junction
 		(at 332.74 137.16)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "a77b1970-e5e9-4c90-ae2e-da2a3fb0c49a")
+		(uuid "88104db6-be41-4ab1-a1d1-a5264cb65b9c")
 	)
 	(junction
 		(at 335.28 124.46)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "70a42e3b-95d6-4ee0-9b6b-c7cf95943a85")
+		(uuid "c827e42c-a5af-41ef-834f-b85e8c323307")
 	)
 	(junction
 		(at 170.18 165.1)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "0f978981-d6fc-407a-aae8-c03d8049151c")
+		(uuid "9dea5c5a-575a-4024-9c0c-4b89790000fd")
 	)
 	(junction
 		(at 170.18 170.18)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "fd74d80f-33d3-4d2f-ad37-838380087264")
+		(uuid "a1b1bb97-753f-43da-950f-62de7ec82514")
 	)
 	(junction
 		(at 175.26 172.72)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "df18efa4-9b0d-40a8-8bad-31107be9ba0a")
+		(uuid "5c131a5b-7cff-4294-b027-6b96284cd3a1")
 	)
 	(junction
 		(at 180.34 167.64)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "d20071c4-5aa7-458f-83ac-f569fa7442a0")
+		(uuid "9f3f07a0-0a37-46c6-a989-9a5d5a13290d")
 	)
 	(junction
 		(at 180.34 180.34)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "a82bc657-bc89-487d-98a6-9953602d49d2")
+		(uuid "8a0c5642-7199-4be4-92d4-54a59e7b3401")
 	)
 	(junction
 		(at 182.88 220.98)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "a1532152-6716-4ff0-82da-69907209e507")
+		(uuid "7801ad9d-2795-4b75-af96-9c853290dc09")
 	)
 	(junction
 		(at 182.88 223.52)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "639c985c-722d-4319-8319-ffb49f565ae2")
+		(uuid "15f66527-2006-489a-9b8f-7bc5ca1c587b")
 	)
 	(junction
 		(at 182.88 228.6)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "a468e3b4-c15e-40c4-862f-14c72ee74f22")
+		(uuid "a39b1e69-7324-4816-aba8-8e25b356924c")
 	)
 	(junction
 		(at 198.12 200.66)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "bcd3d156-49bd-4dae-87c0-888525cb3ff6")
+		(uuid "002449f7-c415-404e-b5cb-49001dbf68af")
 	)
 	(junction
 		(at 200.66 238.76)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "e9e4c0c1-ffcb-4d4d-868a-edb59299a9f5")
+		(uuid "d0095d10-399b-428b-8e15-d7a6fcd0a099")
 	)
 	(junction
 		(at 251.46 203.2)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "5d624dcc-63ff-4da4-bca5-0fa1281453ab")
+		(uuid "2c29148a-fb2f-4afe-ad45-98acbde8224f")
 	)
 	(junction
 		(at 251.46 218.44)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "0fda7f00-5033-46c1-9f41-20d2b76a2b06")
+		(uuid "743da1d2-062d-4e9a-b97b-c7f0fc0ba611")
 	)
 	(junction
 		(at 299.72 177.8)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "efd6cc08-f0b6-4986-9d6c-2852b5d8c43b")
+		(uuid "aaa018ba-e4b8-4f0c-96b5-5b1f1a95f7cb")
 	)
 	(symbol
 		(lib_id "esp-iradio:ESP32-WROVER-IE_iRadio")
@@ -5824,7 +5824,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "13056b32-10d5-4588-89c7-4003075817c4")
+		(uuid "41682179-874f-543d-adfd-85c0b4a2bba8")
 		(property "Reference" "U3"
 			(at 213.36 101.6 0)
 			(effects
@@ -5871,121 +5871,121 @@
 			)
 		)
 		(pin "2"
-			(uuid "12a3a3b3-6d57-4a7d-b70c-251a9d99205b")
+			(uuid "f87d9de7-46fa-4874-86d7-8bb7a76a0a38")
 		)
 		(pin "8"
-			(uuid "434970dd-509b-4529-a578-ded1cab927c4")
+			(uuid "24542452-f1e9-497e-ba6d-66b64af6f699")
 		)
 		(pin "9"
-			(uuid "c371bf91-bf93-4b73-82e0-84b7b57bce48")
+			(uuid "cfc9920d-17be-4600-8d12-4c250877460c")
 		)
 		(pin "10"
-			(uuid "437516e1-acc7-4e39-8bec-f778d93fdeda")
+			(uuid "5ed02457-ec29-41db-a453-7c21fa23b7ee")
 		)
 		(pin "11"
-			(uuid "d058d7a7-5dbb-47dd-913c-27e792fa4fa4")
+			(uuid "829d86d3-5726-44eb-83bb-ddaaadee51a2")
 		)
 		(pin "12"
-			(uuid "5be1ea3a-81bc-4e83-a8fe-45a08ab740dd")
+			(uuid "8c1636c3-585c-4161-bf1e-91656495c32b")
 		)
 		(pin "13"
-			(uuid "4af0157d-5881-4d8f-adfa-ddc3bafc70d0")
+			(uuid "630c190f-9770-4ce0-a929-af9f2eb77fea")
 		)
 		(pin "14"
-			(uuid "b90dc337-87fd-418c-bcd7-914821bbef8e")
+			(uuid "9e7cfb54-c17a-4354-a374-1c6c97176379")
 		)
 		(pin "15"
-			(uuid "fb777cc5-e645-4f20-aabb-ddeeb9926033")
+			(uuid "62ea3afb-9e27-4015-a7fc-3b225e59383d")
 		)
 		(pin "16"
-			(uuid "946bdc22-affc-4f41-82f9-e1783200da13")
+			(uuid "a822036e-1991-41cd-a1f6-e347da9133e8")
 		)
 		(pin "3"
-			(uuid "c9018c1e-58f0-4bac-994d-fcd56845e99d")
+			(uuid "373ae2ae-d17f-4798-ad72-de89dba06579")
 		)
 		(pin "4"
-			(uuid "9b892a25-0f1e-48e7-8983-73db25062a38")
+			(uuid "020b8387-bd1c-4fb5-94af-26a6036c852c")
 		)
 		(pin "5"
-			(uuid "48642282-d0af-4570-852c-ab433a4b4f77")
+			(uuid "beae7647-ad4a-4b0d-82ac-a2791477786f")
 		)
 		(pin "6"
-			(uuid "0edcfb4d-dfbf-44a6-b077-98e0f7816b2c")
+			(uuid "02dcb24a-d00f-4a0b-adf9-918d653b4b5f")
 		)
 		(pin "7"
-			(uuid "9bc90cf8-4599-4d88-a9ff-28231bc72227")
+			(uuid "c5455f0c-258c-40c8-a09e-2ca884614dd1")
 		)
 		(pin "1"
-			(uuid "c6f41c66-ded8-4ccb-a6cf-a8a600a6077f")
+			(uuid "fe19c8bb-f87c-400b-a356-fb9d2b713bb6")
 		)
 		(pin "37"
-			(uuid "9c055263-1242-44aa-a923-cd760aed8f1e")
+			(uuid "e8362d1e-2ff3-4a8b-95a5-ebd07d19ca4a")
 		)
 		(pin "36"
-			(uuid "c9e4eedf-c811-4fa1-9fb2-0a77451e5718")
+			(uuid "30101219-7830-4ac8-b075-a6401083c404")
 		)
 		(pin "35"
-			(uuid "c9e2d537-f51d-4282-bf3a-cf9e91d781ae")
+			(uuid "3795f60f-6d9c-4c14-a50f-8dbdb73163c2")
 		)
 		(pin "34"
-			(uuid "8fe19902-83b2-4b6a-8dd1-58e4bbf15ad2")
+			(uuid "ccbd92e1-6433-400e-b22c-d4713392ae65")
 		)
 		(pin "33"
-			(uuid "e0e65bc4-4473-4168-ba68-1722963b67ff")
+			(uuid "b1c6787a-2d51-4a57-8383-49fddfc319b0")
 		)
 		(pin "38"
-			(uuid "0bdd3029-9200-40cd-ab69-773f0aef555f")
+			(uuid "fd0ae9a0-f2d4-4c80-949c-f740046c4164")
 		)
 		(pin "31"
-			(uuid "4ec5f1b5-6863-4e91-8f73-8db1bdd32601")
+			(uuid "83c63897-a644-415e-ac2e-5f76d869db80")
 		)
 		(pin "30"
-			(uuid "d5fb6991-2a2e-43fd-9f6d-33f1615d19fe")
+			(uuid "05d01a38-b172-457d-be82-08b7a73a5f24")
 		)
 		(pin "29"
-			(uuid "33d7fa5c-c054-4bc0-8fba-954b188757ec")
+			(uuid "c829530a-e150-4c21-9cc2-33204a3b5e21")
 		)
 		(pin "26"
-			(uuid "a4f279b2-4a61-4d05-af6f-7409c7a47897")
+			(uuid "c28d0f1c-8d35-45ce-8c48-da8e3445841f")
 		)
 		(pin "25"
-			(uuid "e25ec2e3-e1c4-4daf-ae11-82d840770b80")
+			(uuid "904c0f23-207b-4ae6-baab-2e5fb2e91aee")
 		)
 		(pin "24"
-			(uuid "c6c30663-d3c2-470e-b0ac-84b09408a69e")
+			(uuid "ca96de74-6bd2-4c67-ae0d-36cc8326ddb9")
 		)
 		(pin "23"
-			(uuid "c375b284-5452-49ee-b0f7-1f437f220942")
+			(uuid "26ddc64d-b36d-47bc-a597-2bcfae999d15")
 		)
 		(pin "39"
-			(uuid "f3454179-c890-4e36-a3e1-dce608b7f4c0")
+			(uuid "3fdee958-11c1-43c7-ab24-b13309c61038")
 		)
 		(pin "17"
-			(uuid "1d78db01-6caf-44d1-a2a4-aa52f79ece3b")
+			(uuid "15b17c06-10b5-434d-ac19-0fc273fc82f3")
 		)
 		(pin "18"
-			(uuid "764cedca-4b3b-408c-aaa1-5863f0b775ed")
+			(uuid "bfcc8f4c-17d7-47ab-8e03-daf22b516b6b")
 		)
 		(pin "19"
-			(uuid "cd210180-cd83-496b-8043-e840d1c94ed1")
+			(uuid "3db7ef81-fc70-46aa-a8fe-70e04c7c5f72")
 		)
 		(pin "20"
-			(uuid "40395649-ff5b-45af-b6c7-54a9c1a022d2")
+			(uuid "f164928e-2d1e-4f9b-a779-cf2cb1bfc93e")
 		)
 		(pin "21"
-			(uuid "347f13de-4bb2-4946-863e-eb11938f038b")
+			(uuid "31ca5156-8bac-4ff6-bfe1-36044d8fddaa")
 		)
 		(pin "22"
-			(uuid "ae799ebd-e2e8-4016-bc50-255e470f5881")
+			(uuid "48a2ce41-5f81-497f-8287-bec978270806")
 		)
 		(pin "27"
-			(uuid "690bf2b0-e83f-452d-92e2-cf8bb2eadd83")
+			(uuid "be8cf336-d752-4872-9dd7-a6366ca9956b")
 		)
 		(pin "28"
-			(uuid "499c4504-e333-4826-861d-1a2280133682")
+			(uuid "1a4657ff-4567-4b93-9001-ba146a2e905c")
 		)
 		(pin "32"
-			(uuid "183b2b44-0a72-41fd-b0f6-4fdcf962e1d4")
+			(uuid "fd355711-115e-4384-ad0f-af128a928e5f")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6005,7 +6005,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8de89a09-639c-469a-8387-48205f9106c1")
+		(uuid "76a110de-196b-55f0-aeca-11e0e4b8ab6c")
 		(property "Reference" "#PWR001"
 			(at 185.42 111.76 0)
 			(effects
@@ -6042,7 +6042,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "a509f9b9-c3f3-46d4-b714-1395dafc0f17")
+			(uuid "8e3d1b8c-ecc8-4c68-b48c-31dd3e918bc8")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6061,7 +6061,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4233d9fb-ac51-4280-ad12-33b1a412b540")
+		(uuid "c4432493-e0e8-576c-a604-e36e3097357c")
 		(property "Reference" "#PWR002"
 			(at 185.42 144.78 0)
 			(effects
@@ -6099,7 +6099,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "dc9ba9c6-d50c-4f21-8217-1eda858a0e45")
+			(uuid "adcef84b-56dc-413a-8a83-05ec4436b3fb")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6118,7 +6118,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9359a588-a008-4575-984e-1e8a05d2af92")
+		(uuid "1088adb2-2cfc-5c89-a157-02e95a1cc41c")
 		(property "Reference" "#PWR003"
 			(at 215.9 111.76 0)
 			(effects
@@ -6156,7 +6156,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "c2ca5e98-7b94-4aa3-8681-b999b7326a72")
+			(uuid "53ff0650-9c8e-454c-9e79-30559c2fe992")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6175,7 +6175,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a0547e11-d656-4f81-84e3-d10a884b8c23")
+		(uuid "a23d5d99-af03-5018-bd1b-27f40ab2a513")
 		(property "Reference" "#PWR004"
 			(at 215.9 127 0)
 			(effects
@@ -6213,7 +6213,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "f558c902-94e5-46ff-bf92-191eca4df48c")
+			(uuid "8957727e-1f2a-405e-b02a-3f77cdf00198")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6233,7 +6233,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "cab8ff95-4bf7-4823-bbb1-3372d030a79a")
+		(uuid "5a3eac87-9444-51c6-92a6-db4f6e43ef9d")
 		(property "Reference" "SW1"
 			(at 40.64 119.38 0)
 			(effects
@@ -6269,19 +6269,19 @@
 			)
 		)
 		(pin "A"
-			(uuid "c4f681b4-f3df-4f09-939c-2e5edcbfb401")
+			(uuid "f83b0d1e-8127-43eb-8b98-2aba66f6a6c6")
 		)
 		(pin "C"
-			(uuid "e1731a75-8264-440b-9ebb-d8f0308d4cdb")
+			(uuid "62190888-fd7a-49a1-a5ef-731dbfcb4870")
 		)
 		(pin "B"
-			(uuid "ae1adc28-9439-44a2-9573-97c20440ae45")
+			(uuid "8044a9c9-e54f-44c7-a0bb-428969b646c8")
 		)
 		(pin "S1"
-			(uuid "26c52997-b336-4234-a118-63a141771657")
+			(uuid "f1548497-0717-4370-98aa-83212e234684")
 		)
 		(pin "S2"
-			(uuid "161c1e2c-edbf-4658-8f84-3f82ec5a1936")
+			(uuid "7da5ed35-1c01-411c-aac0-b4c9136f8624")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6300,7 +6300,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "858703e7-8741-48b7-ace2-4f45fe83bb38")
+		(uuid "8d64d248-50f9-5518-b5d4-67e651702248")
 		(property "Reference" "#PWR005"
 			(at 48.26 129.54 0)
 			(effects
@@ -6338,7 +6338,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "5f6725bb-8924-4301-a80b-2990c0334e78")
+			(uuid "9d2e2c9c-060a-4142-be73-e627cb41b9c1")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6357,7 +6357,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "200a4ef8-39c5-4a61-8060-317f531e2582")
+		(uuid "62274b1d-9ea8-5995-98d2-d02157c17413")
 		(property "Reference" "#PWR006"
 			(at 33.02 132.08 0)
 			(effects
@@ -6395,7 +6395,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "d3c36476-0c16-42bc-a7fe-dbd4ed18958c")
+			(uuid "12fae334-01c3-4674-86f3-c80f4a56fc0e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6414,7 +6414,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3a394156-64b0-4015-aba5-1a77f2889747")
+		(uuid "b7030d89-27c0-5b35-a745-e91a78b0cb25")
 		(property "Reference" "R10"
 			(at 97.79 100.33 0)
 			(effects
@@ -6452,10 +6452,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "944279a4-698b-4d3e-b67f-3c4e074f797a")
+			(uuid "e9366b43-aef9-4a98-ad39-6a922070bb56")
 		)
 		(pin "2"
-			(uuid "3dea1e75-749a-48f0-983c-16b8bcc0414c")
+			(uuid "e1bff179-56c4-4219-8c23-2f51c1248289")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6474,7 +6474,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a06998cf-9308-499e-b34a-196812e88c22")
+		(uuid "e1fbcba9-daec-5271-aebf-36b1145cf566")
 		(property "Reference" "#PWR007"
 			(at 93.98 96.52 0)
 			(effects
@@ -6512,7 +6512,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "f77d8245-1ed2-4536-abcc-6c2b63f4cfe3")
+			(uuid "5feaa5c2-6f48-406a-b2f5-cd760f87c230")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6531,7 +6531,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c18baa01-f819-4834-99e3-0373f94620e0")
+		(uuid "fbd7600e-f649-502f-ad15-f6335baf2565")
 		(property "Reference" "C6"
 			(at 110.49 110.49 0)
 			(effects
@@ -6569,10 +6569,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "2c208ea2-4e29-462a-8a39-819c9eedfbe9")
+			(uuid "5f1dc28d-3dda-4936-864b-1cc4052ba4a8")
 		)
 		(pin "2"
-			(uuid "ecfb7375-3474-4c7b-b3c0-7ffce03a7b80")
+			(uuid "7184a6b6-9558-4bb5-960e-afce0c810058")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6591,7 +6591,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "62dfff7f-9a81-41e6-a5b7-e586a37dcdcd")
+		(uuid "f9015109-3e14-54cc-ab02-c8e4d9186221")
 		(property "Reference" "#PWR008"
 			(at 106.68 116.84 0)
 			(effects
@@ -6629,7 +6629,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "efac81dd-c52a-42e2-9600-11016f19b2ec")
+			(uuid "799b4f6c-b61a-4b65-8894-ec140080ee1f")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6648,7 +6648,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0bd5f742-f76f-4c20-8af1-1bf76f357545")
+		(uuid "98f2767b-e0cf-5f6f-b205-c2fa229534f5")
 		(property "Reference" "R11"
 			(at 102.87 123.19 0)
 			(effects
@@ -6686,10 +6686,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "f1b9f613-1bc6-43bb-b039-565b447c74b6")
+			(uuid "293cbbf4-32ef-4f0b-8e33-4d7967fc7d0b")
 		)
 		(pin "2"
-			(uuid "5a2f6c36-e92d-4815-b4b8-b6a14c22d479")
+			(uuid "f04ea474-82a1-42b8-bd42-a96777da3793")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6708,7 +6708,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8df4018a-429b-445c-a648-c2cbbaa08088")
+		(uuid "f5a7425e-dc6b-58df-8798-9e3dfda2c183")
 		(property "Reference" "#PWR009"
 			(at 99.06 119.38 0)
 			(effects
@@ -6746,7 +6746,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "851b0fc3-4085-4d89-a711-846269f51e75")
+			(uuid "6c189bb3-7b1f-463a-a503-7d5f0f793d78")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6765,7 +6765,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2f53092a-2360-4158-bb26-74f728b59ed2")
+		(uuid "7070e076-0e05-5780-8662-65646555054a")
 		(property "Reference" "C7"
 			(at 115.57 133.35 0)
 			(effects
@@ -6803,10 +6803,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "c9a67988-deae-4cb4-9940-e515516b41b8")
+			(uuid "9263b35e-52b5-4248-9166-c2b3f9869cda")
 		)
 		(pin "2"
-			(uuid "45901f07-760f-40a0-807a-378af35f2ffa")
+			(uuid "94990422-7439-49b1-b961-58d3756fab8b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6825,7 +6825,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fa9a0d36-7df7-445c-9537-8add76779dc3")
+		(uuid "f7f380b1-e801-5389-ab4f-cf4544c2bf33")
 		(property "Reference" "#PWR010"
 			(at 111.76 139.7 0)
 			(effects
@@ -6863,7 +6863,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "55bed57a-31b3-4711-9ac2-3fa2df8f9b72")
+			(uuid "c38793c0-5f75-4f37-bb67-acafc469ead9")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6882,7 +6882,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "533ef99d-f545-43ab-a3b2-bd44eb78c7c8")
+		(uuid "2cac1d1a-7fe5-5ce9-ab64-5b5d95d4a539")
 		(property "Reference" "R12"
 			(at 97.79 146.05 0)
 			(effects
@@ -6920,10 +6920,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "9ec631f3-8377-4c58-9ada-e176823433ed")
+			(uuid "713cc029-8e9d-4f9f-b0d1-6d7cf65804b3")
 		)
 		(pin "2"
-			(uuid "f9df8cea-92c5-4532-a6b8-e257bd5a329d")
+			(uuid "b2ff8129-0780-4b71-890c-55b15d5396f2")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6942,7 +6942,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c68390ed-12d3-41f4-8f03-8c95cee2903a")
+		(uuid "90bbb359-fdfa-5aee-afb1-1465f2fb5968")
 		(property "Reference" "#PWR011"
 			(at 93.98 142.24 0)
 			(effects
@@ -6980,7 +6980,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "3758e106-4424-425b-8e9b-6bc4684b04e0")
+			(uuid "2bc10aa0-5165-4388-8dd0-d04f169998f5")
 		)
 		(instances
 			(project "esp-iradio"
@@ -6999,7 +6999,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d0c8a5d2-e45b-4a56-9592-b409f3c4b6f6")
+		(uuid "8d85a0b6-450f-5442-8307-bae93dfa41b1")
 		(property "Reference" "C8"
 			(at 110.49 156.21 0)
 			(effects
@@ -7037,10 +7037,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "8bcadc32-2b14-4427-bad3-6226a4bc7564")
+			(uuid "e25a38c5-dabd-4ae1-ab95-680d0ae87440")
 		)
 		(pin "2"
-			(uuid "db23f286-fd9e-411f-b7f7-74455db0be31")
+			(uuid "5f313659-afca-4891-a23f-99a7bdfbb4d6")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7059,7 +7059,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0852c39f-b4e4-4822-8abd-d701c801cee4")
+		(uuid "7a3b29be-d58a-5a1f-9851-1c0421b5357d")
 		(property "Reference" "#PWR012"
 			(at 106.68 162.56 0)
 			(effects
@@ -7097,7 +7097,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "deb20587-178c-4c4a-8a3a-78466c6c5f5c")
+			(uuid "92bd1c7f-4836-464f-9965-0611a43f2ef8")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7113,10 +7113,10 @@
 		(at 345.44 63.5 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "eb9c3103-8d6a-429c-8ab9-ddb0cb8dffee")
+		(uuid "f921872d-71ce-52e2-9a6e-737f548503e5")
 		(property "Reference" "J3"
 			(at 335.28 35.56 0)
 			(effects
@@ -7154,40 +7154,40 @@
 			)
 		)
 		(pin "1"
-			(uuid "464949f7-e485-42d2-86fc-5690298ed3e6")
+			(uuid "dfe41bff-9594-4a20-8d22-1f89ff81f969")
 		)
 		(pin "2"
-			(uuid "a2299de2-ccaf-4cc9-b32b-f2cb2bb620f2")
+			(uuid "012e39ba-d755-437a-a0e2-4a852e158109")
 		)
 		(pin "3"
-			(uuid "eeea64b9-69a4-4c9b-89e6-806535af6451")
+			(uuid "1546b2e3-c4da-4fdf-a69a-2f84bf1e4c48")
 		)
 		(pin "4"
-			(uuid "436cb18c-94b9-48bb-9aa1-877d9eb8efd0")
+			(uuid "3589aedc-ba70-4a79-9162-60842ce5f862")
 		)
 		(pin "5"
-			(uuid "1ef9b605-7d5c-496a-8946-c76b4f2b5ada")
+			(uuid "6ce37a73-9ca8-4e30-bba0-9ede56314f90")
 		)
 		(pin "6"
-			(uuid "0e74df4a-6cff-4941-be71-1cd89e928254")
+			(uuid "9b420e6f-79a7-40f1-ac29-64fe89dd76e9")
 		)
 		(pin "7"
-			(uuid "c84f413c-4f14-4d25-ac40-bffb7a86556d")
+			(uuid "0a6a7cc8-1977-434d-87e7-68f3ee177dea")
 		)
 		(pin "8"
-			(uuid "25188abb-a703-42b5-8d13-7c49494b6525")
+			(uuid "7ecd29a9-9699-4066-bdb3-2624b2ab873f")
 		)
 		(pin "9"
-			(uuid "9a55cc69-32fe-4947-a9ee-d0e8c711c7fc")
+			(uuid "8dad77bf-7506-45a1-8ea7-0ef8a4f31d41")
 		)
 		(pin "10"
-			(uuid "53948072-1614-4f15-a73f-7ba4f606972b")
+			(uuid "0866e4c9-c482-48bf-9c2c-03c71bce875a")
 		)
 		(pin "11"
-			(uuid "46ecb535-6673-4c72-9ed2-75d65f0c6e0e")
+			(uuid "43100986-2f6b-42fe-bad1-1492df4fefbf")
 		)
 		(pin "12"
-			(uuid "e8420493-2557-4993-b568-79b14b384586")
+			(uuid "d8df14cf-eb87-4252-9597-0cd73b08984b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7206,7 +7206,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8665bbb9-b675-403c-b800-c8e5043da535")
+		(uuid "e9a23826-2862-5b55-9391-80bb7243c0ee")
 		(property "Reference" "#PWR013"
 			(at 340.36 50.8 0)
 			(effects
@@ -7244,7 +7244,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "65548c33-97b5-4557-865c-e6375acf3132")
+			(uuid "c8add2cb-a0f9-443f-9248-cd0df58ed66c")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7263,7 +7263,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0718aa6f-1241-4392-9d08-f62682a26592")
+		(uuid "531211b7-3843-5183-a851-8c34dc1737d1")
 		(property "Reference" "#PWR014"
 			(at 340.36 60.96 0)
 			(effects
@@ -7301,7 +7301,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "adde65a8-c2c6-41f5-b91d-b291f101f8dd")
+			(uuid "0d769f2d-69c9-420d-b421-04da4cde252e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7320,7 +7320,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "49c95098-b2b2-4e47-b9fc-1f7bf55f98c0")
+		(uuid "3aa1269c-4b92-5ca7-9318-ea8055219f6b")
 		(property "Reference" "#PWR015"
 			(at 340.36 63.5 0)
 			(effects
@@ -7358,7 +7358,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "97c969f8-2ecc-40bb-9bc9-55af1c9444b0")
+			(uuid "15781c72-36fa-4ebc-8438-3cc0b1f2f99b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7377,7 +7377,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ba88dcae-a455-4e78-9a56-6cf9c8491eb6")
+		(uuid "41c0b7ee-603e-5e6f-9d30-8766223557a7")
 		(property "Reference" "#PWR016"
 			(at 340.36 78.74 0)
 			(effects
@@ -7415,7 +7415,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "21b7e702-d645-4177-b5b1-c94eebf0f31d")
+			(uuid "7131de2b-0501-4768-b0ae-e6e6bd340db6")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7435,7 +7435,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6f4b5b31-de41-46de-9664-f949d202e815")
+		(uuid "853ec2c7-15ea-5e7b-b89c-66b72d6e0e6f")
 		(property "Reference" "#PWR017"
 			(at 332.74 58.42 0)
 			(effects
@@ -7474,7 +7474,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "a092e9c6-12a6-4817-9d85-55945ed89474")
+			(uuid "fe7d96ce-e4e4-4ece-870b-5531bc6ab133")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7493,7 +7493,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a96aa7fc-af58-44d4-b719-9494e2718cb6")
+		(uuid "dae76f83-10ac-5be3-b53c-74443bbe4c72")
 		(property "Reference" "Q1"
 			(at 314.96 50.8 0)
 			(effects
@@ -7540,13 +7540,13 @@
 			)
 		)
 		(pin "1"
-			(uuid "6e6123f2-e330-4d4d-bb12-490e6358b82d")
+			(uuid "66cb86bb-5a4f-4d75-afe1-df0436c24606")
 		)
 		(pin "3"
-			(uuid "a27dd360-105e-40ef-90b6-fa6f4d86c3a5")
+			(uuid "a3e99cbb-c077-4abe-be18-b70e21947b8d")
 		)
 		(pin "2"
-			(uuid "85a12259-e550-4f0b-bff1-788df23802fd")
+			(uuid "ba96e6cf-3a6d-42e2-9a90-204f41a50428")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7565,7 +7565,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c4cc92b4-6654-46e8-bf2d-726117440cc2")
+		(uuid "4251d3d1-af32-5d8a-ab0f-da3041134258")
 		(property "Reference" "R22"
 			(at 322.58 39.37 90)
 			(effects
@@ -7601,10 +7601,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "61e50b48-2550-4910-837c-69a1bf0876a1")
+			(uuid "18d7d71c-5944-46d1-aa93-ce4be890a718")
 		)
 		(pin "2"
-			(uuid "9a872b22-9eec-4b87-bb39-af2bc68bd4ff")
+			(uuid "6b33b3bd-fed8-4d98-8024-4502a4177ea2")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7623,7 +7623,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d09d5157-eff9-4758-8157-6d21412a86c6")
+		(uuid "082d818e-8ddf-5ef4-bbbd-af751edaf43e")
 		(property "Reference" "#PWR018"
 			(at 312.42 53.34 0)
 			(effects
@@ -7661,7 +7661,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "aa73bdaa-7b33-4e91-8edb-4566de7b32f9")
+			(uuid "9e4dc295-4653-4b44-832e-2c52396023af")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7680,7 +7680,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b27cf174-9ec3-47e3-ab59-98da3d0bd7a0")
+		(uuid "bf6dabe4-3463-53d5-906e-05fdb8b2b066")
 		(property "Reference" "R23"
 			(at 295.91 41.91 0)
 			(effects
@@ -7718,10 +7718,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "a8eed2b8-ec77-4d83-8962-86140d7560fe")
+			(uuid "73c45223-5340-47d3-9be2-6f8a05ef4bb3")
 		)
 		(pin "2"
-			(uuid "fcd61b4c-342f-4007-98df-8eb097859be0")
+			(uuid "2efd38df-e9a1-4eec-bd2c-b98bb1d41cfd")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7740,7 +7740,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9d0e4d1e-3398-4acc-b39d-39f0be3cd541")
+		(uuid "a5921d77-ccb7-5e3a-a5e2-52967d101d42")
 		(property "Reference" "#PWR019"
 			(at 299.72 38.1 0)
 			(effects
@@ -7778,7 +7778,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "0e1dea08-2bfe-4a1f-afcb-90f8194ac2da")
+			(uuid "9d9e7104-e22e-4166-a59a-66b2fc6a1d03")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7797,7 +7797,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "74949b9f-c695-4193-a976-cea9891d4078")
+		(uuid "75e30f60-d971-5355-b290-46b40c692530")
 		(property "Reference" "C5"
 			(at 369.57 64.77 0)
 			(effects
@@ -7835,10 +7835,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "1f0fbad3-d861-4aad-97f7-1896f1a32d81")
+			(uuid "90fa0a59-f1e5-4fb2-beb7-e952e2787cb7")
 		)
 		(pin "2"
-			(uuid "7046d0b7-e671-4d14-8302-292e6f0cf645")
+			(uuid "d2ace59f-6353-4c8b-8357-be86377c271e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7857,7 +7857,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c0c1a090-b13a-4f09-8203-ea0cdfbc8232")
+		(uuid "d9e41d7f-13c7-558d-a8fe-94374c3d444e")
 		(property "Reference" "#PWR020"
 			(at 365.76 60.96 0)
 			(effects
@@ -7895,7 +7895,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "785a1ca1-3506-4ff4-be2a-46e001eaea4b")
+			(uuid "ca2d41b8-0fa5-447b-90f3-15aef2e09a9b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7914,7 +7914,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4a17ba4e-c99f-4ad9-9d93-5fab9f0859d7")
+		(uuid "9bb41892-5a03-5113-b840-2fe3f5701362")
 		(property "Reference" "#PWR021"
 			(at 365.76 71.12 0)
 			(effects
@@ -7952,7 +7952,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "8a910396-deb0-4a5c-8d20-6f21ac531619")
+			(uuid "a840afa5-a176-47a9-a76a-d32b92790f1e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -7971,7 +7971,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "28c68bfc-234e-40e7-8234-3ce4b7146e2d")
+		(uuid "c0a05c69-7eaa-5761-8095-d0b94b6a1b19")
 		(property "Reference" "J4"
 			(at 368.3 114.3 0)
 			(effects
@@ -8016,43 +8016,43 @@
 			)
 		)
 		(pin "1"
-			(uuid "b6aacee9-3dcd-4df1-b2a2-b2fa02b41c04")
+			(uuid "d0c799f6-6f60-482f-8cf3-9297f29270be")
 		)
 		(pin "2"
-			(uuid "302f6189-2d2a-4ca1-8a27-fa1ebaeed01d")
+			(uuid "56263738-4208-4665-ae43-19f113622eaf")
 		)
 		(pin "3"
-			(uuid "aef46345-f8f6-413c-9c53-874c9ea832bd")
+			(uuid "3df35849-39b2-4c6f-9248-1de6511b132b")
 		)
 		(pin "4"
-			(uuid "c31a02a6-05fc-401c-b995-5ceb4eb82f00")
+			(uuid "f3ca8851-2a34-4d87-983e-6568d43ec445")
 		)
 		(pin "5"
-			(uuid "bd73e278-a201-456b-8141-e05b951ab33a")
+			(uuid "199c70c1-c2e6-4e09-afbb-389e8c0d4138")
 		)
 		(pin "6"
-			(uuid "b0fcd728-3d26-4224-a2f6-d65e2634f2bd")
+			(uuid "40ef31d7-de52-470d-8dd6-e9e4c5e9e921")
 		)
 		(pin "7"
-			(uuid "a061e661-a3ac-441f-8653-78b03053cfc0")
+			(uuid "91d30ffc-ff24-448b-8561-33d4dead6da7")
 		)
 		(pin "8"
-			(uuid "9615aead-264c-490f-9da6-8c1bb9638155")
+			(uuid "3f2a4485-3175-41e1-868d-85240c2ba1ba")
 		)
 		(pin "10"
-			(uuid "ac1480a9-264c-4c41-8eaf-05542421b4af")
+			(uuid "93662fa9-9a3a-49f7-9430-5fb10f5a645e")
 		)
 		(pin "11"
-			(uuid "cef9884a-1e9a-42ee-9a22-74836bb1954f")
+			(uuid "21a6ed16-2966-4c8c-996a-cc8e68cdf8f0")
 		)
 		(pin "12"
-			(uuid "c3f00e60-9846-4548-82ab-85c8f9bcd078")
+			(uuid "ef749850-9a6c-4bcd-ac6a-dfbef26597ac")
 		)
 		(pin "13"
-			(uuid "111c9dcd-7857-4556-b74b-d407120db2f9")
+			(uuid "b81a56a3-4419-4242-956c-538ad0cebf2c")
 		)
 		(pin "9"
-			(uuid "38d43cba-9018-4334-8144-74af97043d04")
+			(uuid "d6940471-3cfa-4c6e-aaa5-5b5ab24e8cec")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8072,7 +8072,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c2588f6e-f7c1-4dad-a24b-52c1b868b20d")
+		(uuid "ba2eefe3-a872-50ba-a8cb-dabf3e8e67be")
 		(property "Reference" "#PWR022"
 			(at 345.44 129.54 0)
 			(effects
@@ -8111,7 +8111,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "9f747abc-946f-41e4-8787-e9ded524bdb8")
+			(uuid "f2ad01ad-be58-4570-afcc-a05a2b8b9fcf")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8130,7 +8130,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0cd2246c-aeb6-440a-a0ad-e6f9ca2a6f28")
+		(uuid "a2d9dfd1-cc46-5957-a610-071d3595ef2c")
 		(property "Reference" "#PWR023"
 			(at 345.44 134.62 0)
 			(effects
@@ -8168,7 +8168,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "c0da6781-7cc8-40b5-97db-cdb95a18e334")
+			(uuid "6280cafd-11ad-425a-8f20-c62c8317bde7")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8187,7 +8187,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "49c6c4d3-2aa5-4328-a7bf-1de26d312d7d")
+		(uuid "446673cc-8f20-5872-b8e0-e0bbc3fda06c")
 		(property "Reference" "#PWR024"
 			(at 388.62 144.78 0)
 			(effects
@@ -8225,7 +8225,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "7df1f401-8443-4aab-b64b-b597fe964078")
+			(uuid "37c5d807-aee5-4751-ac58-b5797f25fff7")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8244,7 +8244,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5134b4e8-33a8-4a2f-9292-a150b9e7d65a")
+		(uuid "85978b54-4c9d-5b53-a6bb-d018429ca8cc")
 		(property "Reference" "C3"
 			(at 379.73 156.21 0)
 			(effects
@@ -8282,10 +8282,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "20909ac3-14bb-456c-b457-e46379e2903d")
+			(uuid "6af787ca-6a81-4daa-a29f-5bebd6466ead")
 		)
 		(pin "2"
-			(uuid "85fe8731-89a3-4ba6-a0a6-2472ce6bfe70")
+			(uuid "e2fc257d-a393-4030-b3a0-27f4b39550fc")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8304,7 +8304,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "26df7ffa-3b69-49d2-871d-bc345471a73a")
+		(uuid "50ca57c7-92a4-5955-9ee2-7370560df9c0")
 		(property "Reference" "C4"
 			(at 389.89 156.21 0)
 			(effects
@@ -8342,10 +8342,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "8386fadd-8cf8-4abd-8323-c75b7460f7e1")
+			(uuid "646029d4-182a-49db-8dc6-0b6b2ae9729d")
 		)
 		(pin "2"
-			(uuid "8e5c376b-8df1-4840-86e9-2fa13cc5c1bc")
+			(uuid "809b152b-a730-4701-9104-d9b832a43fc3")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8364,7 +8364,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "dfecf899-4a72-41f9-89d4-3444a6fb7370")
+		(uuid "43125eb6-6564-5f99-a96b-9019544b3173")
 		(property "Reference" "C25"
 			(at 382.27 64.77 0)
 			(effects
@@ -8402,10 +8402,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "047fa9b3-8687-436d-aada-4a37827e4d14")
+			(uuid "e40a03f0-3e47-46c6-bf21-8ef3e523208a")
 		)
 		(pin "2"
-			(uuid "e1843b06-9fa9-4742-abd4-fecf8027d9b3")
+			(uuid "bcc1c54d-aed3-4ed9-a723-8df2bff63087")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8424,7 +8424,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f6ab00b3-b384-48b9-9bc2-f82553b71ea7")
+		(uuid "eceecf4e-56e2-5162-be33-ece6e7a11918")
 		(property "Reference" "#PWR025"
 			(at 378.46 60.96 0)
 			(effects
@@ -8462,7 +8462,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "72b4fc70-2113-4ae4-ada9-c58bfed8a444")
+			(uuid "486cc104-2b1a-46b5-b091-b3feb6ec9dd2")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8481,7 +8481,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "af7d319b-df54-4998-af23-52f0f83233fa")
+		(uuid "c97c9811-44b8-509e-8070-f099ad15ba48")
 		(property "Reference" "#PWR026"
 			(at 378.46 71.12 0)
 			(effects
@@ -8519,7 +8519,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "d8cd242f-4311-41c8-85a0-fdab5a5b0656")
+			(uuid "0f27c865-4f09-458b-a320-c7a549149859")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8538,7 +8538,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a38da0e2-503a-4611-962c-da393efd9b00")
+		(uuid "685a2952-64c7-5738-843f-11c9dde5cc9e")
 		(property "Reference" "#PWR027"
 			(at 375.92 152.4 0)
 			(effects
@@ -8576,7 +8576,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "a10c6f91-c171-401c-8910-bf9177ac0974")
+			(uuid "b1e1b68b-e22d-4559-bf2d-b3be7e9c07e1")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8595,7 +8595,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "71e38125-b220-4cbe-b924-407736f77cc0")
+		(uuid "5bf66a62-3293-570d-88de-199685347e11")
 		(property "Reference" "#PWR028"
 			(at 375.92 162.56 0)
 			(effects
@@ -8633,7 +8633,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "8e76919f-141c-40ae-9622-640f234703a6")
+			(uuid "3c32f412-c995-433e-9ba6-8b3317766ea8")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8652,7 +8652,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "afca2c27-695c-4f51-b02d-abee167065bf")
+		(uuid "d2d362be-c957-5c81-acb7-34ac5ca66f20")
 		(property "Reference" "#PWR029"
 			(at 386.08 152.4 0)
 			(effects
@@ -8690,7 +8690,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "61bd95c6-e71c-41fe-b974-42d0ac189479")
+			(uuid "c1b32b2f-fea4-4f6b-bb96-2f4e009b567b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8709,7 +8709,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "bb47fc8a-384e-4c2e-a1c9-68929c2167a7")
+		(uuid "f678471b-778e-5dbf-bba4-e03153d0f395")
 		(property "Reference" "#PWR030"
 			(at 386.08 162.56 0)
 			(effects
@@ -8747,7 +8747,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "9158927a-dd93-4f14-91c9-1cd5f594d24e")
+			(uuid "7ef67575-abe1-4ab8-811f-f8175a4ea93e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8766,7 +8766,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d67b0248-ffd7-41d6-a3c2-149c90acc205")
+		(uuid "6bfcb378-8be7-5bd0-a7b7-ca209d5a91e3")
 		(property "Reference" "R8"
 			(at 309.88 128.27 90)
 			(effects
@@ -8802,10 +8802,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "b9809182-fed3-45fc-b77f-cec3551242a2")
+			(uuid "6f561aa1-8c49-49fe-ae3c-eb355a9be78c")
 		)
 		(pin "2"
-			(uuid "26e7753a-4f97-44ca-9a8b-77a9e0560c11")
+			(uuid "4696dd91-f06a-4bf1-8797-794a91a1d6a7")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8821,10 +8821,10 @@
 		(at 299.72 132.08 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "67cadda8-3813-4214-a419-c123fd86ff0b")
+		(uuid "11e7c5ee-1cc5-50b8-954d-d374483cb66e")
 		(property "Reference" "TP5"
 			(at 298.45 128.27 0)
 			(effects
@@ -8863,7 +8863,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "315b839e-6f22-403a-8028-573241c3fd09")
+			(uuid "e3da6a84-f687-4d7f-a215-00cd31e3c049")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8882,7 +8882,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "76026d98-4521-40c1-b3c8-4d9882fe3aee")
+		(uuid "e845bab5-711f-5f2a-a1b4-256219680393")
 		(property "Reference" "R9"
 			(at 309.88 110.49 90)
 			(effects
@@ -8918,10 +8918,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "8eb977ab-f612-4607-be3f-b3ef1a638cba")
+			(uuid "44348b3a-ec38-4829-aaac-d3b55e658313")
 		)
 		(pin "2"
-			(uuid "aa70a2c1-3668-433a-a892-ffe4abe525f1")
+			(uuid "f4052183-2068-43ca-b4fc-2743724ca568")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8940,7 +8940,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "387c448c-12ad-4e85-b8b8-e2090553620a")
+		(uuid "aec01215-7d8e-5a9e-8938-0e52fb332c64")
 		(property "Reference" "R3"
 			(at 307.34 82.55 90)
 			(effects
@@ -8976,10 +8976,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "604eeb8a-f53f-4dfb-bf09-f32790f92974")
+			(uuid "826b7000-12a3-4511-bc2a-73ae3943da40")
 		)
 		(pin "2"
-			(uuid "907522da-5714-4b78-93be-f834535d7b7d")
+			(uuid "a533eeb7-ff3f-41a2-b00f-bc5420b9badf")
 		)
 		(instances
 			(project "esp-iradio"
@@ -8999,7 +8999,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "32c1a780-a5a4-43e0-87e7-94b8b661b957")
+		(uuid "6a4ae166-db59-5a41-9180-4cdec6cfcd68")
 		(property "Reference" "#PWR031"
 			(at 312.42 86.36 0)
 			(effects
@@ -9038,7 +9038,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "007138a0-cfaf-40c3-b4db-67165387371f")
+			(uuid "1f78fb34-01bd-47ed-8bdc-d69c063ee85c")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9057,7 +9057,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9c014f8d-014a-4d35-b468-cfcbe6702b6f")
+		(uuid "4e768675-7588-5380-ada4-c15d013316d7")
 		(property "Reference" "R5"
 			(at 328.93 144.78 0)
 			(effects
@@ -9095,10 +9095,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "bc44b5f1-47be-4bf2-be09-c3582a93dd97")
+			(uuid "e8b3fab1-c284-4c2f-96b5-69136861b907")
 		)
 		(pin "2"
-			(uuid "98dafc26-adf4-46a5-9082-ecf2bc143fc7")
+			(uuid "84b93fa2-a0ee-4cfd-b188-ccd18c7bb20d")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9117,7 +9117,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4cbbb7e0-8627-4712-adea-80e6907bc996")
+		(uuid "7f2a05b8-70de-5419-8dae-cbfa5dbe1b36")
 		(property "Reference" "#PWR032"
 			(at 332.74 147.32 0)
 			(effects
@@ -9155,7 +9155,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "e12ec92b-b268-4190-bcbf-643173a07ca0")
+			(uuid "c07703db-9036-45a4-ac43-cba54806e427")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9174,7 +9174,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "1e87cab1-e080-4ab0-b9b8-3a070a9ee9e9")
+		(uuid "0f321eb7-4091-5b64-8dcc-f8b2843f1be9")
 		(property "Reference" "R4"
 			(at 331.47 118.11 0)
 			(effects
@@ -9212,10 +9212,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "46cae849-c53e-46b0-9ab0-65c569aee8e4")
+			(uuid "2322f041-5aee-406f-a4ca-6bbe7820764f")
 		)
 		(pin "2"
-			(uuid "a75ce8e7-5bea-4ed4-b58f-a6785888e3ee")
+			(uuid "c3c920e0-65a4-4f67-bb88-cbd7138c7135")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9234,7 +9234,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "39a68595-d2c2-4780-b965-d0ebccf9fe5a")
+		(uuid "f87d277d-0c4f-5dab-a0ec-1e7ddc8d0975")
 		(property "Reference" "#PWR033"
 			(at 335.28 114.3 0)
 			(effects
@@ -9272,7 +9272,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "4a929d7c-6316-4139-ad91-cdc2f631e2d1")
+			(uuid "4e06950e-10a4-4cc5-98d1-1f6db53cf068")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9291,7 +9291,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9848f782-e543-4016-87b0-c17a46649b01")
+		(uuid "3a3bdb70-a217-57ef-97b7-bd50eaace8f3")
 		(property "Reference" "R6"
 			(at 344.17 143.51 0)
 			(effects
@@ -9329,10 +9329,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "94cfa32e-45ef-462f-9a3e-1412792d1513")
+			(uuid "385e45d5-0960-4d8f-80cc-ea99e6a53023")
 		)
 		(pin "2"
-			(uuid "e5a9b0a7-09c0-44f4-82f0-29e443cdf00d")
+			(uuid "15b03351-0579-4500-bec7-a0324cdb5a5f")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9351,7 +9351,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "48d63d5a-4707-4b02-8116-7f9661adc6ab")
+		(uuid "8bfef298-cfe2-5013-b9a4-407468a4c12b")
 		(property "Reference" "#PWR034"
 			(at 340.36 149.86 0)
 			(effects
@@ -9389,7 +9389,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "65f74cb3-ae39-4758-836a-5273a54cd612")
+			(uuid "a7b08592-394f-4598-ba7d-13e0fed25391")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9408,7 +9408,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8f88e303-de53-45c3-913b-d699f5e6f9d5")
+		(uuid "81ef4b89-9fc8-5bb7-842e-5dcc0ba46136")
 		(property "Reference" "R7"
 			(at 344.17 115.57 0)
 			(effects
@@ -9446,10 +9446,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "e5b14988-575b-47c2-a5e8-39fa8e94d0c8")
+			(uuid "312bc1b4-adb2-4ee9-9eaa-353fc8f39d5f")
 		)
 		(pin "2"
-			(uuid "37308587-468d-4930-a27b-038a71ddc1a7")
+			(uuid "f0436b8a-c476-413f-9602-d6e6aab87238")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9468,7 +9468,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2a4ca384-3f78-4e62-8729-953b236832ea")
+		(uuid "6a1e1057-f81c-5275-b899-51124a3e9120")
 		(property "Reference" "#PWR035"
 			(at 340.36 111.76 0)
 			(effects
@@ -9506,7 +9506,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "28806fe0-3b1b-497d-a360-bbe24e1d1088")
+			(uuid "732bf126-2003-4148-83f7-d1ce121c9aef")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9525,7 +9525,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e5127049-15e9-4f06-8680-954cfd12d638")
+		(uuid "a2910c29-50d9-5382-a7a8-8e887ed5895f")
 		(property "Reference" "U1"
 			(at 195.58 193.04 0)
 			(effects
@@ -9572,64 +9572,64 @@
 			)
 		)
 		(pin "15"
-			(uuid "cb4d87f8-7ad3-4ce6-8fc1-7c77faa41296")
+			(uuid "db87d82f-63c5-4d84-b85c-4b8c3ec8cf41")
 		)
 		(pin "14"
-			(uuid "7da82709-b6f3-444d-86f8-ebf56fb6582f")
+			(uuid "308027b0-5312-4cb0-abc8-6510b2ded27f")
 		)
 		(pin "13"
-			(uuid "b4ba9872-9c22-4bf5-bef7-339f621d5065")
+			(uuid "ecd71b97-3d70-48fb-a755-aded5ec9289e")
 		)
 		(pin "12"
-			(uuid "7a4fdb59-bb4b-495d-9249-543ef70c0b82")
+			(uuid "48ebd678-1c3a-4404-9430-0b53e74f0324")
 		)
 		(pin "11"
-			(uuid "23ace0de-1be3-4238-b758-aa2093f51ed6")
+			(uuid "efe3049c-b226-4652-8b43-1e9a2f51cc21")
 		)
 		(pin "10"
-			(uuid "8dc185d0-7876-4214-8c77-e9d24b482229")
+			(uuid "3a54f5d8-a930-46ec-a65d-ab75af0b60d7")
 		)
 		(pin "17"
-			(uuid "c815aa66-b5e6-4112-979f-1d95916e054a")
+			(uuid "72638fea-469d-447e-a18f-7a10830a3f03")
 		)
 		(pin "16"
-			(uuid "6e000ffe-ef7a-4718-b2b2-ab6cc57be5e3")
+			(uuid "2eb441e9-afbb-4e6f-b60b-f258698971dc")
 		)
 		(pin "1"
-			(uuid "af249cbe-b2ac-4819-81c1-d87bf4551332")
+			(uuid "ce67ce1a-75c0-4325-bc65-13ab2c3dfb49")
 		)
 		(pin "3"
-			(uuid "182b7bdb-d777-49d2-bed1-233685549d4d")
+			(uuid "1a321523-2fad-4e07-ad9a-e67ffa7eeb0c")
 		)
 		(pin "20"
-			(uuid "571308cb-b1ad-4034-9b43-d047514d28ce")
+			(uuid "7f81c9df-1344-4530-bb47-06af38da2701")
 		)
 		(pin "19"
-			(uuid "70508a76-9219-4c21-aa8b-fc82e5bbf64e")
+			(uuid "b2f7e0f3-a4ad-411c-926d-987869ef3029")
 		)
 		(pin "8"
-			(uuid "e2237178-b22f-4a88-bf8a-1762f4b7af67")
+			(uuid "57ba3351-5672-4555-8e6f-5ccad7fbce1a")
 		)
 		(pin "9"
-			(uuid "32f7a89b-8e10-4357-a536-b802146648c2")
+			(uuid "01d00933-f4fa-422b-95f9-26c806cdef24")
 		)
 		(pin "6"
-			(uuid "bcf5c11a-5b82-499c-91d2-fa765d56a78b")
+			(uuid "d1ae050a-54e3-44d5-b04b-25104e972826")
 		)
 		(pin "7"
-			(uuid "a2443913-4c54-4f3c-a5a1-8969a3bf703b")
+			(uuid "2f8ba501-ba86-4b6a-9107-9ee77cb91291")
 		)
 		(pin "2"
-			(uuid "7b39ada8-c13c-4e68-9a3f-8df555b4dbfb")
+			(uuid "b39d7805-7d5f-4988-a3a6-74745fcdefbf")
 		)
 		(pin "4"
-			(uuid "1012f216-a050-4b8f-85bd-bf10ccfa0651")
+			(uuid "e1040b35-58b6-4e74-a7a2-2e9e55022219")
 		)
 		(pin "18"
-			(uuid "fe6e1581-031e-4444-ac76-b904216730b6")
+			(uuid "1c838ab9-0161-460a-92f8-ab5b869217a7")
 		)
 		(pin "5"
-			(uuid "deaee37f-5376-498f-8c26-baa01b9ca2ee")
+			(uuid "ffd25126-8593-43b7-a8d7-bfa5057396a8")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9645,10 +9645,10 @@
 		(at 170.18 165.1 90)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "a623209a-191a-44af-b3aa-8af34076e956")
+		(uuid "8e9e4fff-3691-58ed-83ad-95055f68bd01")
 		(property "Reference" "TP6"
 			(at 171.45 161.29 0)
 			(effects
@@ -9687,7 +9687,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "28e758b8-6543-46e8-8bc1-e112fcd306a5")
+			(uuid "4425d5aa-b700-4b25-8dce-9a9b3d3f1069")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9703,10 +9703,10 @@
 		(at 175.26 172.72 90)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "bba8dc40-9006-49c1-ad28-b3f9ec0b7ec3")
+		(uuid "a2370123-698b-5806-9bba-f50537febd68")
 		(property "Reference" "TP7"
 			(at 176.53 168.91 0)
 			(effects
@@ -9745,7 +9745,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "4a549796-405e-4d36-af3c-36d1970da614")
+			(uuid "c2148126-51ab-4cd2-95a9-495e7a038f5d")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9761,10 +9761,10 @@
 		(at 180.34 180.34 90)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "36445149-cc06-41d5-b56e-3483686d08dc")
+		(uuid "4cccccf6-eebd-5f8e-b611-dc3f4b24c28b")
 		(property "Reference" "TP8"
 			(at 181.61 176.53 0)
 			(effects
@@ -9803,7 +9803,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "84546730-252a-42d1-87c6-612c031e37c2")
+			(uuid "5b1b3c2d-353c-4fb6-a761-1aa5d4adaf3b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9822,7 +9822,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "44ddbcc2-af2f-4454-8c7a-812dbc431465")
+		(uuid "92e1fccc-4bca-5287-9d47-7419c1a7319a")
 		(property "Reference" "#PWR036"
 			(at 182.88 231.14 0)
 			(effects
@@ -9860,7 +9860,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "2292cf8f-7e18-47f3-ab91-76c8e15a91fa")
+			(uuid "f76a5392-6970-4669-97c7-c5111a45bb76")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9879,7 +9879,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8e648a3f-a314-4131-b5bd-91d2563ed5c4")
+		(uuid "ad636bf4-c7e1-56fc-b29e-da747cd0f5f2")
 		(property "Reference" "R15"
 			(at 168.91 219.71 0)
 			(effects
@@ -9917,10 +9917,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "e7d51c00-dda0-403e-a50e-0bc5999f8051")
+			(uuid "d7c2852e-3965-4bcb-870a-618921a3a5c1")
 		)
 		(pin "2"
-			(uuid "3f2b57e9-002c-40a1-be86-73587c5a71a4")
+			(uuid "d67a6f26-5309-4deb-a01e-880f2dea69ea")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9939,7 +9939,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c0482a0c-084e-444e-8558-1e0a232d1d09")
+		(uuid "d39e1fbf-8e9b-5fd3-99f0-36081595bc0e")
 		(property "Reference" "#PWR037"
 			(at 165.1 215.9 0)
 			(effects
@@ -9977,7 +9977,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "92510689-0255-49fe-9021-eaa5c9b45e41")
+			(uuid "8dd359ea-b09c-4147-81ac-fe130efb474b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -9996,7 +9996,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e184f10f-e154-4b5c-b36d-b74d237e9bae")
+		(uuid "322db615-24d7-574b-ad41-b4ebcdd336ee")
 		(property "Reference" "#PWR038"
 			(at 198.12 193.04 0)
 			(effects
@@ -10033,7 +10033,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "ec0a0c90-c8b9-4e24-88f1-6b09e6842461")
+			(uuid "b23f966d-9a53-4388-9edc-a3584442a6ac")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10052,7 +10052,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f2c38262-7288-4cd5-a3dd-73d0f9cc301e")
+		(uuid "842c0cae-8cfe-5c16-ad46-325d8dedc43f")
 		(property "Reference" "#PWR039"
 			(at 208.28 195.58 0)
 			(effects
@@ -10089,7 +10089,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "aaccdcb4-078b-459f-b216-b9f24f41a7fe")
+			(uuid "f06c5335-74ae-44a0-a903-2361e3a15eb5")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10108,7 +10108,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c36174bb-301d-4271-9475-11e66e62aea0")
+		(uuid "87bb1b65-773c-585d-92f6-3cc34b3c0604")
 		(property "Reference" "#PWR040"
 			(at 200.66 241.3 0)
 			(effects
@@ -10146,7 +10146,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "1cf883ae-ff5b-4733-9d41-d14ed7e016db")
+			(uuid "5203fd83-aa6d-45bc-ba2f-af2ac2bf4322")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10165,7 +10165,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f1d86beb-b19b-4d28-9030-9b299761d5e4")
+		(uuid "439b51b7-39b6-5b6d-9de1-14a763708b1d")
 		(property "Reference" "C15"
 			(at 219.71 217.17 0)
 			(effects
@@ -10203,10 +10203,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "59e1483c-bafd-46cf-b4e0-47250dabdacb")
+			(uuid "f23c095c-7293-429b-9157-8b4dd6cfe3f1")
 		)
 		(pin "2"
-			(uuid "3775f988-c087-47c5-b11c-ff437c6253e5")
+			(uuid "ba839a2d-a00c-4adc-a1d4-4be98c3b39e8")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10225,7 +10225,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b902434e-b1de-4efe-b3bd-779496aaa473")
+		(uuid "73f72d9f-29ce-5ee8-a5b9-5f61021cdaba")
 		(property "Reference" "C17"
 			(at 240.03 232.41 0)
 			(effects
@@ -10263,10 +10263,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "1a6ef95e-3d4a-4f6e-be58-d85da96f32c8")
+			(uuid "1eb323a2-78ab-4a4d-b9b7-2008f4233e0d")
 		)
 		(pin "2"
-			(uuid "b3be9d03-a5b5-4030-b6a8-eaa0849a0d04")
+			(uuid "8a21c7f8-88ba-4e04-8e6a-0a5b01562033")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10285,7 +10285,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "699d0403-7bb8-4bdb-aec6-46ee5809a181")
+		(uuid "68c014d3-c6d8-5037-bc45-bcca3b0bcfce")
 		(property "Reference" "#PWR041"
 			(at 236.22 238.76 0)
 			(effects
@@ -10323,7 +10323,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "a6fcc482-3944-4455-8dda-944d50b1fcb2")
+			(uuid "35e86d03-0e21-4d8d-9c3f-74b7bda89281")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10342,7 +10342,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "95f1b1e6-bcd7-434f-a5b6-49df278fe9b9")
+		(uuid "27974b20-f897-55cb-8b24-4cd652e9e231")
 		(property "Reference" "C16"
 			(at 227.33 234.95 0)
 			(effects
@@ -10380,10 +10380,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "5d0e8451-db03-4384-9fca-4d8e5070ef2d")
+			(uuid "b94f5f5d-29fd-4f2e-b3b4-8013de0cdc24")
 		)
 		(pin "2"
-			(uuid "7b28267c-988b-462e-9924-edebea4bf8bd")
+			(uuid "944054a5-e41d-41c5-ba57-d017406f7c29")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10402,7 +10402,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3db4eeb7-1bd2-4c90-98fc-34379f68331d")
+		(uuid "963251bc-6868-5c95-a6a0-237322f28871")
 		(property "Reference" "#PWR042"
 			(at 223.52 241.3 0)
 			(effects
@@ -10440,7 +10440,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "e0dc222e-b997-4e00-a78e-15dcb0374877")
+			(uuid "193ccbee-8435-4242-99ff-dc15c57a75a4")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10459,7 +10459,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "02b43891-b6b7-4139-99aa-548c4852578b")
+		(uuid "4c5b6608-414b-5fd6-8128-3b69e72257cf")
 		(property "Reference" "C9"
 			(at 105.41 240.03 0)
 			(effects
@@ -10497,10 +10497,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "d992d7cc-5290-4220-877b-b86975a44c94")
+			(uuid "c5f67fa1-d2c5-475b-999b-be30dd1c98ba")
 		)
 		(pin "2"
-			(uuid "e3914806-7ef1-4f84-9063-d67283361a01")
+			(uuid "6ec8da4e-af91-4796-8b76-6e071ad55e9e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10519,7 +10519,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7dacbef5-7850-4ea8-9628-988dda6c9815")
+		(uuid "75e36dbf-7256-5e27-8169-c3bf4537030c")
 		(property "Reference" "#PWR043"
 			(at 101.6 236.22 0)
 			(effects
@@ -10556,7 +10556,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "ac6310a3-bc78-4276-9999-3dd445a5a24b")
+			(uuid "8b9b6435-4009-4556-bd39-275b13852f2c")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10575,7 +10575,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "19ca0fb1-f1ae-423c-910b-d2790952fe70")
+		(uuid "dfa50403-e161-52ad-87be-c0fd219eab07")
 		(property "Reference" "#PWR044"
 			(at 101.6 246.38 0)
 			(effects
@@ -10613,7 +10613,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "b5e78863-03da-4180-9244-ccf204089084")
+			(uuid "28afe3ac-9fa6-48af-94ae-e0a4be214261")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10632,7 +10632,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0bec63b4-0613-4a41-99c8-739c39aee6fd")
+		(uuid "29de48ed-ad1d-5690-a451-a2f16f1303e3")
 		(property "Reference" "C10"
 			(at 118.11 240.03 0)
 			(effects
@@ -10670,10 +10670,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "c2ae6f32-d8e9-4098-895b-fbd2f6ec100f")
+			(uuid "09f9a848-d021-47b5-8d77-88ff25011acc")
 		)
 		(pin "2"
-			(uuid "26a8bad0-818d-4a04-820d-996f93c77243")
+			(uuid "aeeb653f-8568-4888-b3ea-709475e0e868")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10692,7 +10692,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c14f40ca-f671-43ea-9fda-094677334be3")
+		(uuid "c39f278c-8fa0-5543-93ce-babc80bf1219")
 		(property "Reference" "#PWR045"
 			(at 114.3 236.22 0)
 			(effects
@@ -10730,7 +10730,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "c87c232d-e716-4493-be1b-ea0a4e02d1fc")
+			(uuid "ea52cd4c-d89e-4c3b-968c-312a2bab01d9")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10749,7 +10749,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "af9c2c93-9592-4c74-8041-b8a6cc8d211f")
+		(uuid "c49e7dee-27ad-5871-8c5a-f3acfec61b78")
 		(property "Reference" "#PWR046"
 			(at 114.3 246.38 0)
 			(effects
@@ -10787,7 +10787,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "5e89fe45-5eff-4621-821b-3905247fe8b3")
+			(uuid "0400b186-45dc-4cf9-8891-025dd90e3eca")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10806,7 +10806,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ec118861-6302-49f1-a742-5b4125fd8990")
+		(uuid "5e79e9ec-757e-5559-ad87-253143bc6edd")
 		(property "Reference" "C11"
 			(at 130.81 240.03 0)
 			(effects
@@ -10844,10 +10844,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "8e8c8a46-b7b6-4e25-a5c6-e3bfcf28bd67")
+			(uuid "a2885467-1295-41a0-af3a-2faa739dfb27")
 		)
 		(pin "2"
-			(uuid "4090a320-2664-4aaa-bdad-ae75a8e58b60")
+			(uuid "5a5aac1b-f39a-4ee1-8b8c-8ecfb3ec9a28")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10866,7 +10866,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3e517e5c-c489-46b4-87aa-6a4d122edf3c")
+		(uuid "6c4eedbf-6776-5af2-a918-f4b5d6fc8116")
 		(property "Reference" "#PWR047"
 			(at 127 236.22 0)
 			(effects
@@ -10904,7 +10904,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "1f038d30-b84c-4b84-af6d-669f8bd3b962")
+			(uuid "33acb1c5-712b-4242-9048-8873b3802f13")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10923,7 +10923,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e12869e2-ed6f-49bb-baf6-8052998c5988")
+		(uuid "36cfd3b8-d69c-55a6-af55-72b2db69f0f4")
 		(property "Reference" "#PWR048"
 			(at 127 246.38 0)
 			(effects
@@ -10961,7 +10961,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "b6cf2eef-0422-4f9a-afae-301e272f2b5c")
+			(uuid "68ba94dc-f12d-482b-b2d5-91df616d560d")
 		)
 		(instances
 			(project "esp-iradio"
@@ -10980,7 +10980,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5985d8db-292a-4c5b-8473-4d5d6b2a19b7")
+		(uuid "aae51731-46ee-5802-9acd-4b88503660dc")
 		(property "Reference" "C12"
 			(at 143.51 240.03 0)
 			(effects
@@ -11018,10 +11018,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "37f613ce-7621-4691-bd29-2f3e64368fe5")
+			(uuid "3374afa8-a6a9-4bf8-b0e4-6bb6bc48442c")
 		)
 		(pin "2"
-			(uuid "afb086e3-797b-47b1-baf5-5b9bcfcd9944")
+			(uuid "efde3003-e1a5-4d68-ad32-6ce7c683c185")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11040,7 +11040,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e5899e09-c107-4ccf-beba-21dd2769e521")
+		(uuid "a62d8bcb-faf3-569b-9c62-11c19a9cc3f6")
 		(property "Reference" "#PWR049"
 			(at 139.7 236.22 0)
 			(effects
@@ -11078,7 +11078,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "be01bdbe-cf6d-4da6-8e39-be609d91a44b")
+			(uuid "d5ad82e0-1dec-4188-90a7-eaa37b604a8b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11097,7 +11097,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f9087221-419d-4af1-a417-022e09299903")
+		(uuid "7687016e-6196-5f4f-97d3-18c7d13c5ae8")
 		(property "Reference" "#PWR050"
 			(at 139.7 246.38 0)
 			(effects
@@ -11135,7 +11135,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "e497a22b-f200-4d0e-b9ff-9590c4525864")
+			(uuid "f6588c6e-2b07-4992-9a26-0ffc9202cf89")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11154,7 +11154,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c80cc809-c441-4c63-b483-e83e004f4b35")
+		(uuid "672d4da8-9cd5-51ee-8f95-272de136cb40")
 		(property "Reference" "C13"
 			(at 156.21 240.03 0)
 			(effects
@@ -11192,10 +11192,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "ce13c34f-8f4d-4965-b231-2ae13c6a7a0c")
+			(uuid "9c0cd287-2b7b-408f-b109-187a4139a453")
 		)
 		(pin "2"
-			(uuid "3c0ce727-233a-4249-93a9-cd2777d6ef88")
+			(uuid "c2aed9e7-39f5-488a-ad28-4e7f2a0166ca")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11214,7 +11214,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b80bf644-0d75-4dd4-a4ce-b48da6703c57")
+		(uuid "7bd8ed6e-e820-5851-813a-d96f4c061408")
 		(property "Reference" "#PWR051"
 			(at 152.4 236.22 0)
 			(effects
@@ -11251,7 +11251,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "16bd304e-4e91-4eea-b4d0-a9c3f228dcbf")
+			(uuid "8c7249c2-d14d-4b99-ad12-f5978154e30c")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11270,7 +11270,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "658bc46d-1913-4c23-80b5-7d525c9e484d")
+		(uuid "53f77616-3033-5a4d-a8d8-1a47465e23ca")
 		(property "Reference" "#PWR052"
 			(at 152.4 246.38 0)
 			(effects
@@ -11308,7 +11308,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "c30cc80e-b519-431f-80e2-3b3d2ee087b8")
+			(uuid "0b7a7aea-4345-4baf-b29e-9c41ae96dfb8")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11327,7 +11327,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "504adc82-a77a-4b69-903e-5b10fc728158")
+		(uuid "adf9f1cb-8206-5c03-bfee-6c6e1ce5d45c")
 		(property "Reference" "C14"
 			(at 168.91 240.03 0)
 			(effects
@@ -11365,10 +11365,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "9d6a8700-ab1e-4d31-ba74-3f710b2629f6")
+			(uuid "ac44bad7-0318-44b6-85b6-2c6387d6920a")
 		)
 		(pin "2"
-			(uuid "54d00625-fe28-49e4-9119-1aaac5570b8c")
+			(uuid "fbf0ddd1-ae91-44c1-a824-1e3a31f029ae")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11387,7 +11387,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4c212661-ca55-4ae9-85ac-6874f1c70911")
+		(uuid "ab136e1d-0db7-50ba-8143-a7f112b1d4af")
 		(property "Reference" "#PWR053"
 			(at 165.1 236.22 0)
 			(effects
@@ -11424,7 +11424,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "b9239a30-da74-42fa-84c2-57b4c98d8329")
+			(uuid "a6f886ec-9cdc-438f-8508-65b65ac6efc1")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11443,7 +11443,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8989c2db-14f2-426c-b07c-d67214c43e81")
+		(uuid "5d098c40-36fb-5362-a2d7-0e9733bc1105")
 		(property "Reference" "#PWR054"
 			(at 165.1 246.38 0)
 			(effects
@@ -11481,7 +11481,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "1da2d303-7de3-444a-bb00-ac6f502e616a")
+			(uuid "1153e827-c592-4cb5-a903-08063ae9c1b3")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11500,7 +11500,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ad01d17f-33e6-4ba6-bbf1-e147b5ddc300")
+		(uuid "6134eb48-13f8-54d0-95a1-10b003dbb529")
 		(property "Reference" "R16"
 			(at 238.76 199.39 90)
 			(effects
@@ -11536,10 +11536,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "e29e92c7-ff95-406e-b003-e6cbdbcfe5eb")
+			(uuid "430cddc1-bcbf-46d6-80a3-58208e10ad34")
 		)
 		(pin "2"
-			(uuid "98c2bd58-8539-4422-a3e4-dfe8c16cb1aa")
+			(uuid "e3c69c09-fc80-415e-af7d-a64158c7df02")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11558,7 +11558,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "235a0072-46c3-477b-92b8-aa9aa22de764")
+		(uuid "acbf7af1-537f-5f26-8f98-0bd647faef15")
 		(property "Reference" "R17"
 			(at 238.76 214.63 90)
 			(effects
@@ -11594,10 +11594,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "3e134fc7-a093-4fc0-b72d-904d6f2fdbf9")
+			(uuid "aaca6f9c-286e-436d-bcde-7f83108e1de7")
 		)
 		(pin "2"
-			(uuid "cbc5ce3a-6c21-4cff-91b9-41f5dc3142c0")
+			(uuid "e1e1dbe0-2e45-437f-bba4-091826fd95ae")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11616,7 +11616,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "1a07c507-8b92-419d-8d91-8b5b4052c05d")
+		(uuid "75d040d9-8f82-50dd-a469-ed8928ff7e02")
 		(property "Reference" "C18"
 			(at 255.27 207.01 0)
 			(effects
@@ -11654,10 +11654,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "7c92b35a-8199-4494-a18b-379cc2fa6cd6")
+			(uuid "45d0f3c7-a6f1-4fc2-aaa4-53558adf3ce7")
 		)
 		(pin "2"
-			(uuid "cdb4f07b-3885-498f-8833-3cf2adef77a2")
+			(uuid "a262bdd7-cd53-439f-9d70-d0f369f90637")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11676,7 +11676,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0643ad3c-3c8d-43d5-949e-a2643fdf2ac1")
+		(uuid "3ae6018c-6e45-529f-9127-5ffc5c02d495")
 		(property "Reference" "C19"
 			(at 247.65 222.25 0)
 			(effects
@@ -11714,10 +11714,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "5de459b3-4c49-4e00-93eb-524ffe831584")
+			(uuid "5a232263-3f59-494d-87a9-8101b5d5f355")
 		)
 		(pin "2"
-			(uuid "243b346b-0f98-4f2b-b8cb-78194886ac61")
+			(uuid "2fc0d16b-1b8c-4496-8e5c-c53e2fde029e")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11736,7 +11736,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d0f34ffe-5ac4-4986-ae01-4116fb5de7a7")
+		(uuid "b39cc280-3de1-5e7e-8dbe-3ee069e698dd")
 		(property "Reference" "#PWR055"
 			(at 251.46 213.36 0)
 			(effects
@@ -11774,7 +11774,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "e044ed8b-b9be-4c46-b0a9-674f38c2e06f")
+			(uuid "8616500b-2439-4003-b0eb-200523adf2b1")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11793,7 +11793,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "1922a11d-e3fb-48a5-a014-ea7f4196e2f2")
+		(uuid "cbf12900-1779-5d95-9205-d25bb6b8a9d5")
 		(property "Reference" "#PWR056"
 			(at 251.46 228.6 0)
 			(effects
@@ -11831,7 +11831,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "3c62361f-b958-45fe-8fd7-0fd34da9ba90")
+			(uuid "b58a0836-adb9-4a38-b1fb-2d7436441f5a")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11851,7 +11851,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "60676fa7-8ddf-4a16-ba71-4d192af651e7")
+		(uuid "4346800d-5187-58c7-8698-1534c15e2dc7")
 		(property "Reference" "J5"
 			(at 284.48 200.66 0)
 			(effects
@@ -11896,16 +11896,16 @@
 			)
 		)
 		(pin "1"
-			(uuid "ce2e80b4-291b-400f-b46e-8eb1a8403d7f")
+			(uuid "73a2f2ca-233b-4aed-9b49-4296dd704b34")
 		)
 		(pin "2"
-			(uuid "82faf507-326f-46af-b90b-e72dd0d867c8")
+			(uuid "eba93880-77dc-4856-82d1-0fae03916b29")
 		)
 		(pin "4"
-			(uuid "bcb891fa-35c2-4a0e-abcd-6431d1e25fd4")
+			(uuid "f2ee24ee-ce81-419e-89e8-4f53a3762932")
 		)
 		(pin "3"
-			(uuid "a6409284-1cbe-40e3-bb47-93f1033e9a2e")
+			(uuid "553655ab-56c6-4669-8c1e-64770ef5928d")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11924,7 +11924,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "61216453-390d-4ebc-ae8a-66725f7eebe2")
+		(uuid "8c6e6bd3-7247-5dc6-88a9-f66e82b7caad")
 		(property "Reference" "#PWR057"
 			(at 276.86 208.28 0)
 			(effects
@@ -11962,7 +11962,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "27b3c93b-e335-4513-bcc7-33a505a74f41")
+			(uuid "4603a981-80c5-4458-a30a-bd2a20e4b074")
 		)
 		(instances
 			(project "esp-iradio"
@@ -11981,7 +11981,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "32a2fd2a-bf5c-4bad-abac-68a09276eec5")
+		(uuid "1d38bc91-50c4-5917-892e-87876184273d")
 		(property "Reference" "U2"
 			(at 331.47 160.02 0)
 			(effects
@@ -12028,55 +12028,55 @@
 			)
 		)
 		(pin "1"
-			(uuid "fd60581e-70ad-4377-99da-236365f90bb9")
+			(uuid "71852958-303d-4eb4-92dc-4f36923758f7")
 		)
 		(pin "16"
-			(uuid "1b805708-8722-4f7a-97df-8118b63806f4")
+			(uuid "131297c0-29c9-451b-92b3-382bcca1255a")
 		)
 		(pin "14"
-			(uuid "568e7aef-924a-426c-9378-06348042cdb5")
+			(uuid "6f6d1513-1fe6-49cc-b395-aa620e41198c")
 		)
 		(pin "4"
-			(uuid "bdea8d51-72d8-44c1-9059-3d1551a3bc71")
+			(uuid "92714273-25b0-4ca8-acd3-384ce45c6654")
 		)
 		(pin "2"
-			(uuid "899e93af-ccdd-4cd9-acb2-b481513794fc")
+			(uuid "72700e0f-96dc-4170-8e66-7b8ad2f8d1e0")
 		)
 		(pin "11"
-			(uuid "e24c440a-9ba3-4baf-8317-fd278e3b4304")
+			(uuid "d1d71831-3465-41d1-b214-d97db41bfdd9")
 		)
 		(pin "15"
-			(uuid "faeeca17-f38e-4055-a022-fc2b624c91b2")
+			(uuid "f82b405c-75cf-4f0f-8f08-2a8a45596075")
 		)
 		(pin "3"
-			(uuid "6fb800c8-7212-4957-bfb5-45365a0a1910")
+			(uuid "60f11ea6-511a-45f7-a33d-1623d6ccf50e")
 		)
 		(pin "7"
-			(uuid "e901d1af-38bc-4248-a2c0-65c0ed3bc019")
+			(uuid "685c0ef1-21bb-4bc0-8051-d6771f668032")
 		)
 		(pin "8"
-			(uuid "5cd08f84-df85-4e26-bed6-9ec7918ed86a")
+			(uuid "cf5fe54d-f546-4867-8d83-73cebc9c5594")
 		)
 		(pin "17"
-			(uuid "ded33dfe-93e5-486d-addf-4d918d2fd470")
+			(uuid "88eeb42a-0b31-4737-b03b-62ce9f9b1300")
 		)
 		(pin "5"
-			(uuid "3214c634-43b7-43c8-ac88-6bcb8cd1d877")
+			(uuid "3b37130f-898f-44bc-ae5f-f28cee3b9d2e")
 		)
 		(pin "6"
-			(uuid "f21f082c-6f25-4c18-9c84-2bc738b1f4da")
+			(uuid "50294b78-73f3-41cb-8ace-988474de9779")
 		)
 		(pin "12"
-			(uuid "eb73b99e-c51e-4a79-8384-1418d2444a48")
+			(uuid "f8040887-d63b-4001-a9f7-7d2df64e5d5c")
 		)
 		(pin "13"
-			(uuid "b72fba2c-0ca8-4142-abdd-730146156ea6")
+			(uuid "67227a63-0a24-48fc-994c-6d4d47e08284")
 		)
 		(pin "9"
-			(uuid "ba397112-0059-4d1f-b4dd-6f47c74ac2f5")
+			(uuid "26ce56e5-0f6f-4c07-aeae-26a082c653fe")
 		)
 		(pin "10"
-			(uuid "f2c758c3-0590-4d47-9c76-db1f21f6a209")
+			(uuid "7bf8eff5-40af-4c6e-9b95-97370de094ab")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12095,7 +12095,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0259cb45-da42-47b7-b314-bc9a66f4dc9b")
+		(uuid "05fc5fad-f7dd-5c4b-b751-45253fff1e62")
 		(property "Reference" "#PWR058"
 			(at 320.04 162.56 0)
 			(effects
@@ -12132,7 +12132,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "123d4634-42dd-4a52-a51f-c5443b842e8a")
+			(uuid "dcbf19fe-bd98-40b6-969a-1e2a7491750b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12151,7 +12151,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "219f30de-87ef-406f-a294-932f8e6fef4b")
+		(uuid "4084c401-ae79-5faf-920e-4577accd0ef9")
 		(property "Reference" "#PWR059"
 			(at 317.5 187.96 0)
 			(effects
@@ -12189,7 +12189,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "ffa95c03-1f5c-4449-8142-4239477d4338")
+			(uuid "951bc40f-1ddb-49ed-ba5a-9349669c1eaf")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12208,7 +12208,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8a97a624-e69b-467a-8f48-48c215567940")
+		(uuid "7b398487-21d2-5e18-8058-0fa9135b1945")
 		(property "Reference" "#PWR060"
 			(at 322.58 187.96 0)
 			(effects
@@ -12246,7 +12246,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "9a12e8d2-2bc5-48e0-8e15-d63c43394239")
+			(uuid "36ac37aa-893f-4f74-a1d1-1296c39fa8cb")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12265,7 +12265,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3057ff1d-f004-4015-b43f-57e5d2e86116")
+		(uuid "f07b1b23-c501-5064-b9d8-d4c87798de06")
 		(property "Reference" "J6"
 			(at 349.25 165.1 0)
 			(effects
@@ -12312,10 +12312,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "488a59db-6ceb-4a19-8fe3-813ee3ed2ee4")
+			(uuid "77d343b2-c4b8-4be4-98dd-f611762cae3a")
 		)
 		(pin "2"
-			(uuid "0164c1ee-5d7b-4978-9241-324eb6fac2b9")
+			(uuid "d711e96e-0918-4f06-a8ff-d9d9d10cc2f9")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12334,7 +12334,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c2f62f76-4785-49be-ac66-9f3d3c1c1a33")
+		(uuid "5b3db464-418c-54e5-9ad6-4b866390df0d")
 		(property "Reference" "R21"
 			(at 303.53 181.61 0)
 			(effects
@@ -12372,10 +12372,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "2d21a876-c853-4ebe-91a7-874bd0beaaad")
+			(uuid "89b3fdc3-09a3-4b1f-b687-a829f6b4c7db")
 		)
 		(pin "2"
-			(uuid "797093f8-1f07-452b-b325-c1dd5ad105ad")
+			(uuid "be9292e3-df9c-4de9-8a7c-8bfb52b15dcc")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12394,7 +12394,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ba57ed6f-fd81-4ed7-8652-43214a142a10")
+		(uuid "3ab47896-9cc0-5168-adf1-099211bec33c")
 		(property "Reference" "#PWR061"
 			(at 299.72 187.96 0)
 			(effects
@@ -12431,7 +12431,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "03b202f5-22ac-4e19-9b21-be75cabcb5c0")
+			(uuid "86c9214c-ee2f-456e-8aaf-52bdeaaf2afd")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12450,7 +12450,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "156d3ff7-aa6b-4b8f-9069-c85503c90762")
+		(uuid "3df56ded-5823-52b1-a559-f5fceb80dc5a")
 		(property "Reference" "C22"
 			(at 349.25 209.55 0)
 			(effects
@@ -12488,10 +12488,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "9d15b029-bf7c-4220-a7a9-4cb4d9b39aac")
+			(uuid "df044abf-fa49-480b-9ee4-49e9aa1a3f65")
 		)
 		(pin "2"
-			(uuid "583e6e16-1479-4f5c-961d-aa18e567e458")
+			(uuid "e48b156d-4c40-4444-bfae-0479d88ac948")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12510,7 +12510,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8c13abd8-3272-4adf-894f-7d87a6b48fa6")
+		(uuid "63ee1765-2d4c-5f87-b0d4-e9fdb2d44f89")
 		(property "Reference" "#PWR062"
 			(at 345.44 205.74 0)
 			(effects
@@ -12547,7 +12547,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "c8d9f7ae-576d-451b-ba94-d4ddea7efa5c")
+			(uuid "4dfef1c9-82e9-4207-b48c-37972ad146c6")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12566,7 +12566,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3732b362-41b2-44eb-a09f-ecf2772d88a4")
+		(uuid "7fdaa20d-e50b-5c68-937d-90dd7fc2863a")
 		(property "Reference" "#PWR063"
 			(at 345.44 215.9 0)
 			(effects
@@ -12604,7 +12604,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "9ce6aaa8-3f6e-4ae6-af8f-a9bcd0bffdc6")
+			(uuid "44f1a47d-fe0b-44d3-ac83-76397ba1744b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12623,7 +12623,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2f8b1182-8816-4b97-99c4-29ae1d78efb8")
+		(uuid "be11e4f3-87e6-5622-a229-e226e98addb3")
 		(property "Reference" "C23"
 			(at 361.95 209.55 0)
 			(effects
@@ -12661,10 +12661,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "b7a436d4-88f2-4fcd-a8bc-3781c80c46a1")
+			(uuid "f4110b9c-e814-4bd7-b9b5-2887268b41ac")
 		)
 		(pin "2"
-			(uuid "7955c133-dc1d-4f8e-9a96-0e78cfbefdab")
+			(uuid "0f8432bf-ae3c-489e-beed-8bee9905c1ba")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12683,7 +12683,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "97f67301-f325-4410-9b98-d50e90c1a2d1")
+		(uuid "e7aed6c9-bdfa-5426-abb4-a02523563879")
 		(property "Reference" "#PWR064"
 			(at 358.14 205.74 0)
 			(effects
@@ -12721,7 +12721,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "2fd8c29a-1fc5-49d9-a716-f31e0b9376cb")
+			(uuid "bb5c5d81-5140-40a7-af22-589b9f15d412")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12740,7 +12740,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "357617db-40d2-4639-bd8f-a4ead5700cab")
+		(uuid "d9a62e3c-4cbe-511d-86b8-1099684a44ce")
 		(property "Reference" "#PWR065"
 			(at 358.14 215.9 0)
 			(effects
@@ -12778,7 +12778,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "9d244b82-e5a5-49f6-bfae-39e4c7d76f8a")
+			(uuid "b91ae364-f0ea-427f-852b-c20fa64b1aa0")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12794,10 +12794,10 @@
 		(at 391.16 205.74 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "72b4ec5b-eefd-4ad2-b2e1-c7a0cce154d3")
+		(uuid "2a151035-9a14-5af2-97c2-6b6c01a46121")
 		(property "Reference" "TP2"
 			(at 392.43 201.93 0)
 			(effects
@@ -12836,7 +12836,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "b3105889-75ea-44fb-9858-a13eb6a62390")
+			(uuid "d8323b27-33ce-4bf6-85f7-8721ad85df3b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12855,7 +12855,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "92fe52b2-4db0-487f-8e4a-e388eb882b03")
+		(uuid "f03cd06d-57fc-52ed-bd10-f8b4d6957c1a")
 		(property "Reference" "#PWR066"
 			(at 391.16 205.74 0)
 			(effects
@@ -12893,7 +12893,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "0c082ff3-f8d1-4fd3-a262-d6c7b5e3d95d")
+			(uuid "3e49261d-b5f8-48bd-b4c0-67d345846fe4")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12909,10 +12909,10 @@
 		(at 391.16 50.8 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "5f3b297d-8cd0-4c85-ba07-5d9a81f1cf56")
+		(uuid "72ccc706-299e-57da-ab07-b29888aa7a40")
 		(property "Reference" "TP4"
 			(at 392.43 46.99 0)
 			(effects
@@ -12951,7 +12951,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8d2ae6dd-f92b-4a58-8bf0-cf1a53986550")
+			(uuid "746906e4-ddd7-48a3-9695-cac0db111e9b")
 		)
 		(instances
 			(project "esp-iradio"
@@ -12970,7 +12970,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "53c6e080-6fe5-4617-a62b-74ca66a1237e")
+		(uuid "9e33a908-2be5-5168-b395-a4041c667cbb")
 		(property "Reference" "#PWR067"
 			(at 391.16 50.8 0)
 			(effects
@@ -13008,7 +13008,7 @@
 			)
 		)
 		(pin "0"
-			(uuid "52871cbf-a86f-4fcc-8069-45934341ed99")
+			(uuid "cd9d56f9-8472-45be-9947-261d4cb58a5a")
 		)
 		(instances
 			(project "esp-iradio"
@@ -13024,10 +13024,10 @@
 		(at 30.48 241.3 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "a4e6ab2a-ca92-41d7-b83f-0df81362c8a9")
+		(uuid "93e9dfee-b971-5fbe-8c90-07f6ef385f57")
 		(property "Reference" "H1"
 			(at 30.48 236.22 0)
 			(effects
@@ -13076,10 +13076,10 @@
 		(at 40.64 241.3 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "3faf9890-1243-4f83-bec2-3d6767cbd7ac")
+		(uuid "25a91d22-af3f-5622-a04f-f290756834e5")
 		(property "Reference" "H2"
 			(at 40.64 236.22 0)
 			(effects
@@ -13128,10 +13128,10 @@
 		(at 50.8 241.3 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "f5a2ccba-250a-463f-a2d7-9d276d6a0bca")
+		(uuid "f9226637-75d0-5b24-a197-bfa33ea35ced")
 		(property "Reference" "H3"
 			(at 50.8 236.22 0)
 			(effects
@@ -13180,10 +13180,10 @@
 		(at 60.96 241.3 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "d7603bab-3202-44b9-b5c7-205d5832aa34")
+		(uuid "f7b5505a-da31-51f5-8956-9ecf3aecc311")
 		(property "Reference" "H4"
 			(at 60.96 236.22 0)
 			(effects

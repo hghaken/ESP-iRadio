@@ -16,7 +16,10 @@ are worked in below). Schematic Rev B done the same evening (two A3 sheets, see
 (`grok-bevindingen.md`, `claude-bevindingen.md` in the repository root); the agreed changes are
 worked in: no bulk electrolytic on VSYS, polyfuse 2 A before the TVS, ILIM 1.13k, a high-ohmic USB
 divider, recovery pads, NPTH locating holes, no VIN-DPM in ILIM mode (power the board from a
-source of at least 1.5 A). Next: the checks listed in NOTES.md, then the layout.
+source of at least 1.5 A). First layout (Rev B draft, 80 x 60 mm, 4 layers) done the same night:
+DRC 0 errors, 0 unconnected, 0 schematic parity issues (`esp-iradio/NOTES.md`, "Layout"). Next:
+the open checks there (panel mock-up, short-shaft encoder, switch ON side), a review of the routing
+in KiCad, then the JLCPCB files.
 
 ## Owner decisions (2026-10-15)
 
@@ -244,7 +247,7 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 | USBLC6-2SC6 | C2827654 | 105627 | USB ESD |
 | SMAJ5.0A | C113952 | 602831 | VBUS TVS |
 | NTC 10k B3435 0603 (NCP18XH103F03RB) | C13564 | 206858 | TS |
-| TYPE-C-31-M-12 | C165948 | 90528 | USB-C 16 pins |
+| TYPE-C-31-M-12 | C165948 | 90528 | USB-C 16 pins; KiCad footprint `USB_C_Receptacle_HRO_TYPE-C-31-M-12` |
 | microSD push-push (TF-01A) | C91145 | 205737 | footprint to match |
 | EC11E with switch, short shaft | e.g. C470754 EC11E15244B2 | 6196 | THT; confirm shaft length/type for D16 |
 | MSK12C02 slide switch | C431540 | 166028 | on/off |

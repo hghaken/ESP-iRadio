@@ -41,3 +41,7 @@ KiCad/esp-iradio/lib/lcsc.3dshapes/*.step
 
 # Python byte code (KiCad/esp-iradio/tools)
 __pycache__/
+
+# PCB autorouter work files (Specctra DSN/SES, Freerouting logs) and the placement check board
+KiCad/esp-iradio/route/
+KiCad/esp-iradio/_placement_check.kicad_pcb

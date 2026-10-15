@@ -283,7 +283,12 @@ class Sheet:
         out += '\t\t(unit %d)\n' % s['unit']
         if s['style'] != 1:
             out += '\t\t(convert %d)\n' % s['style']
-        out += '\t\t(exclude_from_sim no)\n\t\t(in_bom yes)\n\t\t(on_board yes)\n\t\t(dnp %s)\n\t\t(uuid "%s")\n' % ('yes' if s['dnp'] else 'no', _u())
+        # test pads, mounting holes and the panel's FPC pads are not assembled parts: not in the BOM
+        in_bom = 'no' if ref.startswith(('TP', 'H')) or ref == 'J3' else 'yes'
+        # fixed symbol UUID (sheet + reference): the board's footprints point to it, so a regenerated
+        # schematic stays linked to the layout ("Update PCB from Schematic" matches on it)
+        sym_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'esp-iradio/%s/%s' % (self.file_uuid, ref)))
+        out += '\t\t(exclude_from_sim no)\n\t\t(in_bom %s)\n\t\t(on_board yes)\n\t\t(dnp %s)\n\t\t(uuid "%s")\n' % (in_bom, 'yes' if s['dnp'] else 'no', sym_uuid)
         out += self._prop('Reference', ref, ref_at[:2], ref_at[2], s['hide_ref'], ref_at[3])
         out += self._prop('Value', s['value'], val_at[:2], val_at[2], s['hide_value'], val_at[3])
         out += self._prop('Footprint', s['footprint'], (x, y), 0, True)
