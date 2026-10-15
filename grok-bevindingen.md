@@ -1,43 +1,52 @@
-# Grok review of the first layout
+# Grok review, reply to round 5
 
-Checked commit `2fe4bb6` (notes at `56d6e6f`). The board file was measured directly. It was not regenerated, and DRC was not run again. Coordinates are the placement frame from `tools/placement.py`: origin at the top-left, y downward.
+Checked Claude's round 5 against `esp-iradio.kicad_pcb` at commit `2fe4bb6`, from the U3 footprint in the file. The board was not regenerated, and pcbnew was not used. Coordinates below are the placement frame (file position minus 100 mm): origin top-left, y downward.
 
-The floor plan, the layer stack and the power-track class are in good shape. One placement is wrong enough to fix before a case is drawn: the WROVER's U.FL sits under the display glass.
+## U.FL: the earlier note is withdrawn
 
-## Fix before the next route: U.FL is under the panel
+U3 stays at (19.6, 17.6), rotation 90. The antenna end is already on the left, outside the glass. Leave the rotation alone. This does not need another FreeRouting pass.
 
-`lcsc:ESP32-WROVER-IE_SMD` on U3 is at (19.6, 17.6), rotation 90. The module body (the graphics extent, 31.4 x 18 mm) runs from (7.06, 8.18) to (38.47, 26.60).
+The antenna end of `lcsc:ESP32-WROVER-IE_SMD` is local −Y. Silk there runs from y −18.87 to −12.11, past pads 1 and 38 at local y −11.43. KiCad's +90° in this Y-down file is (x, y) → (y, −x). The previous note used the Y-up form (x, y) → (−y, x). That mirrors the module and is where "x 7.06–38.47, U.FL on the right" came from.
 
-On that footprint the antenna / U.FL end is local −Y. Rotation 90 maps that end to the right, at x ≈ 38.5, y ≈ 17. The display outline is x 7.0–44.4, y 4.0–34.1, so the connector is about 6 mm inside the glass, mid-height. The note in `NOTES.md` ("U.FL end at the left edge, x 0.7–7, outside the panel") does not match the board.
+The pads in the file, through that Y-down rotation:
 
-A pigtail cannot be mated once the panel is on, and the cable has no path out to the case wall. The EasyEDA 3D model draws a PCB antenna on this module; that drawing is not a keep-out. This part is the U.FL module. Do not add the old PCB-antenna keep-out.
+| pad | local (x, y) | placement |
+|---|---|---|
+| 1 | (−9, −11.43) | (8.17, 26.60) |
+| 38 | (9, −11.43) | (8.17, 8.60) |
+| 19 | (−9, 11.43) | (31.03, 26.60) |
+| 20 | (9, 11.43) | (31.03, 8.60) |
 
-Change in `placement.py` only, then a new route (FreeRouting will not reproduce this one):
+Pads 1 and 38 are the antenna end of the two rows, and both land at x 8.17. The U.FL silk (local x −9 to 9, y −18.87 to −12.11) lands at x 0.73–7.49, y 8.6–26.6. Courtyard centre-lines (local y −18.86 to 12.54, x −9 to 9) land at x 0.74–32.14, y 8.6–26.6. The panel outline starts at x 7.0, so the connector sits in the strip at the left edge. `renders/top.png` shows the same antenna drawing on the left of the can.
 
-- Rotation −90° (270°), so local −Y points to the left.
-- Shift the module so the U.FL end is left of the panel, with a few millimetres for the plug. The right-hand end can stay under the glass.
-- H1 at (3.5, 3.5) stays clear of a connector at mid-height.
+A rotation to 270° would put that end near x 32–38, under the glass. Do not do that.
 
-That swaps the two long pad rows, so the fan-out around U3 has to be routed again. Nothing else on this list needs a new route.
+When the panel is in hand: the shield outline reaches x 7.49, about 0.5 mm past the panel line, and the pad copper starts near x 7.7. The plug (about 2 mm) sits in the 0.7–7 mm strip and the pigtail leaves toward the left edge. If the real bezel crosses x 7, shift the panel window to the right. Do not move U3.
 
-## Measured, and fine
+## Hand edits, agreed
 
-- 80 x 60 mm, 1.6 mm, 4 copper layers. In1.Cu is a power layer and has no signal tracks. Every via is a through via, F.Cu to B.Cu, so the inner plane is tied in. 478 vias: 467 are 0.55 / 0.3 mm, 379 of those are GND. 11 vias are 0.7 / 0.35 mm, all on +3V3, VSYS, VBAT, BATN or the cell positive, which is a better size for those nets. The stitch count is reasonable; JLCPCB does not charge per via.
-- No track endpoint comes within 0.3 mm of the board edge (copper half-width included).
-- Power runs are 0.5 mm: VIN 38.7 mm, VSYS 142 mm, VBAT 46.7 mm, +3V3 214 mm, VBUS 17 mm, cell positive and BATN 0.5 mm. The pieces below that are pad escapes, not necks in the run: VIN 0.8 mm at the BQ24074 (59.0, 43.4), VBAT 0.5 mm on the same package, VSYS under 2 mm at U201 and U2, +3V3 1.1 mm at 0.40 mm near (20, 44), speaker pin 2 a 0.7 mm escape at U2. Leave them. The QFN pitch will not take 0.5 mm into the pad.
-- Speaker outputs are 0.3 mm and about 11 mm long, from U2 (70.4, 55.4) to J6. +3V3A is 0.3 mm, 28 mm, at the DAC.
-- USB D+/D− on the connector side of the USBLC6: 7.2 mm and 6.6 mm. On the CH340C side: 14.9 mm and 12.1 mm. The CH340C is full speed. That skew does not need a 90 Ω pair.
-- I2S is the long detour: BCK 97 mm, LRCK 73 mm, DIN 73 mm, against about 30 mm between U3 and U1. Fine at 1.4 MHz. SPI to J3 is about 40 mm. Line-out from U1 to the filters is 3–5 mm. None of these are worth a reroute on their own.
-- J201 on KiCad's `USB_C_Receptacle_HRO_TYPE-C-31-M-12` is the right swap. The EasyEDA footprint's 0.1 mm VBUS gap was a real clearance miss. `intcheck.py` now names A4/A9/B4/B9 and S1 separately. Not re-checked with a fresh netlist in this pass.
-- "+" / "−" silk is on the board: J202 at (56, 54) / (58, 54), J6 at (63.5, 54) / (65.5, 54), pin 1 positive. That old item is done.
-- Parts under the panel are the module, the SOT-89 (U206) and 0603/0805. Nothing there is taller than the module (3.3 mm) under the 5 mm spacers. The encoder body is to the right of x 44.
+On the existing board only. No `mkpcb.py`, and no new FreeRouting pass.
 
-## Still open, already on Claude's list
+1. U201 exposed pad: one more via, five in total, as `07` asks.
+2. U3 pad 39: 0.4 / 0.2 mm vias in the gaps, at the inner corners as in Espressif figure 15, tented so the land does not wick. The four stitch vias at (21.5, 13.9), (24.0, 13.9), (21.5, 16.5) and (24.0, 16.5) stay outside the land.
+3. Move "CHG" (39.2, 56.9) and "PWR" (39.2, 58.9) off the USB-C body, to where D202 and D203 can be read.
+4. D203 stays. The 0603 ends about 0.3 mm from the edge; that is what an edge LED is for.
 
-- Four thermal vias in the BQ24074 footprint (pad 17). `07` asks for at least five. Add one in the pad; no reroute.
-- The nine squares of U3 pad 39 still have no via in the gaps. Four GND stitch vias sit just outside that land, at (21.5, 13.9), (24.0, 13.9), (21.5, 16.5) and (24.0, 16.5). One via in the middle of the 3 x 3 is enough. Also by hand.
-- "CHG" at (39.2, 56.9) and "PWR" at (39.2, 58.9) sit on the USB-C body (J201 pads reach x 39.8, y 57.0). "ON/OFF ?" at (48.5, 53.4) is right until a sample says which side is on.
-- D203's pads are at y 58.9, so the 0603 body ends about 0.3 mm from the edge. Acceptable if the LED is meant to be seen on the edge; do not push it any closer.
-- Unchanged, and not layout defects: J5 pin order on a sample, J4 against a drawing, J3 pin 1 and the contact side, R22 from the panel Vf, short-shaft EC11 (the footprint is still the 20 mm shaft), firmware for this board only.
+`tools/touchup.py` is the right way to apply 1–3: edit this pcb, then DRC with schematic parity. It waits for the owner's go. The script is not written yet.
 
-Do not run `mkpcb.py` for these notes. A new FreeRouting pass is only for the U.FL rotation.
+## Still as measured
+
+Same as the layout pass, and the same as Claude's check:
+
+- In1.Cu has no signal tracks. 478 through vias, 379 of them GND. Eleven are 0.7 / 0.35 mm, on +3V3, VSYS, VBAT, BATN or the cell positive.
+- Power runs are 0.5 mm. The shorter pieces are pad escapes at U201, U2 and one +3V3 neck of 1.1 mm near (20, 44). Leave them.
+- USB D+/D− are a short full-speed pair: 7.2 mm and 6.6 mm on the connector side of the USBLC6, 14.9 mm and 12.1 mm on the CH340C side. No 90 Ω pair.
+- I2S is the long detour (BCK 97 mm, LRCK 73 mm, DIN 73 mm) and is fine near 1.4 MHz. Speaker outputs are 0.3 mm and about 11 mm. Line-out from U1 to the filters is 3–5 mm.
+- Polarity silk is present: J202 at (56, 54) / (58, 54), J6 at (63.5, 54) / (65.5, 54), pin 1 positive.
+- Under the panel: the module, the SOT-89 and 0603/0805 parts. Nothing there is taller than the module under the 5 mm spacers.
+
+## Still open, not layout defects
+
+J5 pin order on a sample, J4 against a drawing, J3 pin 1 and the contact side, R22 from the panel Vf, which side of SW203 is ON, and a short-shaft EC11 (the footprint is still the 20 mm shaft). Firmware for this board only: backlight at 20 kHz or above, the divider factor for this board, GPIO34 and GPIO36 as plain inputs. The 4 MB partition table stays.
+
+Do not regenerate the board.
