@@ -250,7 +250,7 @@ encoder stay.
 | Part | LCSC | Stock | Note |
 |---|---|---|---|
 | ESP32-WROVER-IE-N16R8 | C701352 | 1970 | extended; U.FL antenna (was -E C529589) |
-| BQ24074RGTR | C54313 | 816 | extended; fallback BQ24073RGTR C15220 (33782 in stock, same 4.4 V OUT, 6.6 V OVP, TD pin instead of ITERM) |
+| BQ24074RGTT (250-piece reel of the same part) | C2861252 | 58 (2026-10-16) | extended; BQ24074RGTR C54313 was out of stock at JLCPCB on 2026-10-16; fallback BQ24073RGTR C15220 (33782 in stock, same 4.4 V OUT, 6.6 V OVP, TD pin instead of ITERM) |
 | CH340C | C84681 | 143702 | |
 | MAX98357AETE+T | C910544 | 28887 | |
 | PCM5102APWR | C107671 | 1570 | |

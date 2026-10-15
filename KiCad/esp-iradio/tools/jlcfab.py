@@ -107,7 +107,12 @@ for fp in sorted(board.GetFootprints(), key=lambda f: refkey(f.GetReference())):
     if not lcsc:
         missing.append(ref)
     name = fp.GetFPID().GetLibItemName().wx_str()
-    groups.setdefault((fp.GetValue(), name, lcsc), []).append(ref)
+    # one BOM line per LCSC part: JLCPCB flags two lines that match the same part
+    key = (lcsc, name) if lcsc else ('', name, fp.GetValue())
+    groups.setdefault(key, {'vals': [], 'refs': []})
+    if fp.GetValue() not in groups[key]['vals']:
+        groups[key]['vals'].append(fp.GetValue())
+    groups[key]['refs'].append(ref)
     if fp.IsExcludedFromPosFiles() or not lcsc:
         continue
     c = centre(fp)
@@ -120,13 +125,13 @@ for fp in sorted(board.GetFootprints(), key=lambda f: refkey(f.GetReference())):
 with open(os.path.join(OUT, 'esp-iradio_bom.csv'), 'w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)
     w.writerow(['Comment', 'Designator', 'Footprint', 'LCSC Part #', 'Quantity'])
-    for (val, name, lcsc), refs in sorted(groups.items(), key=lambda kv: refkey(kv[1][0])):
-        w.writerow([val, ','.join(refs), name, lcsc, len(refs)])
+    for key, g in sorted(groups.items(), key=lambda kv: refkey(kv[1]['refs'][0])):
+        w.writerow([' / '.join(g['vals']), ','.join(g['refs']), key[1], key[0], len(g['refs'])])
 with open(os.path.join(OUT, 'esp-iradio_cpl.csv'), 'w', newline='', encoding='utf-8') as f:
     w = csv.writer(f)
     w.writerow(['Designator', 'Mid X', 'Mid Y', 'Layer', 'Rotation'])
     w.writerows(cpl)
-print('BOM: %d lines, %d parts; CPL: %d placements' % (len(groups), sum(len(r) for r in groups.values()), len(cpl)))
+print('BOM: %d lines, %d parts; CPL: %d placements' % (len(groups), sum(len(g['refs']) for g in groups.values()), len(cpl)))
 if missing:
     print('no LCSC number (not placed by JLCPCB):', ' '.join(missing))
 

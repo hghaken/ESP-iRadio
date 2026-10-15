@@ -11305,7 +11305,7 @@
 				)
 			)
 		)
-		(property "Value" "BQ24074RGTR"
+		(property "Value" "BQ24074RGTT"
 			(at 0 2.83 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11341,7 +11341,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C54313"
+		(property "LCSC" "C2861252"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)

@@ -216,8 +216,8 @@ gnd((111.76, 220.98))
 # ================================================================ charger BQ24074 (top middle)
 s.text('CHARGER: BQ24074 power path (OUT = VSYS), 0.8 A charge, 1.37 A input', (119.38, 30.48), 1.8, True)
 BX, BY = 175.26, 63.5
-s.add('Battery_Management:BQ24074RGT', 'U201', BX, BY, 0, 'BQ24074RGTR',
-      'Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias', extra={'LCSC': 'C54313'},
+s.add('Battery_Management:BQ24074RGT', 'U201', BX, BY, 0, 'BQ24074RGTT',
+      'Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias', extra={'LCSC': 'C2861252'},
       fields={'ref': (BX - 2.54, BY - 19.05, 0, 'right'), 'val': (BX - 2.54, BY - 16.51, 0, 'right')})
 # IN from the VIN rail, 4.7 uF
 W((91.44, VR), (BX, VR), P('U201', 'IN'))
