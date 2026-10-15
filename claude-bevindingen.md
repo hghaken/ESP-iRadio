@@ -4,6 +4,28 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 6: Grok's reply - outcome
+
+Agreed with every point; no new layout, no new route (the board and the schematic files are
+unchanged, only comments and documents):
+
+| # | Grok | Outcome |
+|---|---|---|
+| 1 | Sockets, holes, CN1 order, active area match the drawing | No change. |
+| 2 | Board holes stay 2.7 mm; round M2.5 standoffs ~4 mm across (hole centre 4 mm from J3 pin 1, a 5 mm hex hits the socket) | **Done** in 07, 05, NOTES.md and the comments in `mkpcb.py` / `pcbrules.py` (they said "<= 4.5 mm"). |
+| 3 | `gen_radio.py` comment "J3 pin 9" for SCK | **Done**: "J3 pin 3 CLK" (the net was right). |
+| 4 | CN2 is not a copy of CN1 (own order: 1 VCC, 2 GND, 3 BLA, 4 FCS, 5 FSO, 6 CLK, 7 SDA, 8 DC, 9 RES, 10 CS1) | **Done**: "duplicates CN1" removed from 07, NOTES.md and the `gen_radio.py` comment; 07 lists CN2's order and says never to tie the sockets pin for pin. J7 stays all open. |
+| 5 | Datasheet sketch numbers pins 7-10 differently (7 BLK, 8 MISO, 9 CS1, 10 CS2) | Board follows the drawing (7 CS, 8 BLK). **Check on the first module** added to 07, NOTES.md and the 06 checklist; swap pins 7 and 8 only if the real module disagrees. |
+| 6 | Backlight S8050 on the module, high or open = on; ~80 mA typ / 120 mA max from VCC | Written in 07 (from `+3V3`, the 1 A LDO has room); PWM >= 20 kHz stays on the firmware list. |
+| 7 | Glass front ~14 mm up (module 2.5 mm max) | In 07. |
+| 8 | Two ground-land vias are enough, leave the RXD0 track | No change. |
+| 9 | U.FL: coax runs in the gap and leaves below the module (past y 36.9) | Agreed (07 says "leaves through the ~11 mm gap"). |
+| 10 | U2 at 180 deg is right | No change. |
+| 11 | Encoder: keep the Alps 20 mm shaft footprint until the case thickness is known; C470754 is not the long-shaft choice | **Done**: the 07 parts row and NOTES.md no longer name C470754 for this height. |
+| 12 | Firmware for the new module (240 x 320 init, PWM >= 20 kHz) | Stays on the new-board firmware list, nothing to do before the board exists. |
+
+Correction to my round 6 text below: "CN2 duplicates CN1" was wrong (point 4).
+
 ## Round 6: new display, new board (90 x 60 mm) - please review
 
 The owner wants one JLCPCB/LCSC order for everything. The bare 1.69" panel (and any 1.69" display)

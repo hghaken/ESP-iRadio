@@ -70,7 +70,7 @@ the revision history of the actual KiCad project.
   JLCPCB/LCSC catalogue), and the owner wants one order for everything. The HS20S010B (LCSC
   C5329586, 2.0" IPS, 320 x 240, ST7789V2, SPI, 63.2 x 36.2 mm module PCB with two 1x10 2.54 mm
   rows and four M2.5 holes) is in that catalogue. It plugs into two 1x10 sockets J3 (CN1, the
-  signals) and J7 (CN2, only mechanical: its pins duplicate CN1 and stay open); the module has its
+  signals) and J7 (CN2, only mechanical: CN2 has its own pin order, all its pins stay open); the module has its
   own backlight transistor, so Q1/R22/R23 went and `LCD_BL` (IO26) drives BLK directly (high =
   on). FSO/FCS (the optional font chip, not fitted) stay open. Board 90 x 60 mm (was 80 x 60),
   encoder beside the module. Schematic: ERC 1 known warning, `intcheck.py` OK (120 parts, 117
@@ -130,7 +130,10 @@ Still to do on the layout (before ordering):
 - display module: check on the delivered module that CN1 pin 1 (GND) is at the top right as in
   the datasheet drawing, and whether it comes with pin headers (the LCSC photo shows none: then
   order two 1x10 2.54 mm male headers with it and solder them on, short side through the module);
-  measure the standoff height (socket + header spacer, ~11 mm: M2.5 standoffs of that length);
+  measure the standoff height (socket + header spacer, ~11 mm: round M2.5 standoffs of that
+  length, ~4 mm across; a 5 mm hex hits the socket); check that GPIO5 (pin 7) selects the display
+  and GPIO26 (pin 8) switches the backlight (the datasheet's application sketch numbers them
+  differently from its drawing; if swapped, exchange pins 7 and 8);
 - SW1: with the module ~11 mm above the board plus its glass, the front panel lies ~15 mm up; pick
   the EC11 shaft length for that height (D16 assumed a recessed knob next to a low panel);
 - SW203: which slide position is ON (silk says "ON/OFF ?");
@@ -201,7 +204,8 @@ To verify before the layout:
 - MSK12C02 (SW203): the pad pitch (3.0 mm between pins 1 and 2, 1.5 mm between 2 and 3) is the
   Shouhan C431540 drawing (checked by Grok); which slide position is ON only shows on a sample.
 - EC11 (SW1): the shaft length for the front panel height (see "Still to do on the layout");
-  C470754 is 24.5 mm tall.
+  the footprint is the Alps EC11E 20 mm shaft until the case thickness is known; C470754 (24.5 mm
+  overall) is not the part for this height.
 - Display module HS20S010B: pin 1 of CN1 and whether pin headers come with it (see the layout).
 - TS-1187A: pads 1 and 4 diagonal, per the XKB drawing (Grok); a sample check is enough.
 - J4 TF-01A: symbol and footprint agree; not yet compared with a manufacturer drawing.

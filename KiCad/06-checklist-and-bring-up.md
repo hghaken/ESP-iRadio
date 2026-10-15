@@ -11,7 +11,8 @@ Before the layout (details in `esp-iradio/NOTES.md`):
 - [ ] MSK12C02 (SW203): which slide position is ON, on a sample (for the silk).
 - [ ] EC11 shaft length for the front panel ~15 mm above the board (D16); update SW1's part.
 - [ ] Display module HS20S010B (C5329586): CN1 pin 1 position on the delivered module; pin
-      headers included or two C492409 ordered with it; standoff height (~11 mm) measured.
+      headers included or two C492409 ordered with it; standoff height (~11 mm) measured;
+      GPIO5 (pin 7) selects the display and GPIO26 (pin 8) switches the backlight.
 - [ ] TS-1187A pads 1 and 4 diagonal (LCSC drawing).
 
 Layout:

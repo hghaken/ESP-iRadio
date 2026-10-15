@@ -37,7 +37,7 @@ json.dump(d, open(PRO, 'w', encoding='utf-8', newline='\n'), indent=2)
 print('rules and net classes written to', PRO)
 
 # custom rule: the display module's M2.5 standoffs (H1, H5-H7) sit next to its sockets (J3, J7) by design;
-# their courtyards touch, the parts do not (standoffs up to 4.5 mm round). Every other overlap still counts.
+# their courtyards touch, the parts do not (round standoffs ~4 mm across; a 5 mm hex would hit the socket). Every other overlap still counts.
 DRU = PRO[:-len('.kicad_pro')] + '.kicad_dru'
 HOLES = "(A.Reference == 'H1' || A.Reference == 'H5' || A.Reference == 'H6' || A.Reference == 'H7')"
 SOCKS = "(B.Reference == 'J3' || B.Reference == 'J7')"

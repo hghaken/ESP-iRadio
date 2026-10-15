@@ -9,7 +9,7 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
   power (VSYS, +3V3) and some signals, top and bottom signals. Stitch GND vias along the edge and
   next to signal vias that change layer.
 - **Front (top) side**: the HS20S010B display module top left on two 1x10 sockets (J7 CN2 left,
-  J3 CN1 right) and four M2.5 standoffs (H1, H5-H7), its PCB ~11 mm above the board; the EC11
+  J3 CN1 right) and four round M2.5 standoffs, ~4 mm across (H1, H5-H7), its PCB ~11 mm above the board; the EC11
   encoder beside it (D13/D16). Only parts lower than ~10 mm under the module. The case front
   panel lies ~15 mm above the board (module + glass); agree the front with the owner first.
 - **Display sockets**: positions and the module holes follow the HS20S010B drawing

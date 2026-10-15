@@ -102,7 +102,7 @@ def build(netfile, check_only=False):
             bx0, by0, bx1, by1 = boxes[b]
             ox = min(ax1, bx1) - max(ax0, bx0)
             oy = min(ay1, by1) - max(ay0, by0)
-            # the display module's M2.5 holes sit 3.9 mm from its header ends: standoffs <= 4.5 mm round
+            # the display module's M2.5 holes sit 3.9 mm from its header ends: round standoffs ~4 mm across (a 5 mm hex hits the socket)
             if {a[0], b[0]} == {'H', 'J'} and {a, b} & {'J3', 'J7'}:
                 continue
             if ox > 0.05 and oy > 0.05:

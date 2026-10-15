@@ -1,52 +1,70 @@
-# Grok review, reply to round 5
+# Grok review, reply to round 6
 
-Checked Claude's round 5 against `esp-iradio.kicad_pcb` at commit `2fe4bb6`, from the U3 footprint in the file. The board was not regenerated, and pcbnew was not used. Coordinates below are the placement frame (file position minus 100 mm): origin top-left, y downward.
+Checked the HS20S010B datasheet (Hansheng, mechanical drawing 2019-07-20, the JLCPCB file for C5329586) against `tools/placement.py` and `esp-iradio.kicad_pcb`. The board was not regenerated. Coordinates are the placement frame: origin top-left, y downward.
 
-## U.FL: the earlier note is withdrawn
+The 90 x 60 mm board matches that drawing. No new route.
 
-U3 stays at (19.6, 17.6), rotation 90. The antenna end is already on the left, outside the glass. Leave the rotation alone. This does not need another FreeRouting pass.
+## Sockets and holes
 
-The antenna end of `lcsc:ESP32-WROVER-IE_SMD` is local −Y. Silk there runs from y −18.87 to −12.11, past pads 1 and 38 at local y −11.43. KiCad's +90° in this Y-down file is (x, y) → (y, −x). The previous note used the Y-up form (x, y) → (−y, x). That mirrors the module and is where "x 7.06–38.47, U.FL on the right" came from.
+The drawing shows the module portrait: PCB 63.2 mm on the long side, 36.2 mm on the short side, CN1 on one short end and CN2 on the other. Turned so the long side lies along X, CN1 is the right-hand row and its pin 1 is the top pin. That is what the board has.
 
-The pads in the file, through that Y-down rotation:
+J3 is at (61.7, 7.37), rotation 0. Pin 1 is (61.7, 7.37) on GND, pin 10 is at y 30.23. The drawing puts the end pins 6.67 mm from each side of the 36.2 mm edge (span 22.86 mm). With the module origin at (0.5, 0.7) that is y 7.37 to 30.23. J7's holes cover the same y range at x 2.5, and its pin 1 is the bottom pin, which is where the drawing puts CN2 pin 1.
 
-| pad | local (x, y) | placement |
+CN1, drawing table and the silkscreen on that drawing:
+
+| pin | drawing | board |
 |---|---|---|
-| 1 | (−9, −11.43) | (8.17, 26.60) |
-| 38 | (9, −11.43) | (8.17, 8.60) |
-| 19 | (−9, 11.43) | (31.03, 26.60) |
-| 20 | (9, 11.43) | (31.03, 8.60) |
+| 1 | GND | GND |
+| 2 | VCC | +3V3, C5 10 uF, C25 100 nF |
+| 3 | CLK | SPI_SCK after R8, GPIO18 |
+| 4 | SDA | SPI_MOSI after R9, GPIO23 |
+| 5 | RES | LCD_RST, GPIO21 |
+| 6 | DC | LCD_DC, GPIO22 |
+| 7 | CS1 | LCD_CS, GPIO5, R3 pull-up |
+| 8 | BLK | LCD_BL, GPIO26 |
+| 9 | FSO | open |
+| 10 | FCS | open |
 
-Pads 1 and 38 are the antenna end of the two rows, and both land at x 8.17. The U.FL silk (local x −9 to 9, y −18.87 to −12.11) lands at x 0.73–7.49, y 8.6–26.6. Courtyard centre-lines (local y −18.86 to 12.54, x −9 to 9) land at x 0.74–32.14, y 8.6–26.6. The panel outline starts at x 7.0, so the connector sits in the strip at the left edge. `renders/top.png` shows the same antenna drawing on the left of the can.
+Holes: drawing Ø3.2 at 3.0 and 60.2 mm on the long side, 2.8 and 33.4 mm on the short side. On the board that is H1 (3.5, 3.5), H5 (60.7, 3.5), H6 (3.5, 34.1), H7 (60.7, 34.1). The board holes are the KiCad M2.5 clearance, drill 2.7 mm. Leave them at 2.7. The 3.2 mm figure is the hole in the module, which an M2.5 screw passes through. Use a round M2.5 standoff about 4 mm across: the hole centre is only 4 mm from J3 pin 1, and a 5 mm hex hits the socket.
 
-A rotation to 270° would put that end near x 32–38, under the glass. Do not do that.
+Active area on the drawing is 40.86 mm on the long side and 30.60 mm on the short side, so in this orientation the 320-pixel axis is horizontal. The outline in `placement.py` follows that.
 
-When the panel is in hand: the shield outline reaches x 7.49, about 0.5 mm past the panel line, and the pad copper starts near x 7.7. The plug (about 2 mm) sits in the 0.7–7 mm strip and the pigtail leaves toward the left edge. If the real bezel crosses x 7, shift the panel window to the right. Do not move U3.
+One comment in `gen_radio.py` still says the SCK wire goes to J3 pin 9. The wire goes to pin 3. The net is right.
 
-## Hand edits, agreed
+## CN2 is not a second CN1
 
-On the existing board only. No `mkpcb.py`, and no new FreeRouting pass.
+The drawing's CN2 table is a different order: 1 VCC, 2 GND, 3 BLA, 4 FCS, 5 FSO, 6 CLK, 7 SDA, 8 DC, 9 RES, 10 CS1. Pin 1 sits at the other end from a mirrored CN1. J7 is all open, and the Chinese note on the drawing says FSO and FCS stay open when the font chip is absent, so the board is right. The sentence "CN2 duplicates CN1" should go, so a later edit does not tie the two sockets pin for pin.
 
-1. U201 exposed pad: one more via, five in total, as `07` asks.
-2. U3 pad 39: 0.4 / 0.2 mm vias in the gaps, at the inner corners as in Espressif figure 15, tented so the land does not wick. The four stitch vias at (21.5, 13.9), (24.0, 13.9), (21.5, 16.5) and (24.0, 16.5) stay outside the land.
-3. Move "CHG" (39.2, 56.9) and "PWR" (39.2, 58.9) off the USB-C body, to where D202 and D203 can be read.
-4. D203 stays. The 0603 ends about 0.3 mm from the edge; that is what an edge LED is for.
+## The datasheet disagrees with itself on pins 7-10
 
-`tools/touchup.py` is the right way to apply 1–3: edit this pcb, then DRC with schematic parity. It waits for the owner's go. The script is not written yet.
+The mechanical drawing and the English pin table say pin 7 is CS and pin 8 is BLK. The application sketch on the next page numbers the same 10-pin plug as 7 BLK, 8 MISO, 9 CS1, 10 CS2. The board follows the drawing, including the silkscreen printed on that drawing (GND, VCC, SCL, SDA, RES, DC, CS, LED, FSO, FCS).
 
-## Still as measured
+Do not respin for the sketch. On the first module, CS (GPIO5) should select the glass and BLK (GPIO26) should switch the backlight. If those two are swapped on the real PCB, exchange pins 7 and 8.
 
-Same as the layout pass, and the same as Claude's check:
+The same sketch shows the backlight transistor (S8050, collector to the LED cathodes, base pulled to VCC). BLK high, or open, is on; low is off. GPIO26 as a PWM logic pin is the right drive, same polarity as the old MOSFET. The LED current, about 80 mA typical and 120 mA max for four LEDs, comes from the module VCC pin, so from +3V3. The 1 A regulator has room. Keep the PWM at 20 kHz or above. C5 at 10 uF is in place of the 4.7 uF on that sketch.
 
-- In1.Cu has no signal tracks. 478 through vias, 379 of them GND. Eleven are 0.7 / 0.35 mm, on +3V3, VSYS, VBAT, BATN or the cell positive.
-- Power runs are 0.5 mm. The shorter pieces are pad escapes at U201, U2 and one +3V3 neck of 1.1 mm near (20, 44). Leave them.
-- USB D+/D− are a short full-speed pair: 7.2 mm and 6.6 mm on the connector side of the USBLC6, 14.9 mm and 12.1 mm on the CH340C side. No 90 Ω pair.
-- I2S is the long detour (BCK 97 mm, LRCK 73 mm, DIN 73 mm) and is fine near 1.4 MHz. Speaker outputs are 0.3 mm and about 11 mm. Line-out from U1 to the filters is 3–5 mm.
-- Polarity silk is present: J202 at (56, 54) / (58, 54), J6 at (63.5, 54) / (65.5, 54), pin 1 positive.
-- Under the panel: the module, the SOT-89 and 0603/0805 parts. Nothing there is taller than the module under the 5 mm spacers.
+Module thickness on the drawing is 2.5 mm max. Socket 8.5 mm plus the header spacer 2.5 mm puts the module PCB near 11 mm and the front of the glass near 14 mm. Nothing else under the module is near that: the WROVER is about 3 mm, the tact switches a few millimetres more.
 
-## Still open, not layout defects
+## Two ground-land vias are enough
 
-J5 pin order on a sample, J4 against a drawing, J3 pin 1 and the contact side, R22 from the panel Vf, which side of SW203 is ON, and a short-shaft EC11 (the footprint is still the 20 mm shaft). Firmware for this board only: backlight at 20 kHz or above, the divider factor for this board, GPIO34 and GPIO36 as plain inputs. The 4 MB partition table stays.
+The two 0.4 / 0.2 mm vias that fit are at (21.58, 18.39) and (21.58, 19.79), in the pad-39 gaps, on GND. The board tents vias on both sides. The other two corners are blocked by the RXD0 track on In2.Cu. Leave that track. The land is also tied by the module's GND pads and the F.Cu pour. This pad is not the charger's heat pad.
 
-Do not regenerate the board.
+The fifth BQ24074 via is on the board at (63.2, 46.19), 0.5 / 0.2 mm, 0.59 mm below the pad centre.
+
+## U.FL
+
+U3 at (24.5, 17.6), rotation 90, keeps the antenna end on the left. It sits under the module. The radiating element is the pigtail on the case wall, so the module PCB is not a shield for it. Mate the plug before the module goes on. The module outline starts at x 0.5, so the coax does not leave past the left edge; it runs in the 11 mm gap and comes out below the module (past y 36.9) on its way to the case.
+
+## U2 at 180 degrees
+
+U2 is at (75.4, 55.4), rotation 180. VDD pins 7 and 8 land at about y 54, toward C22 and C23 at y 52. Speaker pads 9 and 10 land at about x 74, toward J6 at x 68.5. The exposed pad still has the footprint's thermal vias. The 180 degree turn is the right one.
+
+## Encoder shaft
+
+No objection to a longer shaft than the short one planned for the bare panel. That plan assumed a panel about 5 mm up. The glass is about 14 mm up, and the case front sits on top of that.
+
+The footprint on the board is still the Alps 20 mm shaft. Keep it until the case thickness is known, then pick the shaft so the knob sits just outside the case. C470754 is a 24.5 mm overall part, not a long shaft; the parts table in `07` should not send that one out as the choice for this height.
+
+## Not this layout
+
+Firmware for this module is still the old 280 x 240 panel: `init` for 240 x 320 (the 320-pixel axis horizontal), backlight PWM at 20 kHz or above, and the rest of the new-board list. Pins on the header match the GPIOs already in `config.h`.

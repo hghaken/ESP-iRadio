@@ -132,7 +132,7 @@ s.text('CONTROLS: EC11 encoder (recessed knob)', (20.32, 99.06), 1.8, True)
 # ---------------------------------------------------------------- display + microSD (right)
 # display module HS20S010B (LCSC C5329586, 2.0in 320x240 ST7789V2) on two 1x10 sockets (JLCPCB fits the
 # sockets; the module comes loose and gets its own 1x10 pin headers). CN1 carries the signals, CN2 holds
-# the other side (its pins duplicate CN1 and stay open). FSO/FCS belong to the optional font chip:
+# the other side (CN2 has its own pin order, not CN1's: all pins stay open). FSO/FCS belong to the optional font chip:
 # not fitted, left open (datasheet). BLK switches the module's own backlight transistor: high = on.
 s.add('Connector_Generic:Conn_01x10', 'J3', 345.44, 63.5, 0, 'Display HS20S010B CN1',
       'Connector_PinSocket_2.54mm:PinSocket_1x10_P2.54mm_Vertical', extra={'LCSC': 'C2897373'},
@@ -170,7 +170,7 @@ for c in ('C3', 'C4'):
     up('+3V3', P(c, 1), False)
     gnd(P(c, 2))
 
-# SPI SCK: module -> R8 -> SCK_BUS -> J4 CLK (straight) + J3 pin 9 SCL (column 317.5); TP5 on the column
+# SPI SCK: module -> R8 -> SCK_BUS -> J4 CLK (straight) + J3 pin 3 CLK (column 317.5); TP5 on the column
 R('R8', 309.88, Rt(9)[1], '22R', 90)
 W(Rt(9), (299.72, 132.08), P('R8', 1))
 W(P('R8', 2), (317.5, 132.08), P('J4', 'CLK'))

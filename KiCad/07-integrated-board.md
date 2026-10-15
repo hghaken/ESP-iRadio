@@ -172,8 +172,9 @@ order for everything. The HS20S010B (LCSC C5329586, ~$5.4, ~100 in stock) is the
 IPS, **320 x 240** (was 280 x 240), ST7789V2, 4-wire SPI, 3.3 V, module PCB 63.2 x 36.2 mm with
 four M2.5 holes (3.2 mm, at 3.0/60.2 x 2.8/33.4 mm from the top-left corner), glass 51.8 mm wide,
 active area 40.86 x 30.6 mm. Two 1x10 2.54 mm rows: CN1 at the right end (x 61.2), CN2 at the
-left end (x 2.0), both at y 6.67-29.53. CN2 duplicates CN1's signals; the board connects CN1 only
-and uses CN2 to hold the module.
+left end (x 2.0), both at y 6.67-29.53. CN2 carries the same signals in a **different order** (1 VCC,
+2 GND, 3 BLA, 4 FCS, 5 FSO, 6 CLK, 7 SDA, 8 DC, 9 RES, 10 CS1): the board connects CN1 only and
+uses CN2, all pins open, to hold the module. Never tie the two sockets pin for pin.
 
 | CN1 pin | Signal | Board net |
 |---|---|---|
@@ -184,18 +185,26 @@ and uses CN2 to hold the module.
 | 5 | RES | `LCD_RST` GPIO21 |
 | 6 | DC | `LCD_DC` GPIO22 |
 | 7 | CS | `LCD_CS` GPIO5 (10k pull-up R3) |
-| 8 | BLK | `LCD_BL` GPIO26 (PWM; the module's own transistor, high = on) |
+| 8 | BLK | `LCD_BL` GPIO26 (PWM; the module's own S8050 transistor, base pulled to VCC: high or open = on, low = off) |
 | 9, 10 | FSO, FCS | open (the optional font chip, not fitted) |
 
+- Pins 7/8: the mechanical drawing, the English pin table and the drawing's silkscreen say 7 CS,
+  8 BLK (the board follows that); the application sketch in the same datasheet numbers the plug
+  7 BLK, 8 MISO, 9 CS1, 10 CS2. Check on the first module that GPIO5 selects the display and
+  GPIO26 switches the backlight; if they are swapped, exchange pins 7 and 8 (no respin otherwise).
 - Sockets J3 (CN1) and J7 (CN2): HCTL PM254-1-10-Z-8.5 (LCSC C2897373, 8.5 mm), assembled by
   JLCPCB. The LCSC photo shows the module without pin headers: order two 1x10 male headers
   (e.g. C492409 PZ254V-11-10P: 2.5 mm spacer, 3 mm short side through the module, 6 mm into the
-  socket) and solder them on. Module PCB then ~11 mm above the board; four M2.5 standoffs of that
-  length on H1/H5/H6/H7 hold it.
+  socket) and solder them on. Module PCB then ~11 mm above the board, the front of the glass ~14 mm (module 2.5 mm
+  thick); four **round** M2.5 standoffs of ~11 mm, about 4 mm across, on H1/H5/H6/H7 hold it (the
+  hole centres are 4 mm from the socket ends: a 5 mm hex standoff hits the socket). The board
+  holes stay 2.7 mm (M2.5 clearance); the 3.2 mm holes are the module's.
 - Under the module (~11 mm free): the WROVER-IE (its U.FL included), the 3.3 V regulator, the
   buttons and recovery pads, most of the small parts.
-- Backlight: no driver on the board any more (Q1/R22/R23 removed). Firmware: backlight PWM
-  >= 20 kHz still (5 kHz current pulses on +3V3 can be heard through the amplifier).
+- Backlight: no driver on the board any more (Q1/R22/R23 removed); four LEDs, ~80 mA typical,
+  120 mA max, through the module's VCC pin from `+3V3` (the 1 A AP7361C has room; C5 10 uF where
+  the datasheet sketch has 4.7 uF). Firmware: backlight PWM >= 20 kHz still (5 kHz current
+  pulses on +3V3 can be heard through the amplifier).
 - Firmware: `init(240, 320)` and a new layout for 320 x 240 (the 280 x 240 layout in
   `display.cpp` gets 40 px more width).
 - Source: the HS20S010B datasheet with the mechanical drawing (LCSC C5329586), 2026-10-16.
@@ -262,7 +271,7 @@ encoder stay.
 | NTC 10k B3435 0603 (NCP18XH103F03RB) | C13564 | 206858 | TS |
 | TYPE-C-31-M-12 | C165948 | 90528 | USB-C 16 pins; KiCad footprint `USB_C_Receptacle_HRO_TYPE-C-31-M-12` |
 | microSD push-push (TF-01A) | C91145 | 205737 | footprint to match |
-| EC11E with switch, short shaft | e.g. C470754 EC11E15244B2 | 6196 | THT; confirm shaft length/type for D16 |
+| EC11E with switch | footprint now: Alps EC11E 20 mm shaft | | THT; the shaft length is picked once the case thickness is known, so the knob sits just at the case front (glass ~14 mm up). C470754 (EC11E15244B2, 24.5 mm overall) is not the choice for this height |
 | MSK12C02 slide switch | C431540 | 166028 | on/off |
 | TS-1187A-B-A-B | C318884 | 498821 | basic; RESET, BOOT |
 | JST S2B-PH-K-S (side) / B2B-PH-K-S (top) | C173752 / C131337 | 193749 / 87147 | cell, speaker |
