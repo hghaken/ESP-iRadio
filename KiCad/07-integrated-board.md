@@ -159,6 +159,7 @@ a 16 MB partition table; everything else (pins, I2S, SPI, encoder) stays.
 | D13 | Display position | **on the front of the board**: panel on spacers or double-sided tape, FPC folded to the pads on the same side |
 | D14 | Charge LEDs | **yes**: red on CHG (charging), green on PGOOD (USB power), besides the screen |
 | D15 | Board size | as small as reasonable, about **60 x 80 mm**; the case is designed around the board |
+| D16 | Encoder | **recessed**: nothing may stick out of the front panel. EC11 with push switch and a shorter shaft (the carrier footprint is for H20 mm), a low knob (about 15-18 mm across, ~6 mm high) in a round pocket in the front panel (about 22 mm across) with its top flush with the panel. The EC11 body is ~6.5 mm high, so the front panel sits at least that far above the board and the display goes on ~5 mm spacers to bring its glass right behind the window. Alternative if the owner prefers a flat front: a thumbwheel encoder on a case edge. |
 
 ## Sources
 
