@@ -486,7 +486,8 @@ static Screen current() {
   } else if (p.lineOut) {
     int kbps = p.bitrateKbps > 0 ? p.bitrateKbps : 96;
     int seconds = (p.bufferKB * 8 / kbps + 2) / 5 * 5;
-    s.status = "Line out  buf " + String(seconds) + " s" + (p.codec.length() ? "  " + p.codec : "");
+    s.status = String(p.speaker ? "Speaker" : "Line out") + "  buf " + String(seconds) + " s" +
+               (p.codec.length() ? "  " + p.codec : "");
   } else if (!p.btEnabled || !p.btConnected) {
     s.status = "";  // the header already says off / searching
   } else {

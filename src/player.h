@@ -10,6 +10,7 @@ struct PlayerStatus {
   bool btConnected = false;
   bool btEnabled = true;   // Bluetooth switched on (web toggle)
   bool lineOut = false;    // line output (PCM5102A over I2S) plays: Bluetooth switched off
+  bool speaker = false;    // the MAX98357A speaker amplifier is switched on
   int station = -1;  // index into settings.stations
   String stationName;
   String title;      // ICY StreamTitle

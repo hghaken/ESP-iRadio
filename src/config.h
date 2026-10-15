@@ -24,6 +24,10 @@
 #define I2S_BCK_PIN  27
 #define I2S_LRCK_PIN 14
 #define I2S_DATA_PIN 13
+// Speaker: MAX98357A I2S amplifier on the same three lines. Its SD pin: driven low = off;
+// released (input) = on, the board's 1 Mohm pull-up then selects (L+R)/2. Never drive it high:
+// 3.3 V on SD selects the left channel only. Low at boot (strapping pin), so no pop at power-up.
+#define AMP_SD_PIN 2
 
 // Olimex battery sense (470k/470k divider, needs BAT_SENS_E1 + BAT_PWR_E1 bridged) and
 // external power sense (needs PWR_SENS_E1 bridged). Both ADC1, input-only pins.

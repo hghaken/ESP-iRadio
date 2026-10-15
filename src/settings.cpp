@@ -50,6 +50,7 @@ void settingsLoad() {
   settings.scrollTitles = prefs.getBool("scroll", true);
   settings.line32 = prefs.getBool("l32", false);
   settings.batteryFitted = prefs.getBool("batf", true);
+  settings.speakerOn = prefs.getBool("spk", true);
   settings.backlight = constrain(prefs.getInt("bl", 100), 5, 100);
   settings.nightDim = prefs.getBool("ngt", false);
   settings.nightFrom = constrain(prefs.getInt("ngtf", 22 * 60), 0, 24 * 60 - 1);
@@ -107,6 +108,7 @@ void settingsSave() {
   prefs.putBool("scroll", settings.scrollTitles);
   prefs.putBool("l32", settings.line32);
   prefs.putBool("batf", settings.batteryFitted);
+  prefs.putBool("spk", settings.speakerOn);
   prefs.putInt("bl", settings.backlight);
   prefs.putBool("ngt", settings.nightDim);
   prefs.putInt("ngtf", settings.nightFrom);

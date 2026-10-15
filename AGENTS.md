@@ -28,7 +28,7 @@ use (see "Stations"). Next to active Bluetooth the radio gets ~9-16 KB/s: 96 kbp
 128 kbps MP3 is borderline, 192/320 kbps stutters. Stations that are too heavy or only offer
 HE-AAC are re-encoded to AAC-LC 96 kbps by Liquidsoap relays on the user's NAS (Joe, NPO
 Sterren.nl, RadioNL, Team FM; `nas/`) and played from the own Icecast.
-Firmware v1.36 (2026-10-14: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
+Firmware v1.37 (2026-10-15: microSD breakout, logo layout, rotary encoder, line output; v1.17 was the JBL fix). Open problem: with the JBL Charge 5 the WiFi stream starves
 now and then (minutes to hours into a link; the headphones never show it); investigation,
 workarounds and diagnostics in `docs/wifi-stall-investigation.md` and under "Zombie WiFi" in
 Pitfalls.
@@ -135,6 +135,14 @@ Hardware:
   so VCC = 5 V; SCK and XSMT handled on the board; FMT jumper on I2S; FLT solder bridge N/L as
   shipped); its maker's site has no page for it. First test 2026-10-14: only crackling until the
   DATA wire went to the right pin; the 440 Hz tone isolated that.
+  Speaker (v1.37): a MAX98357A I2S amplifier on the same three lines plays with the line output
+  when the web checkbox "Speaker" is on (NVS `spk`, default on, `/api/speaker on=`, SD backup
+  `speaker=`). `ampSet()` in `lineTask` drives `AMP_SD_PIN` (GPIO2) low = off and releases it
+  (input) = on, the board's 1 Mohm pull-up then selects (L+R)/2; never driven high (3.3 V would
+  select the left channel only). On only while I2S runs: switched on after I2S starts and off
+  before it stops or the driver is reinstalled. GPIO2 is driven low from `playerBegin()`. Display
+  status "Speaker  buf ..." while it plays, `speaker` / `speakerOn` in `/api/status`, Diagnostics
+  "Output: line out + speaker".
 - `src/player.*` - audio pipeline: `netTask` (ICY stream -> 256 KB PSRAM buffer) and `decodeTask`
   (AAC/MP3 Helix decoder -> `PcmSink` -> 64 KB PSRAM PCM buffer); `PcmSink` resamples anything that is
   not 44.1 kHz (linear interpolation in Q16 fixed point: the ESP32 has no double FPU) and stops waiting
@@ -297,7 +305,7 @@ Hardware:
   UART interrupt may be held off), `#D` + restart or `#E <reason>` (playback resumes). Our own log
   lines to the serial port are muted meanwhile (`weblogSerialMute`); `Serial.setRxBufferSize(2048)`
   before `Serial.begin`. The PC opens the port with DTR/RTS low so the board is not reset.
-- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.36 on 2026-10-14),
+- `src/version.*` - firmware version `FIRMWARE_VERSION` in `version.h` (v1.01 .. v1.37 on 2026-10-15),
   shown bottom left on the display, under Diagnostics -> Firmware and as `diag.version`. Raise it
   by 0.01 with every firmware change (in the same commit), before building and uploading. Also the build stamp (`buildStamp`) from the generated, git-ignored `include/build_stamp.h`
   that the pre-build script writes every build (PlatformIO rebuilds on content, not timestamps; a
@@ -826,7 +834,9 @@ Former displays (Robot LCD, e-paper) used the same CS/DC/RST/BL pins; the e-pape
 GPIO4, the Robot LCD its SD chip select there.
 Avoid GPIO16/17 (PSRAM on WROVER),
 GPIO6-11 (flash), GPIO0/12/15 (strapping), GPIO1/3 (USB serial). GPIO2 (strapping, low at boot) is
-reserved for the amplifier shutdown of the planned speaker output (was GPIO19, now MISO).
+the MAX98357A speaker amplifier's SD (shutdown) since v1.37 (was GPIO19, now MISO).
+MAX98357A: LRC -> GPIO14, BCLK -> GPIO27, DIN -> GPIO13 (parallel to the DAC), GAIN open (9 dB),
+SD -> GPIO2 (EXT2 pin 15), GND, Vin -> 5V, speaker 4-8 ohm on its +/- (never to ground).
 
 ## Stations
 My Radio (user's own Icecast 2.4.4 server, `http://icecast.example.com:8888/`) is what the user
@@ -916,12 +926,10 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
 (2026-10-11) about twice that is expected, not measured yet.
 
 ## Open points
-- Speaker (2026-10-14, not wired yet): two boards on hand, a PAM8403 mini board with volume pot
-  (analog, no shutdown pin) and a MAX98357A I2S mono amplifier (recommended: shares the I2S lines
-  27/14/13 with the PCM5102A, SD on GPIO2 driven low = off, released = on, never high). Planned:
-  web checkbox "Speaker" for the MAX98357A, both outputs silent while Bluetooth is on. Details
-  and wiring in `docs/speaker-output.md`. The line output itself works (v1.30+). Maybe a
-  separate output choice instead of the Bluetooth toggle.
+- Speaker: firmware for the MAX98357A done (v1.37, checkbox "Speaker"); wiring and a listening
+  test on the radio still to confirm (2026-10-15). The PAM8403 mini board is a spare (analog, no
+  shutdown pin). Details and wiring in `docs/speaker-output.md`. Maybe a separate output choice
+  instead of the Bluetooth toggle.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
   the space under the battery line is still free (e.g. a volume or buffer bar). The EC11 rotary
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see

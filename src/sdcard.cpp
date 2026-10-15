@@ -308,6 +308,7 @@ bool sdBackupNow() {
   s += "scroll=" + String(settings.scrollTitles ? 1 : 0) + "\n";
   s += "line32=" + String(settings.line32 ? 1 : 0) + "\n";
   s += "battery_fitted=" + String(settings.batteryFitted ? 1 : 0) + "\n";
+  s += "speaker=" + String(settings.speakerOn ? 1 : 0) + "\n";
   s += "backlight=" + String(settings.backlight) + "\n";
   s += "night=" + String(settings.nightDim ? 1 : 0) + "\n";
   s += "night_from=" + String(settings.nightFrom) + "\n";
@@ -362,6 +363,7 @@ String sdRestoreSettings(bool* ok) {
     else if (k == "scroll") settings.scrollTitles = v.toInt() != 0;
     else if (k == "line32") settings.line32 = v.toInt() != 0;
     else if (k == "battery_fitted") settings.batteryFitted = v.toInt() != 0;
+    else if (k == "speaker") settings.speakerOn = v.toInt() != 0;
     else if (k == "backlight") settings.backlight = constrain(v.toInt(), 5, 100);
     else if (k == "night") settings.nightDim = v.toInt() != 0;
     else if (k == "night_from") settings.nightFrom = constrain(v.toInt(), 0, 24 * 60 - 1);

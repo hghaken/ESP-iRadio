@@ -67,6 +67,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 <div class="row"><label><input type="checkbox" id="coexwifi" onchange="post('/api/coex','wifi='+(this.checked?'1':'0'))"> Test: WiFi priority while streaming (until the next restart)</label><span class="mut" id="coexstat"></span></div>
 <div class="row"><label><input type="checkbox" id="btlead" onchange="post('/api/btlead','on='+(this.checked?'1':'0'))"> Radio leads the Bluetooth link (no role switch; keeps WiFi steady next to some speakers)</label></div>
 <div class="row"><label><input type="checkbox" id="bten" onchange="post('/api/btenable','on='+(this.checked?'1':'0'))"> Bluetooth on (connect to the chosen device)</label></div>
+<div class="row"><label><input type="checkbox" id="spk" onchange="post('/api/speaker','on='+(this.checked?'1':'0'))"> Speaker (MAX98357A) plays with the line output</label></div>
 <div class="row"><label><input type="checkbox" id="line32" onchange="post('/api/line32','on='+(this.checked?'1':'0'))"> Line output: 32-bit I2S slots (off = 16-bit)</label></div>
 <div class="mut">With Bluetooth off the radio plays through the line output (PCM5102A DAC).</div>
 <div class="mut" style="margin-top:8px">Not connecting? Try again turns WiFi off for 30 seconds and calls the chosen device. Nothing is erased.</div>
@@ -133,7 +134,7 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
  $('wifi').textContent=s.wifi.mode=='ap'?'Setup mode (access point). Choose your network below.':'Connected to '+s.wifi.ssid+' ('+s.wifi.ip+', '+s.wifi.rssi+' dBm'+(s.diag.channel?', channel '+s.diag.channel:'')+(s.diag.bssid?', ..'+s.diag.bssid.slice(-5):'')+(s.wifi.roam<0?', roam below '+s.wifi.roam+' dBm':'')+')';
  const d=s.diag,rows=[
   ['Stream input',d.inKBps+' KB/s ('+(s.codec=='MP3'?'320 kbps needs 40':'96 kbps needs 12')+')'],
-  ['Output',s.lineOut?'line out (PCM5102A, I2S)':'Bluetooth'],
+  ['Output',s.lineOut?'line out (PCM5102A, I2S)'+(s.speaker?' + speaker (MAX98357A)':''):'Bluetooth'],
   ['Audio pull',d.btKBps+' KB/s (176 = real time)'+(d.silenceKBps?', silence padding '+d.silenceKBps+' KB/s':'')],
   ['Network buffer',d.bufferKB+' / '+d.bufferMaxKB+' kB (~'+(s.codec=='MP3'?Math.round(d.bufferKB/40):Math.round(d.bufferKB/12))+' s)'],
   ['PCM buffer',d.pcmKB+' kB'],
@@ -150,7 +151,7 @@ function refresh(){fetch('/api/status').then(r=>r.json()).then(s=>{
  $('diag').innerHTML=rows.map(r=>'<tr><td class="mut" style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top">'+r[0]+'</td><td style="padding:3px 0">'+r[1]+'</td></tr>').join('');
  if(s.backlight)$('blnow').textContent='Now '+s.backlight.now+'%. ';$('sys').textContent=(s.batteryMv?'Battery '+(s.batteryMv/1000).toFixed(2)+' V ('+s.batteryPct+'%)':s.batFitted?'Battery: no reading (jumper open?)':'No battery fitted')+(s.usb?', USB power present':'')+'. Uptime '+Math.floor(s.uptime/60)+' min, heap '+Math.round(s.heap/1024)+' kB free (min '+Math.round(s.minHeap/1024)+' kB), PSRAM '+Math.round(s.psram/1024)+' kB free';
  if(first){first=false;stList=s.stations;lastSt=s.station>=0?s.station:s.last;setTimeout(sdRefresh,300);const sel=$('sel');sel.innerHTML='';s.stations.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;sel.appendChild(o)});
-  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('line32').checked=!!s.line32;$('batf').checked=!!s.batFitted;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
+  sel.value=s.station>=0?s.station:s.last;$('vol').value=s.volume;$('volv').textContent=s.volume;$('ssid').value=s.wifi.ssid||'';$('roam').value=s.wifi.roam;$('autoscan').checked=!!s.wifi.autoScan;$('bten').checked=!!s.btEnabled;$('line32').checked=!!s.line32;$('spk').checked=!!s.speakerOn;$('batf').checked=!!s.batFitted;$('btlead').checked=!!s.btLead;$('flip').checked=!!s.flip;$('scroll').checked=!!s.scroll;const b=s.backlight;$('bl').value=b.b;$('blv').textContent=b.b+'%';$('ngt').checked=!!b.night;$('ngtf').value=b.from;$('ngtt').value=b.to;$('ngtl').value=b.nl;$('idlm').value=b.idle;$('idll').value=b.il}
  {const c=s.station>=0?s.station:s.last;if(c!=selShown&&document.activeElement!==$('sel'))$('sel').value=c;selShown=c}
  if(s.btDevices)btRender(s.btDevices,!!s.btAuto);if(document.activeElement!==$('coexwifi'))$('coexwifi').checked=!!s.coexWanted;$('coexstat').textContent=s.coexWanted?(s.coexActive?'active':'waiting for streaming'):'';document.querySelectorAll('input[type=range]').forEach(rangeFill);considerAutoScan(s);
 })}
@@ -307,6 +308,8 @@ static void handleStatus() {
   j += ",\"btEnabled\":" + String(p.btEnabled ? "true" : "false");
   j += ",\"lineOut\":" + String(p.lineOut ? "true" : "false");
   j += ",\"line32\":" + String(settings.line32 ? "true" : "false");
+  j += ",\"speakerOn\":" + String(settings.speakerOn ? "true" : "false");
+  j += ",\"speaker\":" + String(p.speaker ? "true" : "false");
   j += ",\"btLead\":" + String(settings.btLead ? "true" : "false");
   j += ",\"coexWanted\":" + String(playerCoexWifiWanted() ? "true" : "false") + ",\"coexActive\":" +
        String(playerCoexWifiActive() ? "true" : "false");
@@ -727,6 +730,11 @@ void webBegin(bool setupMode) {
     settings.batteryFitted = server.arg("on") == "1";
     settingsSave();
     batteryRefresh();  // the display shows the change at once
+    server.send(200, "text/plain", "ok");
+  });
+  server.on("/api/speaker", HTTP_POST, [] {  // MAX98357A with the line output (stored)
+    settings.speakerOn = server.arg("on") == "1";
+    settingsSave();  // lineTask switches the amplifier on its next block
     server.send(200, "text/plain", "ok");
   });
   server.on("/api/line32", HTTP_POST, [] {  // line output slot width, stored

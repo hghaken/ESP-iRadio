@@ -398,6 +398,23 @@ void playerLineTest(bool tone, bool msb, int bits) {
              msb ? "left-justified" : "I2S", lineBits);
 }
 
+// MAX98357A speaker amplifier (AMP_SD_PIN): on only while I2S runs and the "Speaker" setting
+// is on; switched on after I2S has started and off before it stops, so it never sees a broken
+// clock (no pops).
+static volatile bool ampOn = false;
+
+static void ampSet(bool on) {
+  if (on == ampOn) return;
+  ampOn = on;
+  if (on) {
+    pinMode(AMP_SD_PIN, INPUT);  // the board's pull-up switches it on, (L+R)/2
+  } else {
+    pinMode(AMP_SD_PIN, OUTPUT);
+    digitalWrite(AMP_SD_PIN, LOW);
+  }
+  Log.printf("[line] speaker %s\n", on ? "on" : "off");
+}
+
 void playerSetLineSlots32(bool on) {
   lineBits = on ? 32 : 16;
   lineCfgGen = lineCfgGen + 1;
@@ -410,10 +427,12 @@ static void lineTask(void*) {
   uint32_t phase = 0;  // tone phase in Q16 turns
   for (;;) {
     if (installed && cfgGen != lineCfgGen) {
+      ampSet(false);
       i2s_driver_uninstall(I2S_NUM_0);
       installed = running = false;
     }
     if (!lineActive) {
+      ampSet(false);
       if (running) {
         i2s_zero_dma_buffer(I2S_NUM_0);
         i2s_stop(I2S_NUM_0);
@@ -458,6 +477,7 @@ static void lineTask(void*) {
       running = true;
       Log.println("[line] output started");
     }
+    ampSet(settings.speakerOn);
     if (lineTone) {
       int16_t* s = (int16_t*)block;
       for (int i = 0; i < 256; i++) {  // 440 Hz, about -12 dB, same on both channels
@@ -1191,6 +1211,8 @@ void playerBegin(const char* btName, int volume) {
   xTaskCreatePinnedToCore(netTask, "net", 4096, nullptr, 3, nullptr, 1);
   xTaskCreatePinnedToCore(decodeTask, "decode", 8192, nullptr, 4, nullptr, 1);
   lineBits = settings.line32 ? 32 : 16;
+  pinMode(AMP_SD_PIN, OUTPUT);  // speaker amplifier off until the line output runs
+  digitalWrite(AMP_SD_PIN, LOW);
   xTaskCreatePinnedToCore(lineTask, "line", 3072, nullptr, 5, nullptr, 1);
 }
 
@@ -1375,6 +1397,7 @@ PlayerStatus playerStatus() {
   s.btConnected = btLinkUp();
   s.btEnabled = btEnabled;
   s.lineOut = lineActive;
+  s.speaker = ampOn;
   s.muted = muted;
   s.btRole = btRole;
   s.btBonds = btStackStarted ? esp_bt_gap_get_bond_device_num() : -1;

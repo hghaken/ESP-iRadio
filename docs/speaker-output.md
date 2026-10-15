@@ -29,9 +29,9 @@ http://radio.local/api/linetest -d "tone=1"` (back with `tone=0`). The PAM8403 i
    to ~0.5-1 A (fine on the power bank, maybe not on a PC port).
 
 Recommendation given: the MAX98357A for a single built-in speaker (no analog wiring, can be
-switched off). Next step (not built yet): a web checkbox "Speaker" (on = the MAX98357A plays
-with the line output, off = line output only; both silent while Bluetooth is on), once SD is
-wired to GPIO2. The KiCad design still has the analog route (PCM5102APWR + PAM8302A); a
+switched off). Built 2026-10-15 (v1.37): web checkbox "Speaker" (on = the MAX98357A plays with
+the line output, off = line output only; both silent while Bluetooth is on); GPIO2 low = off,
+released = on, switched on after I2S starts and off before it stops. The KiCad design still has the analog route (PCM5102APWR + PAM8302A); a
 MAX98357A there would save the PAM8302A and its input network.
 
 Goal: besides the Bluetooth headphones, add (1) a line output on RCA/3.5 mm for an amplifier or active
