@@ -46,7 +46,8 @@ dropped. Mind which env you
 upload: `pio run -t upload` (env `radio`) puts the prebuilt build back; the `idf` build goes on
 with `.\scripts\build_idf.ps1` plus the curl upload under Commands.
 Line output since 2026-10-14 (v1.31): a PCM5102A DAC module on I2S plays when the Bluetooth
-toggle is off; a speaker amplifier is still to come (see `docs/speaker-output.md`).
+toggle is off, and since 2026-10-15 (v1.37) a MAX98357A speaker amplifier on the same I2S lines
+plays with it (web checkbox "Speaker"; see `docs/speaker-output.md`).
 Public repository: GitHub hghaken/ESP-iRadio (branch `master`, GPL-3.0). Host names such as
 `icecast.example.com`, `my-nas` and 192.168.1.x stand for the owner's own servers.
 
@@ -926,10 +927,10 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
 (2026-10-11) about twice that is expected, not measured yet.
 
 ## Open points
-- Speaker: firmware for the MAX98357A done (v1.37, checkbox "Speaker"); wiring and a listening
-  test on the radio still to confirm (2026-10-15). The PAM8403 mini board is a spare (analog, no
-  shutdown pin). Details and wiring in `docs/speaker-output.md`. Maybe a separate output choice
-  instead of the Bluetooth toggle.
+- Speaker: the MAX98357A plays (wired and heard on 2026-10-15, v1.37, checkbox "Speaker").
+  The PAM8403 mini board is a spare (analog, no shutdown pin). Details and wiring in
+  `docs/speaker-output.md`. Maybe a separate output choice instead of the Bluetooth toggle; the
+  KiCad design could swap its PAM8302A for a MAX98357A.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
   the space under the battery line is still free (e.g. a volume or buffer bar). The EC11 rotary
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see
