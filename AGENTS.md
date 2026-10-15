@@ -210,7 +210,10 @@ Hardware:
   drifted in the v1.24 test). `ENC_REVERSE` makes clockwise positive on this wiring. Button
   debounced 30 ms in `encoderLoop()`. `diag.enc` (Diagnostics "Encoder") shows the counters.
   Test 2026-10-14: 20 clicks right by hand read 19, 20 left came back to exactly 0; ~10
-  bounce steps per minute of turning without RC filter.
+  bounce steps per minute of turning without RC filter. With the RC filter on the breadboard
+  (2026-10-15: 10k pull-up to 3V3 + 100 nF to GND on A, B and the switch, as R10-R12/C6-C8 in
+  the KiCad schematic; internal pull-ups stay on): 20 right = exactly +20, 20 left back to 0,
+  fast back and forth back to 0, raw steps net 0, 0 bad steps; the user finds it smooth now.
 - `src/power.h` - `powerBrownouts()` for the diagnostics (guard itself lives in `main.cpp`).
 - `src/display.*` - status screen on the 1.69" ST7789 IPS (`Adafruit_ST7789::init(240, 280)`:
   generic init with INVON - IPS panels need it - and the 20-row offset; rotation 1, or 3 when
