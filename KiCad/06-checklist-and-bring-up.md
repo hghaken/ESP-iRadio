@@ -16,8 +16,10 @@ Before the layout (details in `esp-iradio/NOTES.md`):
 Layout:
 - [x] First layout (Rev B draft, 2026-10-15): DRC 0 errors, 0 unconnected, 0 schematic parity
       issues; "+"/"-" silk at J202 and J6; recovery pads labelled; U.FL at the left edge.
-- [ ] Routing reviewed by eye in KiCad (autorouted); USB pair short and parallel.
-- [ ] BQ24074 >= 5 thermal vias (the footprint has 4), WROVER ground-land vias.
+- [x] Layout reviewed by Grok and Claude (round 4-5): placement, U.FL at the left edge, power
+      widths, USB lengths, I2S detours accepted.
+- [x] BQ24074 5 thermal vias, WROVER ground-land vias (`tools/touchup.py`); LED labels "C"/"P".
+- [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:
 - [ ] DRC clean with the JLCPCB 4-layer rules after the hand changes.

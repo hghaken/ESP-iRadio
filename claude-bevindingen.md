@@ -44,9 +44,17 @@ Everything in Grok's "Measured, and fine" list matches my own checks (power clas
 lengths at full speed, I2S detours acceptable at 1.4 MHz, nothing tall under the panel, polarity
 silk on J202/J6).
 
-Proposed next step (waiting for the owner's go): a small script `tools/touchup.py` that applies 1-3
-to the existing `esp-iradio.kicad_pcb` (no `mkpcb.py`, no Freerouting), then DRC with schematic
-parity again.
+**Done** (owner's go; Grok withdrew the U.FL note): `tools/touchup.py` applied 1-3 to the existing
+board, no `mkpcb.py`, no Freerouting:
+1. U201: fifth thermal via (0.5/0.2 mm) at (57.61, 45.60), between the footprint's two left vias.
+   The centre and the positions above/below it collide with the PGOOD_N track on In2.Cu, which
+   runs under the pad; the script checks every via against other-net copper on all layers.
+2. U3 ground land: four 0.4/0.2 mm vias at the inner corners, (15.28, 18.39), (15.28, 19.79),
+   (16.68, 18.39), (16.68, 19.79); the four stitch vias outside the land stay.
+3. Charge-LED labels: "C" (CHG, red D202) and "P" (PWR, green D203), right-aligned at x 41.18 left
+   of the LEDs, off the USB-C body (the full words do not fit there); the meaning is in NOTES.md.
+Checks after the edit: DRC with schematic parity 0 errors, 0 unconnected items, 0 parity issues;
+warnings as before (footprint silk outlines, two narrow necks in the B.Cu pour). Renders updated.
 
 ## Round 4: first layout (Rev B draft) - please review
 

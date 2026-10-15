@@ -397,8 +397,8 @@ Hardware:
   libraries in `lib/` incl. `lcsc` parts made with easyeda2kicad (STEP models git-ignored);
   status, decisions and open checks in its `NOTES.md`; Rev A, the carrier board for the Olimex
   module, is in git history; first layout of Rev B on 2026-10-15: 80 x 60 mm, 4 layers, generated
-  and autorouted by the scripts in `tools/` (Freerouting), DRC clean, renders in `renders/`, not
-  yet reviewed by hand) and the design input: `README.md` (overview, phase 1
+  and autorouted by the scripts in `tools/` (Freerouting), reviewed by Grok and Claude, hand edits
+  by `tools/touchup.py`, DRC clean, renders in `renders/`) and the design input: `README.md` (overview, phase 1
   carrier board for the Olimex board with display, EC11 encoder, microSD, PCM5102A line out and
   MAX98357A speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
@@ -979,7 +979,8 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   worked in. The board must be powered from a USB source of at least 1.5 A (owner's choice: the
   charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). First
   layout done the same night (80 x 60 mm, 4 layers, autorouted, DRC 0 errors / 0 unconnected / 0
-  parity issues). Still open (`KiCad/esp-iradio/NOTES.md`, "Layout"): review the routing by hand,
+  parity issues), reviewed by Grok and Claude, hand edits applied. Still open
+  (`KiCad/esp-iradio/NOTES.md`, "Layout"): a last look at the routing by the owner,
   PJ-320D pin order and MSK12C02 ON position on samples, short-shaft EC11, display FPC pin 1 and
   backlight resistor from the real panel, then JLCPCB BOM/CPL and STEP/DXF for the case. The
   firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500, charge state on

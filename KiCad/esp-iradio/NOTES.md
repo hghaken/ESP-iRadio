@@ -90,12 +90,21 @@ signals off the GND plane; ~380 GND stitching vias; SMD pads join the outer pour
 with thermal reliefs. The USB pair is routed like any other signal (short, but not
 impedance-controlled).
 
+Review (Grok and Claude, 2026-10-15/16, `grok-bevindingen.md` / `claude-bevindingen.md`, rounds
+4-5): floor plan, stack, power widths, USB lengths (full speed: no 90 Ohm pair needed), I2S
+detours (fine at 1.4 MHz) and the parts under the panel checked; the U.FL end is at the left
+edge outside the panel (a first note that it sat under the glass used a y-up rotation and was
+withdrawn). Hand edits by `tools/touchup.py` on the routed board: a fifth thermal via in the
+BQ24074 pad (at -0.59 mm x from the centre: the centre and the y positions collide with the
+PGOOD_N track on In2.Cu), four 0.4/0.2 mm vias at the inner corners of the WROVER ground land,
+the charge-LED labels as "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs (the
+words did not fit off the USB-C body). DRC again: 0 errors, 0 unconnected, 0 parity issues.
+
 Still to do on the layout (before ordering):
-- review the routing by eye in KiCad (autorouted: some detours, e.g. long I2S and SPI paths);
+- a last look at the routing in KiCad (autorouted; accepted in the review, detours included);
 - J3: pad orientation and pin 1 from the paper mock-up with the real panel; R22 value;
 - SW1: the short-shaft EC11 for the recessed knob (D16) and its footprint;
 - SW203: which slide position is ON (silk says "ON/OFF ?");
-- charge-LED labels "CHG"/"PWR" sit inside the USB-C outline (move when the LEDs move);
 - silkscreen warnings come from the footprints' own outlines (JLCPCB clips silk on pads);
 - two narrow necks (< 0.15 mm) in the B.Cu GND pour (warnings);
 - 3D models: this PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D folders (install

@@ -37,6 +37,8 @@ Expected: ERC 1 warning (the MAX98357A exposed pad, pin type unspecified, on GND
 | `route.py` | Specctra DSN export, Freerouting, SES import, GND pours on F.Cu/B.Cu (SMD pads solid, THT pads thermal), zone fill. `--keep` routes only what is still open |
 | `stitch.py` | GND stitching vias on a 2.5 mm grid where the outer pours have room, a via (or a short track) for every pour island |
 | `silk.py` | silkscreen: references only on connectors, ICs, switches, LEDs and transistors; fields hidden; polarity and function markings, title |
+| `touchup.py` | hand edits on the routed board (review round 5): fifth BQ24074 thermal via, vias in the WROVER ground land, charge-LED labels "C"/"P"; checks every via against other-net copper and holes; idempotent |
+| `relink.py` | points every footprint at its schematic symbol again (path from the netlist) without touching the layout |
 | `fplib.py`, `netparse.py` | footprint loading and netlist reading for the board scripts |
 
 The board scripts run with KiCad's own Python. Freerouting 1.9.0 needs Java (17 or newer); on the
@@ -54,6 +56,7 @@ python pcbrules.py
 %KP% route.py 40 --keep
 %KP% stitch.py
 %KP% silk.py
+%KP% touchup.py
 kicad-cli pcb drc --schematic-parity --severity-all -o drc.rpt ../esp-iradio.kicad_pcb
 ```
 
