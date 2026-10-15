@@ -10,17 +10,19 @@ design. The Olimex ESP32-DevKit-LiPo is open hardware; its Rev.D KiCad files are
 `esp-iradio/ref/` (git-ignored) and show the proven USB, charger and regulator circuits.
 
 Status: design input, reviewed 2026-10-15 (reviewer agent: architecture sound; its must-fix items
-are worked in below). Next: the schematic.
+are worked in below). Schematic Rev B done the same evening (two A3 sheets, see
+`esp-iradio/NOTES.md`); two values were corrected against the BQ24074 datasheet while drawing it
+(ILIM, ITERM/SYSOFF, see Power). Next: the checks listed in NOTES.md, then the layout.
 
 ## Owner decisions (2026-10-15)
 
 | # | Decision | Choice |
 |---|---|---|
 | D8 | Display | the bare 1.69" IPS panel (ST7789V2, 240x280) soldered by its FPC to the board; backlight driver on the board |
-| D9 | ESP32 | **ESP32-WROVER-E-N16R8** module (16 MB flash, 8 MB PSRAM); a chip-down ESP32 is not wanted (antenna and RF tuning) |
+| D9 | ESP32 | **ESP32-WROVER-IE-N16R8** module (16 MB flash, 8 MB PSRAM, U.FL connector for an external 2.4 GHz antenna; owner's choice 2026-10-15, was the -E with PCB antenna); a chip-down ESP32 is not wanted (antenna and RF tuning, no module certification, extended-part fees) |
 | D10 | Battery charging | **power-path charger** (TI BQ24074): the radio runs from USB while the cell charges separately |
 | D11 | Speaker | also on battery: the MAX98357A runs from the system rail (4.4 V on USB, the cell voltage on battery) |
-| D12 | On/off switch | **slide switch on the 3.3 V LDO's enable**: off = the radio is off, also on USB; the cell still charges on USB. (The charger's SYSOFF pin would stop charging while off; not used, tied to GND.) |
+| D12 | On/off switch | **slide switch on the 3.3 V LDO's enable**: off = the radio is off, also on USB; the cell still charges on USB. (The BQ24075/79 have a SYSOFF pin that would also stop charging; the BQ24074 has none.) |
 | D13 | Display position | on the front of the board: panel on ~5 mm spacers (see D16), FPC folded to pads on the same side |
 | D14 | Charge LEDs | red on CHG (charging), green on PGOOD (USB power); they light also while the radio is off |
 | D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board |
@@ -41,7 +43,7 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
         +-- VBUS -- SMAJ5.0A -- polyfuse -- BQ24074 IN
                                               |  OUT = VSYS (4.4 V on USB, VBAT on battery)
                                               |    +-- AP7361C-33Y5 (EN = slide switch) -- +3V3
-                                              |    |      ESP32-WROVER-E, CH340C, display VDD + LEDA,
+                                              |    |      ESP32-WROVER-IE, CH340C, display VDD + LEDA,
                                               |    |      PCM5102A DVDD/CPVDD, microSD, pull-ups
                                               |    +-- LP5907-3.3 -- +3V3A (PCM5102A AVDD)
                                               |    +-- MAX98357A VDD (10 uF + 100 nF + 220 uF)
@@ -66,12 +68,16 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
     7 V abs max; not to +3V3: that rail can be off).
   - **ISET 1.1k** -> ~0.8 A charge (K_ISET ~890 A*Ohm): a 5000 mAh cell in ~6-7 h. 1 A would
     heat the VQFN by ~65-70 C in a closed case (input FET 5.0 -> 4.4 V plus charge FET).
-  - **ILIM 1.05k** -> ~1.5 A input limit (K_ILIM ~1550 A*Ohm).
+  - **ILIM 1.1k** -> ~1.41 A input limit (K_ILIM ~1550 A*Ohm; the datasheet allows 1.1k-8k, so
+    the review's 1.05k was just below the range).
+  - **ITERM open** -> termination at the default 10 % (pin 15 of the BQ24074 is ITERM).
   - **TMR 68k** -> fast-charge safety timer ~9 h (open = 5 h default, which a 5000 mAh cell
     would hit: charging stops with a fault until USB is replugged).
   - **TS: 10k NTC (B ~3435) on the board where the cell lies** (with a 3-wire pack: its NTC).
     A plain 10k resistor would mean no temperature protection at all.
-  - **CE to GND** (charging enabled), **SYSOFF to GND** (D12: not used for the switch).
+  - **CE to GND** (charging enabled). The BQ24074 has **no SYSOFF pin** (only the BQ24075/79);
+    D12 does not need it.
+  - Caps (datasheet): IN 1-10 uF -> 4.7 uF 25 V; OUT and BAT 4.7-47 uF -> 10 uF each.
   - Thermal pad with >= 5 vias into the GND plane; copper around it.
   - CHG and PGOOD are open-drain: LEDs (red CHG, green PGOOD) with their anodes on VSYS through
     1k, so they also light while the radio is off; each pin also reaches its GPIO through a
@@ -111,11 +117,13 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   pull-up and 1 uF to GND; GPIO0 with 10k pull-up.
 - **Buttons**: RESET (EN) and BOOT (GPIO0), TS-1187A SMD tact switches (recovery only).
 
-## ESP32-WROVER-E-N16R8
+## ESP32-WROVER-IE-N16R8
 
-- KiCad `RF_Module:ESP32-WROVER-E` (check the library); antenna at a board edge with the keep-out
-  from the Espressif hardware design guidelines (no copper on any layer, no parts, no case metal
-  under and beside the antenna).
+- Project symbol `ESP32-WROVER-IE_iRadio`, footprint `lcsc:ESP32-WROVER-IE_SMD` (LCSC C701352;
+  same pads and outline as the WROVER-E). No PCB antenna, so no antenna keep-out at a board edge:
+  a 2.4 GHz antenna with an IPEX/U.FL pigtail (bought separately, not assembled) plugs into the
+  module and goes to the case wall. Keep the U.FL connector reachable (no tall parts next to it,
+  room for the plug); never transmit without an antenna connected.
 - Strapping (reviewed): GPIO12 (MTDI) **must be low at boot** (high selects 1.8 V flash): nothing
   connected (optionally burn the VDD_SDIO eFuse to 3.3 V). GPIO0 10k up; GPIO2 low at reset (its
   internal pull-down beats the MAX98357A network, also in download mode); GPIO5 10k up (LCD_CS);
@@ -123,8 +131,7 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
 - PSRAM: 8 MB on the module, the ESP32 maps 4 MB directly (the rest only through the himem API):
   same as today for the firmware. Flash: 16 MB -> a new partition table with larger OTA slots
   (one full flash over USB on a new board; settings start empty).
-- **PCB: 4 layers** (layer 2 a solid GND plane): RF keep-out, audio and the charger's heat. Cheap
-  at JLCPCB.
+- **PCB: 4 layers** (layer 2 a solid GND plane): audio and the charger's heat. Cheap at JLCPCB.
 
 ## Display: bare panel on the board (D8)
 
@@ -198,7 +205,7 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 
 | Part | LCSC | Stock | Note |
 |---|---|---|---|
-| ESP32-WROVER-E-N16R8 | C529589 | 1515 | extended |
+| ESP32-WROVER-IE-N16R8 | C701352 | 1970 | extended; U.FL antenna (was -E C529589) |
 | BQ24074RGTR | C54313 | 816 | extended; fallback BQ24073RGTR C15220 (33782 in stock, same 4.4 V OUT, 6.6 V OVP, TD pin instead of ITERM) |
 | CH340C | C84681 | 143702 | |
 | MAX98357AETE+T | C910544 | 28887 | |
@@ -208,7 +215,9 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 | DW01A | C351410 | 117507 | cell protection |
 | FS8205A | C2830320 | 55880 | protection FETs |
 | DMG2305UX-7 | C5261054 | 9017 | reverse-cell P-FET |
-| BAT54 (single) | to pick | - | 2x, CHG/PGOOD isolation (BAT54C/S in stock as pairs) |
+| BAT54WS (SOD-323) | C7502694 | 405154 | preferred; 2x, CHG/PGOOD isolation |
+| LED red / green 0603 | C2286 / C12624 | 3941052 / 354847 | red basic, green extended |
+| polyfuse 1206L150/16NR (1.5 A hold) | C22379952 | 14655 | VBUS |
 | AO3400A | C20917 | 1071707 | basic; backlight |
 | MMBT3904 | C7420353 | 5024877 | preferred; auto-reset |
 | USBLC6-2SC6 | C2827654 | 105627 | USB ESD |
@@ -221,7 +230,7 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 | TS-1187A-B-A-B | C318884 | 498821 | basic; RESET, BOOT |
 | JST S2B-PH-K-S (side) / B2B-PH-K-S (top) | C173752 / C131337 | 193749 / 87147 | cell, speaker |
 | PJ-320D 3.5 mm jack (SMD) | C431535 | 60364 | line out |
-| polyfuse, ferrites, R/C, LEDs | basic parts where possible | | picked in the schematic step |
+| R/C | basic parts | | LCSC numbers from JLCPCB Tools when the BOM is made |
 
 Stock is a snapshot; JLCPCB Tools checks it again when the BOM is made. Not assembled: the display
 panel (hand-soldered FPC), the cell, the speaker.
@@ -229,10 +238,9 @@ panel (hand-soldered FPC), the cell, the speaker.
 ## Sources
 
 - TI BQ24072/3/4/5/9 datasheet (ZHCSIF0N / SLUSA19): BQ24074 OUT 4.4 V typ (4.3-4.5 V), OVP 10.5 V;
-  ISET/ILIM/TMR/EN1-EN2/SYSOFF/TS from the same datasheet (values as given by the review; check
-  against the PDF in the schematic step).
+  ISET/ILIM/TMR/ITERM/EN1-EN2/TS from the same datasheet (SLUS810N, checked in the schematic step).
 - Panel: lcdwiki.com/1.69inch_IPS_Module (SPEC_UN169T-IG01.pdf, 1.69IPS_MSP1691_Schematic.pdf).
 - Olimex ESP32-DevKit-LiPo Rev.D hardware files (github.com/OLIMEX/ESP32-DevKit-LiPo): CH340X,
   BL4054B charger, HX6211 3.3 V LDO.
-- Espressif ESP32-WROVER-E datasheet and hardware design guidelines (antenna keep-out, strapping).
+- Espressif ESP32-WROVER-E / -IE datasheet and hardware design guidelines (strapping, antenna).
 - JLCPCB parts: the JLCPCB Tools plugin database (`current-parts-fts5.db`, 2026-10-11).

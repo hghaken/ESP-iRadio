@@ -1,0 +1,215 @@
+(footprint "FPC_12P_P0.70mm_Solder"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Solder pads for the 12-pin FPC (0.7 mm pitch) of a bare 1.69in ST7789V2 panel (UN169T-IG01 class); hand or hot-bar soldered after assembly. Check the contact side and pin 1 with a paper mock-up first.")
+	(tags "FPC solder 12 pin 0.7mm display")
+	(property "Reference" "REF**"
+		(at 0 -2.8 0)
+		(layer "F.SilkS")
+		(uuid "5781347f-52d6-41b2-ba86-c2c512b747b5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "FPC_12P_P0.70mm_Solder"
+		(at 0 2.8 0)
+		(layer "F.Fab")
+		(uuid "8c2b578f-302c-4aa1-81aa-95f5668710b1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd exclude_from_bom)
+	(fp_line
+		(start -5.700 -1.000)
+		(end 5.700 -1.000)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e6277e11-eeb1-4924-9be2-52266f834018")
+	)
+	(fp_line
+		(start 5.700 -1.000)
+		(end 5.700 1.350)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e97701f8-c99f-453e-8811-781b8b3f8537")
+	)
+	(fp_line
+		(start 5.700 1.350)
+		(end -5.700 1.350)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c7cfbe67-9066-4dc6-941b-dcb2e472172f")
+	)
+	(fp_line
+		(start -5.700 1.350)
+		(end -5.700 -1.000)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cbc6dd84-ae23-4fb9-b4f5-02e1e7e33536")
+	)
+	(fp_line
+		(start -5.900 -1.600)
+		(end 5.900 -1.600)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "255560ac-cc0f-433b-928a-433c11be5f9d")
+	)
+	(fp_line
+		(start -4.050 1.600)
+		(end -3.650 1.600)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "057cd7a8-e5ac-4cf3-a1e1-d6cea6178d84")
+	)
+	(fp_line
+		(start -6.200 -1.900)
+		(end 6.200 -1.900)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "499e65f4-1099-4ea1-b408-3f654cfab30c")
+	)
+	(fp_line
+		(start 6.200 -1.900)
+		(end 6.200 1.900)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "75f80b92-7fe2-41c4-baad-f037b164ab56")
+	)
+	(fp_line
+		(start 6.200 1.900)
+		(end -6.200 1.900)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c9c09ce6-b9ed-4245-82ce-60b186d266fd")
+	)
+	(fp_line
+		(start -6.200 1.900)
+		(end -6.200 -1.900)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "fb9d3025-325b-47a6-b1fb-edf502f36d0d")
+	)
+	(fp_text user "1"
+		(at -3.85 2.4 0)
+		(layer "F.SilkS")
+		(uuid "ae897bb0-c2ea-434a-a842-72ff4cef8c90")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -3.850 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "d29a223e-7580-4b88-81d6-1eed8bd37003")
+	)
+	(pad "2" smd rect
+		(at -3.150 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "cb7f9ea6-67b2-49bd-8afe-178209355b9c")
+	)
+	(pad "3" smd rect
+		(at -2.450 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "4db14938-efe4-415e-94ab-d4c3c5ebc3e2")
+	)
+	(pad "4" smd rect
+		(at -1.750 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "e18d27ac-875e-4184-a6b7-bc9754b07be3")
+	)
+	(pad "5" smd rect
+		(at -1.050 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "591ba688-7ba0-471f-97d2-44c37c146105")
+	)
+	(pad "6" smd rect
+		(at -0.350 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "fafbdabc-f5af-4008-88f8-d79af2191da2")
+	)
+	(pad "7" smd rect
+		(at 0.350 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "83f3b2b5-211f-48f5-8b28-813268a58b66")
+	)
+	(pad "8" smd rect
+		(at 1.050 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "ae80a086-996d-4519-b141-52a413d0f917")
+	)
+	(pad "9" smd rect
+		(at 1.750 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "fff8104f-48f3-47e5-9f10-eb786a82ffce")
+	)
+	(pad "10" smd rect
+		(at 2.450 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "19278cfc-9f38-4e87-809c-656e625e0a85")
+	)
+	(pad "11" smd rect
+		(at 3.150 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "04daaa58-c234-4066-9dfe-1a55f97117fe")
+	)
+	(pad "12" smd rect
+		(at 3.850 0)
+		(size 0.40 2.40)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "169fba9e-67e2-4a74-bce3-4655326024d5")
+	)
+	(embedded_fonts no)
+)
