@@ -990,7 +990,9 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   checked 2026-10-16. Quote that day: $207.39 for 5 assembled boards before shipping and VAT;
   the owner finds that expensive and is deciding between full assembly, a hybrid (JLCPCB places
   only the WROVER, the two QFNs, the DAC and the USB-C; the owner solders the rest) and
-  self-assembly - options and estimates in `KiCad/esp-iradio/jlcpcb/README.md`. Nothing ordered. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
+  self-assembly - options and estimates in `KiCad/esp-iradio/jlcpcb/README.md`. Nothing ordered.
+  Also requested 2026-10-16: RCA outputs L and R next to the 3.5 mm jack (NOTES.md, "Still to do
+  on the layout"); not drawn yet. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
   charge state on GPIO34/36, backlight PWM >= 20 kHz, the 320 x 240 display, a 16 MB partition
   table); pins stay.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);

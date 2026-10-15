@@ -132,6 +132,12 @@ reviewed in round 6 (`claude-bevindingen.md`, `grok-bevindingen.md`): no layout 
 and comments aligned.
 
 Still to do on the layout (before ordering):
+- **RCA (cinch) outputs L and R, requested by the owner 2026-10-16** (the PCM5102A module in use
+  has them next to its 3.5 mm jack): two RCA jacks in parallel with J5 on the DAC outputs (after
+  the 470R / 2.2 nF filters) and GND. A right-angle dual jack (white/red) is ~20-22 mm wide and
+  ~12-15 mm deep, THT; LCSC candidates e.g. CAX AV-210-WR / AV-209-WR (check the drawing).
+  Does not fit next to J5 on the left edge: the board grows or the edge plan changes, so the
+  layout is regenerated. Owner to say: keep the 3.5 mm jack as well, and which edge.
 - a last look at the routing in KiCad (autorouted; accepted in the review, detours included);
 - display module: check on the delivered module that CN1 pin 1 (GND) is at the top right as in
   the datasheet drawing, and whether it comes with pin headers (the LCSC photo shows none: then
