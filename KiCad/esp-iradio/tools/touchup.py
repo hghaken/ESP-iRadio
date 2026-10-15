@@ -5,6 +5,9 @@ round 5); no regeneration, no new route. Run with KiCad's Python after stitch.py
    Espressif's land pattern (datasheet v2.4, figure 15), small and tented;
 3. charge-LED labels: "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs, off the
    USB-C body (the full words do not fit between the connector and the LEDs).
+0. (2026-10-16) no hole below 0.3 mm: JLCPCB's standard process starts there, 0.2 mm holes cost
+   ~$37 extra per order. The thermal-via pads of the QFN footprints (0.5 mm pad, 0.2 mm drill)
+   get a 0.3 mm drill, the vias below are 0.5 / 0.3 mm (an older smaller via is resized).
 Every new via is checked against the copper of other nets on all layers and against other holes;
 it is skipped (with a message) when it does not fit. Refills the zones and saves.
 Idempotent: a via already at the spot is not added twice."""
@@ -17,6 +20,7 @@ PCB = os.path.join(os.path.dirname(HERE), 'esp-iradio.kicad_pcb')
 mm, tomm = pcbnew.FromMM, pcbnew.ToMM
 OX, OY = 100.0, 100.0
 CLR, HOLE_GAP = 0.2, 0.25
+MIN_DRILL = 0.3
 
 board = pcbnew.LoadBoard(PCB)
 gnd = board.FindNet('GND')
@@ -29,11 +33,13 @@ def seg_dist(px, py, ax, ay, bx, by):
     return math.hypot(px - (ax + t * dx), py - (ay + t * dy))
 
 
-def via_fits(x, y, d, drill):
+def via_fits(x, y, d, drill, skip=None):
     r = mm(d / 2)
     c = pcbnew.VECTOR2I(int(x), int(y))
     seg = pcbnew.SEG(c, c)
     for t in board.GetTracks():
+        if skip is not None and t.m_Uuid.AsString() == skip.m_Uuid.AsString():
+            continue
         if t.GetClass() == 'PCB_VIA':
             q = t.GetPosition()
             gap = math.hypot(q.x - x, q.y - y) - mm(drill / 2) - t.GetDrillValue() / 2
@@ -63,7 +69,16 @@ def via_fits(x, y, d, drill):
 def add_via(x, y, d, drill, why):
     for t in board.GetTracks():
         if t.GetClass() == 'PCB_VIA' and math.hypot(t.GetPosition().x - x, t.GetPosition().y - y) < mm(0.05):
-            print('via already there:', why)
+            if t.GetDrillValue() < mm(drill) - 1 or t.GetWidth(pcbnew.F_Cu) < mm(d) - 1:
+                problem = via_fits(x, y, d, drill, skip=t)
+                if problem:
+                    print('NOT RESIZED %s: %s' % (why, problem))
+                    return True
+                t.SetWidth(mm(d))
+                t.SetDrill(mm(drill))
+                print('via resized to %.2f / %.2f: %s' % (d, drill, why))
+            else:
+                print('via already there:', why)
             return True
     problem = via_fits(x, y, d, drill)
     if problem:
@@ -80,6 +95,15 @@ def add_via(x, y, d, drill, why):
     return True
 
 
+# 0. thermal-via pads of the footprints (QFN ThermalVias): 0.3 mm drill, pad at least 0.5 mm
+for fp in board.GetFootprints():
+    for p in fp.Pads():
+        if 0 < p.GetDrillSizeX() < mm(MIN_DRILL) - 1:
+            p.SetDrillSize(pcbnew.VECTOR2I(mm(MIN_DRILL), mm(MIN_DRILL)))
+            if p.GetSize().x < mm(MIN_DRILL + 0.2):
+                p.SetSize(pcbnew.VECTOR2I(mm(MIN_DRILL + 0.2), mm(MIN_DRILL + 0.2)))
+            print('pad %s.%s: drill %.2f mm' % (fp.GetReference(), p.GetNumber(), MIN_DRILL))
+
 # 1. fifth thermal via under the BQ24074: the centre of its exposed pad
 fp = board.FindFootprintByReference('U201')
 ep = [p for p in fp.Pads() if p.GetNumber() == '17' and p.GetDrillSizeX() == 0][0]
@@ -87,7 +111,7 @@ c = ep.GetPosition()
 # the centre first, then the middles between the footprint's four vias (0.59 mm off centre)
 off = mm(0.59)
 for dx, dy in ((0, 0), (0, -off), (0, off), (-off, 0), (off, 0)):
-    if add_via(c.x + dx, c.y + dy, 0.5, 0.2, 'U201 exposed pad, 5th thermal via (%+.2f, %+.2f)' % (tomm(dx), tomm(dy))):
+    if add_via(c.x + dx, c.y + dy, 0.5, 0.3, 'U201 exposed pad, 5th thermal via (%+.2f, %+.2f)' % (tomm(dx), tomm(dy))):
         break
 
 # 2. WROVER ground land: vias at the four inner corners of the 3 x 3 squares
@@ -99,7 +123,7 @@ for i in range(2):
     for j in range(2):
         x = (xs[i] + xs[i + 1]) / 2
         y = (ys[j] + ys[j + 1]) / 2
-        add_via(x, y, 0.4, 0.2, 'U3 ground land (%.2f, %.2f)' % (tomm(x) - OX, tomm(y) - OY))
+        add_via(x, y, 0.5, 0.3, 'U3 ground land (%.2f, %.2f)' % (tomm(x) - OX, tomm(y) - OY))
 
 # 3. charge-LED labels
 for ref, old, new in (('D202', 'CHG', 'C'), ('D203', 'PWR', 'P')):

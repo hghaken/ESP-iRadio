@@ -10,6 +10,8 @@ change; it rewrites all three files):
 | `esp-iradio_cpl.csv` | PCB Assembly, CPL: Designator, Mid X, Mid Y (mm, Y up, same origin as the Gerbers), Layer, Rotation |
 
 Order settings: 4 layers, 1.6 mm, 90 x 60 mm, standard stack-up (no impedance control needed),
+min via hole 0.3 mm (the smallest hole on the board; leave JLCPCB's default "0.3mm/(0.4/0.45mm)":
+the 0.2 mm option adds ~$37),
 assembly on the top side, "Standard" PCBA (the WROVER-IE, QFNs and the through-hole sockets, JST
 connectors and slide switch need it). Placed by JLCPCB: 99 parts, 51 BOM lines, 24 extended
 parts (setup fee each). Stock checked 2026-10-16 against the JLCPCB Tools database of 2026-10-11.

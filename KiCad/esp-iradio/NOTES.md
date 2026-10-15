@@ -81,8 +81,12 @@ the revision history of the actual KiCad project.
 Board 90 x 60 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
 power, B.Cu signals and GND pour), 1.6 mm, every part on the top side. Rules: 0.2 mm tracks with
 0.15 mm clearance, Power class 0.5 mm (VSYS, VIN, VBUS, VBAT, BATN, cell +, +3V3, GND), Supply
-class 0.3 mm (+3V3A, speaker outputs), vias 0.55/0.3 mm (0.4/0.2 only where a pour island had no
-room), copper >= 0.6 mm from the edge (keep-out ring). Custom rule `esp-iradio.kicad_dru`
+class 0.3 mm (+3V3A, speaker outputs), vias 0.55/0.3 mm (0.5/0.3 where a pour island or a land had no room);
+**no hole below 0.3 mm** (2026-10-16: JLCPCB's standard process; 0.2 mm holes added $37.55 to
+the 5-board price, $45.55 instead of $8.00, through a 4-wire test and TG155 material; rule
+`min_through_hole_diameter` 0.3). The QFN ThermalVias footprints of U2 and U201 carry 0.3 mm
+thermal vias set by `tools/touchup.py` (DRC warns `lib_footprint_mismatch` for those two: expected;
+do not "update footprints from library" or the 0.2 mm holes come back), copper >= 0.6 mm from the edge (keep-out ring). Custom rule `esp-iradio.kicad_dru`
 (written by `tools/pcbrules.py`): the courtyards of the module's standoff holes H1/H5-H7 may touch
 the sockets J3/J7 (by design); every other courtyard overlap still is an error. Renders in
 `renders/` (the module itself is not in the 3D view: it is a loose part).
@@ -119,7 +123,7 @@ detours (fine at 1.4 MHz) and the parts under the panel checked; the U.FL end is
 edge outside the panel (a first note that it sat under the glass used a y-up rotation and was
 withdrawn). Hand edits by `tools/touchup.py` on the routed board: a fifth thermal via in the
 BQ24074 pad (the first free spot of centre / +-0.59 mm; on the 90 x 60 board at +0.59 mm y),
-0.4/0.2 mm vias at the inner corners of the WROVER ground land (two of four on the 90 x 60 board:
+vias at the inner corners of the WROVER ground land (0.5/0.3 mm since 2026-10-16, were 0.4/0.2) (two of four on the 90 x 60 board:
 an RXD0 track on In2.Cu passes the other two; the land still has the module's GND pads and the
 pour), the charge-LED labels as "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs (the
 words did not fit off the USB-C body). DRC again: 0 errors, 0 unconnected, 0 parity issues.

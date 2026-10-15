@@ -6779,7 +6779,7 @@
 		(pad "17" thru_hole circle
 			(at -0.365 -0.365 180)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -6789,7 +6789,7 @@
 		(pad "17" thru_hole circle
 			(at -0.365 0.365 180)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -6817,7 +6817,7 @@
 		(pad "17" thru_hole circle
 			(at 0.365 -0.365 180)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -6827,7 +6827,7 @@
 		(pad "17" thru_hole circle
 			(at 0.365 0.365 180)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -11831,7 +11831,7 @@
 		(pad "17" thru_hole circle
 			(at -0.59 -0.59)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -11841,7 +11841,7 @@
 		(pad "17" thru_hole circle
 			(at -0.59 0.59)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -11869,7 +11869,7 @@
 		(pad "17" thru_hole circle
 			(at 0.59 -0.59)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -11879,7 +11879,7 @@
 		(pad "17" thru_hole circle
 			(at 0.59 0.59)
 			(size 0.5 0.5)
-			(drill 0.2)
+			(drill 0.3)
 			(property pad_prop_heatsink)
 			(layers "*.Cu")
 			(remove_unused_layers no)
@@ -26417,8 +26417,8 @@
 	)
 	(via
 		(at 121.58 119.79)
-		(size 0.4)
-		(drill 0.2)
+		(size 0.5)
+		(drill 0.3)
 		(layers "F.Cu" "B.Cu")
 		(net 16)
 		(uuid "2176eb7b-3383-414e-a1b2-2faddd5ed462")
@@ -28338,7 +28338,7 @@
 	(via
 		(at 163.2 146.19)
 		(size 0.5)
-		(drill 0.2)
+		(drill 0.3)
 		(layers "F.Cu" "B.Cu")
 		(net 16)
 		(uuid "b50a272a-82e6-4673-be33-5a18086b7316")
@@ -29489,8 +29489,8 @@
 	)
 	(via
 		(at 121.58 118.39)
-		(size 0.4)
-		(drill 0.2)
+		(size 0.5)
+		(drill 0.3)
 		(layers "F.Cu" "B.Cu")
 		(net 16)
 		(uuid "ff9c3c8a-71b4-4ad2-9969-386ae5bf6330")

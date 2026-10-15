@@ -30,7 +30,7 @@ ns['netclass_patterns'] = ([{'netclass': 'Power', 'pattern': n} for n in POWER] 
 ns['netclass_assignments'] = None
 rules = d.setdefault('board', {}).setdefault('design_settings', {}).setdefault('rules', {})
 rules.update({'min_clearance': 0.15, 'min_track_width': 0.15, 'min_connection': 0.15,
-              'min_via_diameter': 0.4, 'min_via_annular_width': 0.1, 'min_through_hole_diameter': 0.2,  # 0.2: QFN thermal vias
+              'min_via_diameter': 0.5, 'min_via_annular_width': 0.1, 'min_through_hole_diameter': 0.3,  # 0.3: JLCPCB standard hole, smaller costs extra
               'min_copper_edge_clearance': 0.3, 'min_hole_clearance': 0.25, 'min_hole_to_hole': 0.25,
               'min_silk_clearance': 0.0, 'min_resolved_spokes': 1, 'min_text_height': 0.8, 'min_text_thickness': 0.12})
 json.dump(d, open(PRO, 'w', encoding='utf-8', newline='\n'), indent=2)

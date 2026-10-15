@@ -67,7 +67,8 @@ The case is designed around the board, so the board files must give the case des
 
 ## Fab and assembly rules (JLCPCB 4-layer + SMT assembly, D6/D17)
 
-- Track/space 0.15/0.15 mm minimum (0.25 mm signals by default), via 0.3 mm drill / 0.6 mm pad.
+- Track/space 0.15/0.15 mm minimum (0.25 mm signals by default), vias 0.3 mm drill / 0.5-0.55 mm pad; **no
+  hole below 0.3 mm** (smaller holes are JLCPCB's high-precision option, ~$37 extra per order).
   The finest pitches on the board are 0.5 mm (USB-C, both QFNs).
 - Copper 0.3 mm from the board edge.
 - Locating holes of the LCSC footprints are NPTH (fixed in `lib/lcsc.pretty` 2026-10-15); check

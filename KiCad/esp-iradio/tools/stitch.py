@@ -208,7 +208,7 @@ for rnd in range(3):
                     continue
                 bb = outline.BBox()
                 found = False
-                for vd, dr in ((VIA_D, VIA_DRILL), (0.4, 0.2)):      # small via only where needed
+                for vd, dr in ((VIA_D, VIA_DRILL), (0.5, 0.3)):      # smaller via only where needed (0.3 mm drill: JLCPCB standard, no surcharge)
                     step = mm(0.1)
                     y = bb.GetTop()
                     while y <= bb.GetBottom() and not found:
