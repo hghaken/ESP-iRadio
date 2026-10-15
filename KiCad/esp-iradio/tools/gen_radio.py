@@ -170,7 +170,7 @@ for c in ('C3', 'C4'):
     up('+3V3', P(c, 1), False)
     gnd(P(c, 2))
 
-# SPI SCK: module -> R8 -> SCK_BUS -> J4 CLK (straight) + J3 pin 3 (column 317.5); TP5 on the column
+# SPI SCK: module -> R8 -> SCK_BUS -> J4 CLK (straight) + J3 pin 9 SCL (column 317.5); TP5 on the column
 R('R8', 309.88, Rt(9)[1], '22R', 90)
 W(Rt(9), (299.72, 132.08), P('R8', 1))
 W(P('R8', 2), (317.5, 132.08), P('J4', 'CLK'))
@@ -209,6 +209,7 @@ s.text('DISPLAY (ST7789, SPI) AND microSD', (330.2, 30.48), 1.8, True)
 
 # ---------------------------------------------------------------- audio (bottom)
 s.add('Audio:PCM5102A', 'U1', 200.66, 218.44, 0, 'PCM5102APWR', 'Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm',
+      extra={'LCSC': 'C107671'},
       fields={'ref': (195.58, 193.04, 0, 'right'), 'val': (195.58, 195.58, 0, 'right')})
 # I2S from module: BCK pin11, LRCK pin12, DATA pin15
 W(L(11), (170.18, L(11)[1]), (170.18, 165.1), (170.18, 213.36), P('U1', 'BCK'))
@@ -272,7 +273,8 @@ W(P('R17', 2), (251.46, 218.44), (260.35, 218.44), (266.7, 218.44), (266.7, 210.
 gnd(P('J5', 'S'), 'up')
 # amplifier: MAX98357A (I2S in, mono (L+R)/2 out) on the same I2S lines as the DAC
 UX, UY = 320.04, 175.26
-s.add('Audio:MAX98357A', 'U2', UX, UY, 0, 'MAX98357AETE+T', 'Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0.5mm_EP1.23x1.23mm',
+s.add('Audio:MAX98357A', 'U2', UX, UY, 0, 'MAX98357AETE+T',
+      'Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0.5mm_EP1.23x1.23mm_ThermalVias', extra={'LCSC': 'C910544'},
       fields={'ref': (UX + 11.43, UY - 15.24, 0, 'left'), 'val': (UX + 11.43, UY - 12.7, 0, 'left')})
 # taps on the three I2S columns: DATA at 167.64, BCK at 170.18, LRCK at TP7 (172.72)
 W((180.34, 167.64), P('U2', 'DIN'))
@@ -283,20 +285,19 @@ up('VSYS', P('U2', 'VDD'))
 gnd(P('U2', 'GND'))
 gnd(P('U2', 'PAD'))
 s.add('Connector_Generic:Conn_01x02', 'J6', 345.44, 167.64, 0, 'Speaker 4-8 Ohm',
-      'Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical',
+      'Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical', extra={'LCSC': 'C131337'},
       fields={'ref': (349.25, 165.1, 0, 'left'), 'val': (349.25, 172.72, 0, 'left')})
 W(P('U2', 'OUTP'), P('J6', 1))
 W(P('U2', 'OUTN'), P('J6', 2))
-# AMP_SD from module pin 34 (EXT2 15): low = off; released, R21 (1M to +3V3) with the chip's
-# internal 100k pull-down gives ~0.45 V = on, (L+R)/2
+# AMP_SD from IO2 (U3 pad 24): low = off; released, R21 (1M to +3V3) with the chip's internal
+# 100k pull-down gives ~0.30 V = on, (L+R)/2. Never drive IO2 high (left channel only).
 W(Rt(15), (299.72, Rt(15)[1]), (299.72, 177.8), P('U2', '~{SD_MODE}'))
 R('R21', 299.72, 182.88, '1M')
 W((299.72, 177.8), P('R21', 1))
 down('+3V3', P('R21', 2))
 s.text('GAIN open = 9 dB', (UX + 12.7, UY + 10.16), 1.27, False)
-# amplifier supply decoupling
-for i, (ref, val, fp, lib) in enumerate([('C22', '10uF', FC8, 'Elektuur:C'), ('C23', '100nF', FC6, 'Elektuur:C'),
-                                         ('C24', '220uF 10V', 'Capacitor_SMD:CP_Elec_6.3x7.7', 'Elektuur:C-polar')]):
+# amplifier supply decoupling (no bulk electrolytic: VSYS is the BQ24074 OUT, 4.7-47 uF in total)
+for i, (ref, val, fp, lib) in enumerate([('C22', '10uF', FC8, 'Elektuur:C'), ('C23', '100nF', FC6, 'Elektuur:C')]):
     x = 345.44 + 12.7 * i
     C(ref, x, 210.82, val, fp=fp, lib=lib)
     up('VSYS', P(ref, 1), i == 0)

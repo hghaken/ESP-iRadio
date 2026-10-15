@@ -12,7 +12,11 @@ design. The Olimex ESP32-DevKit-LiPo is open hardware; its Rev.D KiCad files are
 Status: design input, reviewed 2026-10-15 (reviewer agent: architecture sound; its must-fix items
 are worked in below). Schematic Rev B done the same evening (two A3 sheets, see
 `esp-iradio/NOTES.md`); two values were corrected against the BQ24074 datasheet while drawing it
-(ILIM, ITERM/SYSOFF, see Power). Next: the checks listed in NOTES.md, then the layout.
+(ILIM, ITERM/SYSOFF, see Power). Reviewed by Grok and Claude the same evening
+(`grok-bevindingen.md`, `claude-bevindingen.md` in the repository root); the agreed changes are
+worked in: no bulk electrolytic on VSYS, polyfuse 2 A before the TVS, ILIM 1.13k, a high-ohmic USB
+divider, recovery pads, NPTH locating holes, no VIN-DPM in ILIM mode (power the board from a
+source of at least 1.5 A). Next: the checks listed in NOTES.md, then the layout.
 
 ## Owner decisions (2026-10-15)
 
@@ -40,27 +44,34 @@ amplifier, microSD, EC11 encoder.
 USB-C --+-- CC1, CC2: 5.1k each (sink)
         +-- D+/D- (A6/B6, A7/B7 tied) -- USBLC6-2 -- CH340C -- TXD0/RXD0 (GPIO1/3)
         |                                         +-- DTR/RTS -- auto-reset (2x NPN) -- EN, GPIO0
-        +-- VBUS -- SMAJ5.0A -- polyfuse -- BQ24074 IN
+        +-- VBUS -- polyfuse -- SMAJ5.0A -- BQ24074 IN
                                               |  OUT = VSYS (4.4 V on USB, VBAT on battery)
                                               |    +-- AP7361C-33Y5 (EN = slide switch) -- +3V3
                                               |    |      ESP32-WROVER-IE, CH340C, display VDD + LEDA,
                                               |    |      PCM5102A DVDD/CPVDD, microSD, pull-ups
                                               |    +-- LP5907-3.3 -- +3V3A (PCM5102A AVDD)
-                                              |    +-- MAX98357A VDD (10 uF + 100 nF + 220 uF)
+                                              |    +-- MAX98357A VDD (10 uF + 100 nF)
                                               |    +-- charge LEDs (anodes)
                                               |  BAT -- P-FET (reverse cell) -- JST-PH 2 -- cell
                                               |         cell negative -- FS8205A (DW01A) -- GND
                                               |  CHG -> GPIO34, PGOOD -> GPIO36 (via BAT54)
-        VBUS -- 33k/22k -> GPIO39 (USB voltage); VBAT -- 470k/470k (+100 nF) -> GPIO35
+        VIN -- 330k/220k (+100 nF) -> GPIO39 (USB voltage); VBAT -- 470k/470k (+100 nF) -> GPIO35
 ```
 
 ## Power
 
 - **USB-C** (TYPE-C-31-M-12, 16 pins): one 5.1k per CC pin (never shared), D+/D- pairs tied
-  (A6/B6, A7/B7), **SMAJ5.0A** (unidirectional: BQ24074 IN must not go below -0.3 V) and a polyfuse
-  (1.5-2 A hold). One connector powers, charges and flashes. On a 500 mA PC port the board may
-  ask for more than the port gives; the charger's input-voltage regulation (DPM) softens that, an
-  old PC port may still switch off (accepted).
+  (A6/B6, A7/B7), a polyfuse **2 A hold** (1206L200/16NR) and behind it the **SMAJ5.0A**
+  (unidirectional: BQ24074 IN must not go below -0.3 V). Fuse first: a wrong adapter (above the
+  TVS's ~6.4 V) then opens the fuse instead of burning the TVS into a short. One connector
+  powers, charges and flashes.
+- **USB source of at least 1.5 A (owner's decision 2026-10-15, option a).** In ILIM mode the
+  BQ24074 has **no input-voltage regulation**: VIN-DPM only works in the USB100/USB500 modes
+  (EN2 = 0, SLUS810N 9.3.4.1.1), and DPPM only cuts the charge current to keep OUT up. The board
+  can therefore draw up to ~1.37 A (radio ~0.3 A + 0.8 A charging an empty cell); a 500 mA PC or
+  laptop port may switch off or brown out, also while flashing. Charge and flash from a power bank
+  or charger of at least 1.5 A (the power bank in use today). A USB500 option would need two
+  jumpers switched together (EN1 to VSYS and EN2 to GND); not on this board.
 - **Charger BQ24074RGTR** (VQFN-16 3x3):
   - OUT regulated to 4.4 V while USB is present (4.3-4.5 V), battery 4.2 V, input OVP 10.5 V;
     the system load comes first, the cell supplements above the input limit.
@@ -68,8 +79,8 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
     7 V abs max; not to +3V3: that rail can be off).
   - **ISET 1.1k** -> ~0.8 A charge (K_ISET ~890 A*Ohm): a 5000 mAh cell in ~6-7 h. 1 A would
     heat the VQFN by ~65-70 C in a closed case (input FET 5.0 -> 4.4 V plus charge FET).
-  - **ILIM 1.1k** -> ~1.41 A input limit (K_ILIM ~1550 A*Ohm; the datasheet allows 1.1k-8k, so
-    the review's 1.05k was just below the range).
+  - **ILIM 1.13k** -> ~1.37 A input limit (K_ILIM ~1550 A*Ohm; the datasheet allows 1.1k-8k:
+    1.05k was below it, and 1.1k at 1 % tolerance could be too).
   - **ITERM open** -> termination at the default 10 % (pin 15 of the BQ24074 is ITERM).
   - **TMR 68k** -> fast-charge safety timer ~9 h (open = 5 h default, which a 5000 mAh cell
     would hit: charging stops with a fault until USB is replugged).
@@ -91,7 +102,10 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
 - **+3V3A for the DAC: LP5907-3.3** (TPLP5907MFX-3.3, 300 mA, SOT-23-5, low noise) from VSYS, EN
   tied to the LDO's EN net (off with the switch). Replaces the ferrite from the WiFi rail.
 - **Speaker supply** = VSYS directly (MAX98357A 2.5-5.5 V): 4.4 V on USB (~2.4 W in 4 Ohm),
-  3.5-4.2 V on battery (~1.3-1.8 W). 10 uF + 100 nF at the pins, 220 uF bulk. Its SD_MODE pull-up
+  3.5-4.2 V on battery (~1.3-1.8 W). 10 uF + 100 nF at the pins, **no bulk electrolytic**: VSYS
+  is the BQ24074 OUT (4.7-47 uF allowed, ~31 uF in total now), and a large bulk would have to be
+  charged through the FS8205A when a cell is plugged in (the DW01A may read that as a short). The
+  cell supplements the peaks. Its SD_MODE pull-up
   (1M) goes to **+3V3** (not VSYS): with the switch off the amplifier is then really off
   (VSYS would leave ~0.3 V on SD_MODE and keep it on). 1M against the internal 100k gives 0.30 V,
   inside the (L+R)/2 window (0.16-0.77 V); GPIO2 low = off.
@@ -101,9 +115,11 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   (gate to GND through 10k-100k, conducts both ways with a correct cell, blocks a reversed one).
   Big +/- on the silkscreen next to the JST-PH (pin order is not standardised between vendors).
 - **Measurement**: VBAT -> 470k/470k -> GPIO35 with **100 nF** at the pin (the source is too
-  high-ohmic for the ADC sample capacitor; the Olimex board has the same). VBUS -> **33k/22k**
-  -> GPIO39 (x0.4: 2.0 V at 5 V, inside the linear 11 dB range; 22k/22k would put 2.5 V there,
-  above it). Firmware: `PWR_CAL_PERMILLE` ~2500 (was 1457), `BAT_CAL_PERMILLE` stays.
+  high-ohmic for the ADC sample capacitor; the Olimex board has the same). VIN (after the fuse) ->
+  **330k/220k with 100 nF** -> GPIO39 (x0.4: 2.0 V at 5 V, inside the linear 11 dB range).
+  High-ohmic on purpose: with the switch off and USB in, the ESP32 is unpowered and the divider
+  would push current through the pin's protection diode into the dead 3V3 rail (33k/22k: ~0.1 mA;
+  now ~10 uA). Firmware: `PWR_CAL_PERMILLE` ~2500 (was 1457), `BAT_CAL_PERMILLE` stays.
   PGOOD and CHG give "on USB" and "charging" without the ADC.
 
 ## USB serial and boot
@@ -116,6 +132,8 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
 - **Auto-reset**: the standard two-NPN circuit (DTR/RTS -> EN and GPIO0, MMBT3904); EN with 10k
   pull-up and 1 uF to GND; GPIO0 with 10k pull-up.
 - **Buttons**: RESET (EN) and BOOT (GPIO0), TS-1187A SMD tact switches (recovery only).
+- **Recovery pads** TP203-TP207 (EN, IO0, TXD0, RXD0, GND; +3V3 is TP4): flash the module with a
+  3.3 V serial adapter when the USB-C connector or the CH340C is dead (slide switch on).
 
 ## ESP32-WROVER-IE-N16R8
 
@@ -196,7 +214,7 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 | 34 | `CHG` (BQ24074, via BAT54) | input only, 100k pull-up to +3V3 |
 | 35 | battery voltage | 470k/470k + 100 nF |
 | 36 | `PGOOD` (BQ24074, via BAT54) | input only, 100k pull-up; ESP32 errata: glitches low ~80 ns while ADC/WiFi run -> poll with debounce, no interrupt |
-| 39 | USB voltage | 33k/22k |
+| 39 | USB voltage | 330k/220k + 100 nF |
 
 Firmware changes for this board: `PWR_CAL_PERMILLE` ~2500, charge state from GPIO34/36 (polled),
 backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder stay.
@@ -217,7 +235,7 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 | DMG2305UX-7 | C5261054 | 9017 | reverse-cell P-FET |
 | BAT54WS (SOD-323) | C7502694 | 405154 | preferred; 2x, CHG/PGOOD isolation |
 | LED red / green 0603 | C2286 / C12624 | 3941052 / 354847 | red basic, green extended |
-| polyfuse 1206L150/16NR (1.5 A hold) | C22379952 | 14655 | VBUS |
+| polyfuse 1206L200/16NR (2 A hold, 16 V) | C22374899 | 34396 | VBUS, before the TVS |
 | AO3400A | C20917 | 1071707 | basic; backlight |
 | MMBT3904 | C7420353 | 5024877 | preferred; auto-reset |
 | USBLC6-2SC6 | C2827654 | 105627 | USB ESD |

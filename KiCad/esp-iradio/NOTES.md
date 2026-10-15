@@ -45,6 +45,15 @@ the revision history of the actual KiCad project.
   netlist checked by `tools/intcheck.py` against document 07 (OK, 107 nets, 39 WROVER pins
   connected); every GPIO of sheet 1 compared with Rev A: only the intended changes (display FPC
   pin numbers, backlight through Q1, the new GPIO0/EN/UART/34/35/36/39 nets).
+- 2026-10-15 late: **review by Grok and Claude** (`grok-bevindingen.md`, `claude-bevindingen.md` in
+  the repository root; two rounds, every disputed point checked against the datasheets). No
+  change needed for Q1 (KiCad `AO3400A` is G-S-D like the part), Q201/Q202 (C7420353 is B-E-C),
+  the WROVER pad 39 (Espressif's 3 x 3 land) or the USB-C pin order. Changed (owner's go, USB
+  option a): C24 220 uF removed from VSYS; F201 2 A hold (C22374899) and now in front of the TVS
+  D201; R210 ILIM 1.13k; USB divider R203/R204 330k/220k + C214 100 nF; recovery pads
+  TP203-TP207; LCSC fields on U1, U2, J6; U2 on the ThermalVias footprint; NPTH locating holes in
+  the four EasyEDA footprints; two comments in `gen_radio.py`. ERC 1 known warning, `intcheck.py`
+  OK, 119 parts.
 
 ## Schematic (Rev B, integrated board)
 
@@ -55,18 +64,23 @@ FPC pads) + backlight driver Q1/R22/R23 and microSD J4 right, PCM5102A + jack J5
 CC resistors, TVS, polyfuse and USBLC6-2SC6; CH340C U203 with auto-reset Q201/Q202 and the RESET /
 BOOT buttons; BQ24074 U201 with its programming resistors, NTC, charge LEDs and BAT54WS isolation;
 the cell: reverse P-FET Q203, JST-PH J202, DW01A U204 + FS8205A U205 in the negative lead; AP7361C
-U206 (EN = slide switch SW203) and LP5907 U207 (`+3V3A`). Sheet 2 references are numbered 2xx.
+U206 (EN = slide switch SW203) and LP5907 U207 (`+3V3A`); recovery pads TP203-TP207 (EN, IO0,
+TXD0, RXD0, GND) bottom left. Sheet 2 references are numbered 2xx.
 
 Between the sheets: global power nets `VSYS`, `+3V3`, `+3V3A`, `GND` and global labels `ESP_EN`,
 `ESP_IO0`, `TXD0`, `RXD0`, `CHG`, `PGOOD`, `VBUS_SENSE`, `VBAT_SENSE`. Local labels on sheet 2:
-`VBUS`, `USB_D+`/`USB_D-` (connector side; the USBLC6 passes each line through inside, pins 1-6
+`VBUS` (connector side of the fuse; `VIN` after it is unnamed), `USB_D+`/`USB_D-` (connector
+side; the USBLC6 passes each line through inside, pins 1-6
 and 3-4, so the CH340C side is a separate net), `VBAT`, `BATN` (cell minus), `CHG_N`, `PGOOD_N`,
 `EN_3V3`.
 
-Values set from the BQ24074 datasheet (SLUS810N): ISET 1.1k (0.81 A charge), ILIM 1.1k (1.41 A
-input; the valid range starts at 1.1k, the review's 1.05k was below it), TMR 68k (~9 h), ITERM
+Values set from the BQ24074 datasheet (SLUS810N): ISET 1.1k (0.81 A charge), ILIM 1.13k (1.37 A
+input; the valid range starts at 1.1k, so not 1.1k at 1 %), TMR 68k (~9 h), ITERM
 open (default 10 % termination; the BQ24074 has ITERM on pin 15, **no SYSOFF pin**), CE and EN1
-to GND, EN2 to OUT, TS to a 10k NTC. Caps: IN 4.7 uF 25 V, OUT and BAT 10 uF.
+to GND, EN2 to OUT, TS to a 10k NTC. Caps: IN 4.7 uF 25 V, OUT and BAT 10 uF; VSYS carries
+~31 uF in total (datasheet 4.7-47 uF), no bulk electrolytic. ILIM mode has no VIN-DPM: power the
+board from a source of at least 1.5 A (owner's choice, 07). Input: VBUS -> F201 (2 A hold) ->
+D201 SMAJ5.0A -> IN; USB sense 330k/220k + 100 nF (high-ohmic for an unpowered ESP32).
 
 Symbol libraries (project tables `sym-lib-table` / `fp-lib-table`, files in `lib/`):
 - `Elektuur` (`lib/Elektuur.kicad_sym`): Elektuur-style symbols, CC0, by M. Gyger,
@@ -95,12 +109,12 @@ R/C get them from JLCPCB Tools (basic parts) when the BOM is made.
 
 To verify before the layout:
 - PJ-320D (J5) pin order S = 1, R = 2, T = 4 against a sample or the LCSC drawing.
-- MSK12C02 (SW203) footprint from EasyEDA: pad 1 at -2.25 mm, 2 at 0.75 mm, 3 at 2.25 mm looks
-  irregular for a 1.5 mm pitch switch; compare with the LCSC datasheet drawing.
+- MSK12C02 (SW203): the pad pitch (3.0 mm between pins 1 and 2, 1.5 mm between 2 and 3) is the
+  Shouhan C431540 drawing (checked by Grok); which slide position is ON only shows on a sample.
 - EC11 (SW1): pick the short-shaft variant for the recessed knob (D16), C470754 is 24.5 mm tall.
 - Display panel FPC: pin 1 and contact side with a paper mock-up; R22 from the real panel's Vf.
-- TS-1187A: confirm in the LCSC drawing that pads 1 and 4 are diagonal (assumed from the EasyEDA
-  footprint).
+- TS-1187A: pads 1 and 4 diagonal, per the XKB drawing (Grok); a sample check is enough.
+- J4 TF-01A: symbol and footprint agree; not yet compared with a manufacturer drawing.
 
 ## Rev A (carrier board, history) - decisions and deviations
 

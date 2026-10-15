@@ -104,24 +104,29 @@ for pn, ref in (('A5', 'R201'), ('B5', 'R202')):
     W(p, P(ref, 1))
     gnd(P(ref, 2), 'right')
 
-# VBUS -> TVS -> polyfuse -> VIN rail (y 40.64)
+# VBUS -> polyfuse -> TVS -> VIN rail (y 40.64): fuse first, so a wrong adapter opens the fuse
+# instead of burning the TVS
 VR = 40.64
 s.label('VBUS', (66.04, VR))
-s.add('Elektuur:D-Zener', 'D201', 73.66, 48.26, 180, 'SMAJ5.0A', 'Diode_SMD:D_SMA', extra={'LCSC': 'C113952'},
-      fields={'ref': (76.2, 46.99, 0, 'left'), 'val': (76.2, 49.53, 0, 'left')})
-W((66.04, VR), (73.66, VR), P('D201', 1))
-gnd(P('D201', 2))
-s.add('Elektuur:F', 'F201', 83.82, VR, 90, '1.5A hold', 'Fuse:Fuse_1206_3216Metric', extra={'LCSC': 'C22379952'},
-      fields=horiz(83.82, VR))
-W((73.66, VR), P('F201', 1))
+s.add('Elektuur:F', 'F201', 73.66, VR, 90, '2A hold 16V', 'Fuse:Fuse_1206_3216Metric', extra={'LCSC': 'C22374899'},
+      fields=horiz(73.66, VR))
+W((66.04, VR), P('F201', 1))
 flag('#FLG201', (66.04, VR), 0)
-# USB voltage sense: 33k/22k -> GPIO39 (x0.4)
-R('R203', 91.44, 48.26, '33k')
-R('R204', 91.44, 60.96, '22k')
-W(P('F201', 2), (91.44, VR), P('R203', 1))
+s.add('Elektuur:D-Zener', 'D201', 83.82, 48.26, 180, 'SMAJ5.0A', 'Diode_SMD:D_SMA', extra={'LCSC': 'C113952'},
+      fields={'ref': (80.01, 46.99, 0, 'left'), 'val': (80.01, 49.53, 0, 'left')})   # 180 deg: 'left' shows right-aligned
+W(P('F201', 2), (83.82, VR), P('D201', 1))
+gnd(P('D201', 2))
+# USB voltage sense: 330k/220k (x0.4) + 100 nF -> GPIO39; high-ohmic, so an unpowered ESP32 (switch
+# off, USB in) gets only ~10 uA through the pin's protection diode
+R('R203', 91.44, 48.26, '330k')
+R('R204', 91.44, 60.96, '220k', fields=lside(91.44, 60.96))
+W((83.82, VR), (91.44, VR), P('R203', 1))
 W(P('R203', 2), P('R204', 1))
-W(P('R203', 2), (99.06, P('R203', 2)[1]))
-s.glabel('VBUS_SENSE', (99.06, P('R203', 2)[1]), 0)
+W(P('R203', 2), (99.06, P('R203', 2)[1]), (104.14, P('R203', 2)[1]))
+C('C214', 99.06, P('R203', 2)[1] + 5.08, '100nF',
+  fields={'ref': (99.06, P('R203', 2)[1] + 13.97, 0, None), 'val': (99.06, P('R203', 2)[1] + 16.51, 0, None)})
+gnd(P('C214', 2))
+s.glabel('VBUS_SENSE', (104.14, P('R203', 2)[1]), 0)
 gnd(P('R204', 2))
 
 # USB ESD: USBLC6-2SC6
@@ -202,8 +207,18 @@ s.add('Elektuur:S-make-push', 'SW202', 154.94, IOY + 5.08, 0, 'BOOT', 'esp-iradi
 gnd(P('SW202', '3'))
 s.glabel('ESP_IO0', (162.56, IOY), 0)
 
+# recovery pads: flash the ESP32 with a serial adapter when USB-C or the CH340C is dead (switch on;
+# +3V3 is TP4 on sheet 1)
+s.text('RECOVERY PADS: flash the ESP32 without USB-C / CH340C (switch on, +3V3 = TP4)', (20.32, 205.74), 1.8, True)
+for i, (ref, net) in enumerate((('TP203', 'ESP_EN'), ('TP204', 'ESP_IO0'), ('TP205', 'TXD0'), ('TP206', 'RXD0'))):
+    at = (30.48 + 20.32 * i, 220.98)
+    tp(ref, at, net)
+    s.glabel(net, at, 270)
+tp('TP207', (111.76, 220.98), 'GND')
+gnd((111.76, 220.98))
+
 # ================================================================ charger BQ24074 (top middle)
-s.text('CHARGER: BQ24074 power path (OUT = VSYS), 0.8 A charge, 1.4 A input', (119.38, 30.48), 1.8, True)
+s.text('CHARGER: BQ24074 power path (OUT = VSYS), 0.8 A charge, 1.37 A input', (119.38, 30.48), 1.8, True)
 BX, BY = 175.26, 63.5
 s.add('Battery_Management:BQ24074RGT', 'U201', BX, BY, 0, 'BQ24074RGTR',
       'Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias', extra={'LCSC': 'C54313'},
@@ -216,7 +231,7 @@ flag('#FLG203', (BX, VR), 0)
 tp('TP201', (101.6, VR), 'VIN')
 s.nc(P('U201', 'ITERM'))         # open = termination at 10 % (BQ24074 has no SYSOFF pin)
 # programming pins fan out to the left, each its own column down to y 88.9
-COL = {'~{CE}': 106.68, 'TMR': 116.84, 'EN1': 127.0, 'EN2': 137.16, 'ILIM': 147.32, 'ISET': 157.48}
+COL = {'~{CE}': 106.68, 'TMR': 116.84, 'EN1': 127.0, 'EN2': 137.16, 'ILIM': 147.32, 'ISET': 160.02}
 BOT = 88.9
 for pn, x in COL.items():
     p = P('U201', pn)
@@ -225,12 +240,13 @@ gnd((COL['~{CE}'], BOT))                     # CE low = charging enabled
 gnd((COL['EN1'], BOT))                       # EN1 low, EN2 high = ILIM mode
 s.add_power('Elektuur:V-+', 'VSYS', (COL['EN2'], BOT), 0, 1, (COL['EN2'] - 2.54, BOT + 5.08, 0, 'right'), True)
 R('R209', COL['TMR'], BOT + 5.08, '68k')
-R('R210', COL['ILIM'], BOT + 5.08, '1.1k')
-R('R211', COL['ISET'], BOT + 5.08, '1.1k')
+R('R210', COL['ILIM'], BOT + 5.08, '1.13k')
+R('R211', COL['ISET'], BOT + 5.08, '1.1k', fields={'ref': (COL['ISET'] + 3.81, BOT + 1.27, 0, 'left'),
+                                                  'val': (COL['ISET'] + 3.81, BOT + 3.81, 0, 'left')})
 for r_ in ('R209', 'R210', 'R211'):
     gnd(P(r_, 2))
 s.text('TMR 68k: safety timer ~9 h', (106.68, 106.68), 1.27, False)
-s.text('ILIM 1.1k: input 1.4 A, ISET 1.1k: charge 0.8 A', (106.68, 109.22), 1.27, False)
+s.text('ILIM 1.13k: input 1.37 A, ISET 1.1k: charge 0.8 A', (106.68, 109.22), 1.27, False)
 gnd(P('U201', 'VSS'))
 # OUT -> VSYS
 o = P('U201', 'OUT')

@@ -970,9 +970,13 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   `docs/speaker-output.md`. Maybe a separate output choice instead of the Bluetooth toggle. The
   KiCad schematic uses the MAX98357A since 2026-10-15.
 - PCB (integrated board, `KiCad/07-integrated-board.md`): schematic Rev B done 2026-10-15 (two
-  sheets, ERC and netlist checked). Before the layout: the checks listed in
-  `KiCad/esp-iradio/NOTES.md` (PJ-320D pin order, MSK12C02 footprint, short-shaft EC11, display
-  FPC pin 1 and backlight resistor from the real panel, TS-1187A pads), then board outline
+  sheets, ERC and netlist checked), reviewed the same evening by Grok and Claude
+  (`grok-bevindingen.md`, `claude-bevindingen.md` in the repository root) and the agreed changes
+  worked in. The board must be powered from a USB source of at least 1.5 A (owner's choice: the
+  charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). Before the
+  layout: the checks listed in `KiCad/esp-iradio/NOTES.md` (PJ-320D pin order and MSK12C02 ON
+  position on samples, short-shaft EC11, display FPC pin 1 and backlight resistor from the real
+  panel), then board outline
   (~60 x 80 mm, 4 layers), placement, routing, DRC, JLCPCB BOM/CPL, STEP/DXF for the case. The
   firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500, charge state on
   GPIO34/36, backlight PWM >= 20 kHz, a 16 MB partition table); pins stay.

@@ -64,26 +64,25 @@ JST-PH on the Olimex board), charged over USB.
 ### Use cases the board must support
 
 1. Bluetooth on: audio to headphones/speaker over Bluetooth; amplifier off (GPIO2 low), DAC idle.
-2. Bluetooth off: audio over I2S to the DAC; line out on the jack; amplifier on (GPIO2 high) to
-   the speaker when USB-C power is present. (Firmware for the I2S path is still to be written.)
-3. On battery only (no USB-C): radio, display, Bluetooth and line out work; the speaker does not
-   (the amplifier is powered from USB-C only, decision D5).
+2. Bluetooth off: audio over I2S to the DAC; line out on the jack; amplifier on (GPIO2 released,
+   the 1M pull-up gives (L+R)/2; never drive GPIO2 high, that selects the left channel only) to
+   the speaker (the I2S firmware exists since v1.28/v1.37).
+3. On battery only: radio, display, Bluetooth and line out work; on the carrier the speaker did
+   not (amplifier on USB-C only, D5); on the integrated board it does (VSYS, D11).
 4. USB-C plugged in: the radio runs from USB-C and the Li-Po charges (decision D7); the Olimex
    micro-USB may be plugged in at the same time (PC for USB updates) without either source feeding
    the other.
-5. Encoder: turn = scroll stations / volume, press = menu (firmware to be written).
-6. microSD: log files, settings backup, station logos, firmware copies (firmware exists,
-   `SD_ENABLED` in `src/config.h` switches it on).
+5. Encoder: turn = volume, press = mute, hold = station chooser (firmware exists, v1.26).
+6. microSD: log files, settings backup, station logos, firmware copies, history (firmware exists,
+   `SD_ENABLED 1`).
 
-## Phase 2: integrated board (later, notes only)
+## Phase 2: integrated board (chosen 2026-10-15)
 
-- ESP32-WROVER-E (8 MB PSRAM variant fine; the firmware uses 4 MB PSRAM, 4 MB flash minimum).
-- USB-C with a USB-UART (CH340C or CP2102N) and the usual auto-reset circuit (DTR/RTS -> EN/GPIO0).
-- Li-Po charger with power path, 3.3 V regulator (>= 600 mA peaks: WiFi + Bluetooth), battery and
-  USB voltage dividers on GPIO35 / GPIO39 like the Olimex (470k/470k for the battery; 10k/22k for
-  USB, see `AGENTS.md` "Battery measurement").
-- Then the Olimex reference design (its KiCad files) is the starting point. Do not start phase 2
-  before phase 1 has run for a while.
+The owner skipped phase 1: the integrated board is the current design. Its requirements and
+decisions D8-D18 are in `07-integrated-board.md` (WROVER-IE-N16R8, USB-C + CH340C, BQ24074 power
+path with cell protection, 3.3 V LDO with the on/off switch, bare display panel, everything
+assembled by JLCPCB). The early notes that stood here (10k/22k USB divider, "after phase 1") are
+superseded.
 
 ## Still open
 

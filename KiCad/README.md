@@ -38,11 +38,11 @@ the carrier: their banners say what still applies.
 | `esp-iradio/NOTES.md` | Schematic Rev B: sheets, nets between them, chosen values, libraries, checks open before the layout |
 | `esp-iradio/tools/README.md` | How the schematic is generated and checked (ERC, netlist check) |
 | `06-checklist-and-bring-up.md` | Review checklist and bring-up: a section for the integrated board, then the carrier's |
-| `01-requirements.md` | Scope and owner decisions D1-D7 (phase 1; most still hold) |
+| `01-requirements.md` | Scope, use cases and owner decisions D1-D7 (phase 1; most still hold) |
 | `02-pinout-and-nets.md` | GPIO and net names (phase 1 headers; the GPIOs are the same on the integrated board, see 07) |
 | `03-parts-and-footprints.md` | Phase 1 bill of materials (the integrated board's parts are in 07) |
 | `04-power.md` | Phase 1 power tree (superseded by "Power" in 07) |
-| `05-layout-guidelines.md` | Audio and SPI routing, mechanics, fab rules (still apply); Olimex outline and antenna keep-out (phase 1 only) |
+| `05-layout-guidelines.md` | Layout rules for the integrated board (rewritten 2026-10-15): mechanics, U.FL, 4 layers, USB pair, charger heat, audio and SPI routing, JLCPCB fab rules |
 
 ## Sources in this repository
 
