@@ -22,7 +22,7 @@ Owner decisions (2026-10-11, details in `01-requirements.md`): chips on the boar
 modules), display on the board, a 3D-printed case designed around the board, one mono speaker,
 amplifier powered from a USB-C input, JLCPCB with SMT assembly.
 
-**Phase 2 (later, optional): an integrated board** with the ESP32-WROVER-E module, USB-UART, Li-Po
+**Phase 2 (chosen 2026-10-15, see `07-integrated-board.md`): an integrated board** with the ESP32-WROVER-E module, USB-UART, Li-Po
 charger and regulator on the PCB itself. Only after phase 1 works; notes in `01-requirements.md`.
 
 ## Files (read in this order)
@@ -35,6 +35,7 @@ charger and regulator on the PCB itself. Only after phase 1 works; notes in `01-
 | `04-power.md` | Power tree, currents, the amplifier supply question, decoupling, grounding |
 | `05-layout-guidelines.md` | Board outline, antenna keep-out, audio and SPI routing, mechanics, fab rules |
 | `06-checklist-and-bring-up.md` | Design review checklist (ERC/DRC/firmware match) and first power-up test plan |
+| `07-integrated-board.md` | **Phase 2, chosen 2026-10-15**: everything on one board (WROVER-E-N16R8, USB-C with CH340C, BQ24074 power-path charger, LDO, bare display panel on its FPC); decisions D8-D11, power, GPIO map, open questions |
 
 ## Sources in this repository
 

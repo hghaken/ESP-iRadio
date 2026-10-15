@@ -397,7 +397,10 @@ Hardware:
   MAX98357A speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
   `src/config.h`), `03-parts-and-footprints.md`, `04-power.md`, `05-layout-guidelines.md` (antenna
-  keep-out, routing, fab rules), `06-checklist-and-bring-up.md`. Owner decisions 2026-10-11: DAC
+  keep-out, routing, fab rules), `06-checklist-and-bring-up.md`, `07-integrated-board.md` (phase 2,
+  chosen 2026-10-15: everything on one board - ESP32-WROVER-E-N16R8, USB-C + CH340C, BQ24074
+  power-path charger, 3.3 V LDO, the bare display panel soldered by its 12-pin 0.7 mm FPC; the
+  carrier schematic stays as the verified reference). Owner decisions 2026-10-11: DAC
   and amplifier as chips (PCM5102APWR, mono amplifier MAX98357A since 2026-10-15, was PAM8302A),
   display on the board,
   3D-printed case around the board (STEP/DXF export), one mono speaker of 4 or 8 Ohm (user's
