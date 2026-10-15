@@ -31,8 +31,10 @@ Before ordering:
 - [x] BOM, CPL and Gerbers in `esp-iradio/jlcpcb/` (`tools/jlcfab.py`, 2026-10-16): every placed
       part has an LCSC number and is in stock; plain R/C mapped to basic parts in the script.
 - [ ] SW1: the EC11 part (shaft length) chosen and its `LCSC` field set (not placed until then).
-- [ ] The rotation of every part checked in JLCPCB's placement preview (list in
-      `esp-iradio/jlcpcb/README.md`).
+- [x] The rotation of every part checked in JLCPCB's placement preview (2026-10-16, six part
+      types corrected in `tools/jlcfab.py`, `PART_CORRECTIONS`).
+- [ ] Decide the assembly scope (full JLCPCB, hybrid or self-assembly; quote and options in
+      `esp-iradio/jlcpcb/README.md`), then upload, check the preview again and order.
 - [ ] STEP and DXF exported for the case; knob, display window and connectors line up.
 
 Bring-up (new board):

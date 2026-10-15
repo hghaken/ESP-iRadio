@@ -46,3 +46,44 @@ Not on the board, add to the same order as loose LCSC parts:
 
 The cell (JST-PH, check the polarity against the "+"/"-" silk) and the speaker (4-8 Ohm) come
 from elsewhere.
+
+## Quote of 2026-10-16 (JLCPCB, logged in, not ordered)
+
+5 boards, all 5 assembled, Standard PCBA, top side, build time PCB 3 days + assembly 5-6 days:
+
+| Item | Price |
+|---|---|
+| PCB (4 layers, 1.6 mm, min hole 0.3 mm; the 0.2 mm option had made it $45.55) | $8.00 |
+| Setup fee | $25.75 |
+| Stencil | $8.27 |
+| Components (47 types for 5 boards) | $85.14 |
+| Feeder loading ($1.53 per part type, 45 types) | $69.75 |
+| SMT assembly | $4.35 |
+| Hand-soldering labour + manual assembly (THT sockets, JST) | $5.62 |
+| Packaging | $0.51 |
+| **Total** | **$207.39** |
+
+Not included: shipping (DHL Express ~$23.36 for the Netherlands, more for the 821 g parcel;
+EuroPacket ~$13.27), 21 % VAT (~$280-285 all in, ~EUR 255-260), the loose parts above (~$6-7 per
+set). Faster assembly: +$49.63 (4-5 days) or +$99.25 (3-4 days). No X-ray or fixture fee was
+charged. The fixed part is ~$104 (setup, stencil, feeders); each extra board adds only ~$17, so
+2 assembled boards come to ~$155 before shipping and VAT.
+
+**Open decision (owner, 2026-10-16): the owner finds this expensive for 2-5 boards.** Options
+discussed (estimates; the script does not support them yet):
+1. As quoted: everything assembled by JLCPCB. 5 boards $207, 2 boards ~$155 (+ shipping, VAT).
+2. **Hybrid (Claude's advice)**: JLCPCB places only the hard parts (ESP32-WROVER-IE with its ground
+   land, BQ24074 and MAX98357A QFNs with exposed pads, PCM5102A TSSOP-20, USB-C 0.5 mm pitch);
+   feeder loading then ~$8 instead of ~$70. ~$80-85 for 2 boards, ~$135 for 5. The owner solders
+   the rest by hand (~90 parts per board: 0603 R/C, SOT-23 parts, CH340C SOIC-16, microSD socket,
+   jack, buttons, slide switch, sockets, JST; ~2-3 h per board), ordered as a separate LCSC list
+   (~$15-20 for a few boards). If JLCPCB offers Economic PCBA for this board: setup $8.18,
+   stencil $1.53 and feeder fees only for extended parts ($3.07 each), another ~$25+ less.
+   Needed: a `jlcfab.py` option that writes the BOM/CPL for a chosen set of references and an LCSC
+   list (`Comment, Designator, LCSC, Quantity`) for the hand-soldered rest.
+3. Fully self-assembled: bare PCBs ($8) + stencil (~$7) + all parts from LCSC (~$20 per board),
+   ~$60-70 for 2 boards with shipping; the two QFNs and the USB-C need solder paste, the stencil
+   and a hotplate or hot air (~EUR 30-50 of tools). Cheapest, riskiest.
+4. "Everything through-hole" is not possible: the charger, amplifier, DAC, USB-C and the ESP32
+   module exist only as SMD. The nearest thing is the phase 1 carrier board with modules (Olimex
+   board, DAC/amplifier/display modules; Rev A in git, `d925e81`), which drops the integration.

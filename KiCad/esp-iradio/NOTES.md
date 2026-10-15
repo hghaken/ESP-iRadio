@@ -147,8 +147,10 @@ Still to do on the layout (before ordering):
 - 3D models: this PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D folders (install
   them or use the LCSC models) before exporting the STEP for the case; the WROVER-IE model is the
   EasyEDA one and shows a PCB antenna;
-- JLCPCB files: done 2026-10-16 (`jlcpcb/`, made by `tools/jlcfab.py`); still to do: SW1's part
-  and the rotation check in JLCPCB's preview (`jlcpcb/README.md`).
+- JLCPCB files: done 2026-10-16 (`jlcpcb/`, made by `tools/jlcfab.py`), placement preview checked
+  with the owner (six part types corrected); still to do: SW1's part. Quote 2026-10-16: $207.39
+  for 5 assembled boards before shipping and VAT; **open decision** on how much JLCPCB assembles
+  (full, hybrid or self-assembly), see `jlcpcb/README.md`, "Quote".
 
 ## Schematic (Rev B, integrated board)
 
