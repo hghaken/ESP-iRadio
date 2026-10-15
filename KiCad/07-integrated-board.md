@@ -46,8 +46,9 @@ USB-C --+-- CC1/CC2 5.1k (sink)
   present, battery regulation 4.2 V. Settings by resistors: ISET for the charge current
   (~1 A for the 5000 mAh cell), ILIM for the input limit (1.5 A), EN1/EN2 = ILIM mode, CE low.
   TS: the cell has no thermistor wire -> 10k to GND (as the datasheet allows; with a 3-wire pack
-  the NTC goes here). SYSOFF: see open question Q1. CHG and PGOOD are open-drain: pull-ups to
-  +3V3, read on GPIO34 and GPIO36 (input-only pins, free on this board).
+  the NTC goes here). SYSOFF: slide switch (D12). CHG and PGOOD are open-drain: pull-ups to
+  +3V3, read on GPIO34 and GPIO36 (input-only pins, free on this board), plus a red (CHG) and a
+  green (PGOOD) LED (D14).
 - **3.3 V: LDO, 1 A class** (e.g. Diodes AP7361C-33 or TI TLV75733P), fed from VSYS. Olimex uses
   a 500 mA LDO (HX6211) and the radio ran 14 h on battery with it; 1 A gives margin for WiFi and
   Bluetooth peaks plus the backlight (60 mA). A switcher would gain a little runtime between
@@ -112,7 +113,7 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 - Pads: 12 x 0.7 mm pitch, ~0.4 x 2.0 mm, in a row matching the FPC end (11.4 mm wide); the FPC is
   hand-soldered (or hot-bar) after the SMT assembly. Mechanics: FPC bend zone 10 mm, panel
   30.07 x 37.43 x 1.56 mm, active area 27.97 x 32.63 mm (see the drawing in the panel spec).
-  Where the panel sits (front of the board, on spacers or taped) follows from the case (Q3).
+  The panel sits on the front of the board (D13).
 - Sources: lcdwiki "1.69inch IPS Module" (MSP1691) with the panel spec SPEC_UN169T-IG01 and the
   module schematic (QDtech), 2026-10-15.
 
@@ -150,16 +151,14 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 Firmware changes for this board: `PWR_CAL_PERMILLE` (new divider), charge status from GPIO34/36,
 a 16 MB partition table; everything else (pins, I2S, SPI, encoder) stays.
 
-## Open questions for the owner
+## Owner decisions on the details (2026-10-15)
 
-- **Q1 On/off switch**: a slide switch on the BQ24074 SYSOFF pin cuts the battery from the system
-  (USB still powers it), or no switch (the radio is always on, as today)?
-- **Q2 Board size and shape**: depends on the case; the display (30 x 37 mm), the WROVER (18 x
-  31.4 mm, antenna at an edge), the encoder, USB-C, 3.5 mm jack, microSD and speaker connector set
-  the minimum (roughly 60 x 80 mm).
-- **Q3 Display position**: on the front of the board with the FPC folded to pads on the same side
-  (simplest), or behind a window in the case with the board further back?
-- **Q4 Charge LEDs**: a red/green LED on CHG/PGOOD in addition to the display, or only on screen?
+| # | Question | Choice |
+|---|---|---|
+| D12 | On/off switch | **yes**: a slide switch on the BQ24074 SYSOFF pin (off = the cell is cut from the system, no drain; with USB plugged in the radio still runs and the cell still charges) |
+| D13 | Display position | **on the front of the board**: panel on spacers or double-sided tape, FPC folded to the pads on the same side |
+| D14 | Charge LEDs | **yes**: red on CHG (charging), green on PGOOD (USB power), besides the screen |
+| D15 | Board size | as small as reasonable, about **60 x 80 mm**; the case is designed around the board |
 
 ## Sources
 
