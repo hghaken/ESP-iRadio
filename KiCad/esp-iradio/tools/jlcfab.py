@@ -63,8 +63,22 @@ CORRECTIONS = [
 ]
 NO_CORRECTION_LIBS = ('lcsc', 'esp-iradio')
 
+# per LCSC part, from JLCPCB's placement preview (2026-10-16): their 3D model of these parts sits in
+# another base orientation than the footprint rule assumes; this correction replaces the rule
+PART_CORRECTIONS = {
+    'C2897373': 90,     # PM254 1x10 socket (J3, J7): the rule-less 0 put the row across the module rows
+    'C165948': 0,       # USB-C TYPE-C-31-M-12 (J201): the plugin's 180 turned the opening into the board
+    'C2861252': 0,      # BQ24074RGTT (U201): the QFN 270 put pin 1 top right instead of top left
+    'C7420353': 180,    # MMBT3904 (Q201, Q202): SOT-23 -90 left the body across the pads
+    'C5261054': 180,    # DMG2305UX (Q203): same
+    'C5370990': 180,    # TPLP5907 SOT-23-5 (U207): same
+}
+
 
 def correction(fp):
+    lcsc = lcsc_of(fp)
+    if lcsc in PART_CORRECTIONS:
+        return PART_CORRECTIONS[lcsc]
     if fp.GetFPID().GetLibNickname().wx_str() in NO_CORRECTION_LIBS:
         return 0
     name = fp.GetFPID().GetLibItemName().wx_str()

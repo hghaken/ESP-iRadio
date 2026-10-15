@@ -22,6 +22,11 @@ Before paying:
   stock at JLCPCB on 2026-10-16); same chip and package.
 - **CH340C**: JLCPCB's matcher shows C7464026 instead of C84681: the same WCH CH340C in SOP-16
   (a second LCSC number), no shortfall in the BOM step; either is fine.
+- Placement preview checked 2026-10-16 (Claude with the owner): six part types were turned wrong
+  by the footprint rules (J3/J7 sockets, J201 USB-C, U201, Q201-Q203, U207) and now have their own
+  correction per LCSC number (`PART_CORRECTIONS` in the script); D201-D205, U1, U2, U3, U202-U206,
+  J4, J6/J202 and SW203 were right; J5 has no JLCPCB 3D model (its pegs line up). Check again
+  after any change.
 - **Check every part in JLCPCB's placement preview**: pin 1 of U1, U2, U3, U201-U207, Q201-Q203,
   the LEDs D202/D203 (cathode), the diodes D201/D204/D205, J201 (USB-C opening at the board
   edge), J4 (card opening at the right edge), J5, and the two sockets J3/J7 along the module rows.
