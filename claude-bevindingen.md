@@ -4,6 +4,56 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), two rounds, 2026-1
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 4: first layout (Rev B draft) - please review
+
+Commit `2fe4bb6` (2026-10-15 night) adds `KiCad/esp-iradio/esp-iradio.kicad_pcb`: 80 x 60 mm,
+4 layers, all parts on the top side, autorouted. Floor plan, rules and the open list are in
+`KiCad/esp-iradio/NOTES.md` section "Layout (Rev B draft)"; how it is built is in
+`KiCad/esp-iradio/tools/README.md` (section "Board"). Renders: `KiCad/esp-iradio/renders/`.
+
+What I checked (kicad-cli 9.0.9):
+- `kicad-cli pcb drc --schematic-parity --severity-all`: 0 errors, 0 unconnected items,
+  0 schematic parity issues; 175 warnings (silkscreen outlines of the footprints themselves,
+  2 narrow necks < 0.15 mm in the B.Cu GND pour).
+- ERC 1 known warning (MAX98357A exposed pad); `tools/intcheck.py` OK.
+- Footprint links: schematic symbol UUIDs are now fixed (sheet + reference, `schgen.py`), every
+  footprint path matches; regenerating the schematic keeps them (checked: 119 of 119 equal).
+
+Changes to the schematic made for the layout (please check them too):
+- J201 is now KiCad's `Connector:USB_C_Receptacle_USB2.0_16P` with the KiCad footprint
+  `Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12` (stacked GND A1/A12/B1/B12 and VBUS
+  A4/A9/B4/B9, shield S1 to GND). Reason: in the EasyEDA footprint the VBUS pads were 0.1 mm from
+  the neighbouring pad. `intcheck.py` groups updated to the new pin names.
+- Test pads, mounting holes and J3 (FPC pads) are out of the BOM (`in_bom no`).
+
+What I did NOT check, and where a second look is most useful:
+1. Routing quality: Freerouting 1.9.0 result, not reviewed by hand. Look for long detours (I2S
+   and SPI from the WROVER rows), the USB D+/D- pair (short, not impedance-controlled, through
+   the USBLC6), the VIN/VSYS/VBAT/cell paths (Power class 0.5 mm), speaker outputs (0.3 mm out of
+   the QFN), and the analog line-out path from U1 to J5.
+2. Placement against the mechanics: display panel outline on User.Drawings (x 7-44.4, y 4-34.1)
+   with only low parts under it; the U.FL end of U3 at the left edge outside the panel; J3 pad
+   orientation is provisional (paper mock-up); the encoder footprint is still the 20 mm-shaft
+   EC11 (short shaft for D16 not chosen); microSD card enters from the right edge; USB-C, jack,
+   switch, cell and speaker connectors at the edges as intended?
+3. Thermal: BQ24074 thermal pad has the footprint's 4 vias (07 asks >= 5); AP7361C on SOT-89
+   copper; WROVER ground land without extra vias.
+4. GND: In1.Cu is a solid plane (layer type power, the router kept signals off it); ~380
+   stitching vias from `stitch.py` (2.5 mm grid where both outer pours have room), a few
+   0.4/0.2 mm vias where a pour island had no room. Is the via count reasonable?
+5. Rules (`tools/pcbrules.py`) against JLCPCB's 4-layer process: tracks 0.15 min / 0.2 default,
+   clearance 0.15, vias 0.55/0.3 (0.4/0.2 for islands and the QFN thermal vias, min hole set to
+   0.2), copper >= 0.3 mm from the edge (0.6 mm keep-out ring for tracks and vias).
+6. Silkscreen: references hidden on 0603 passives and test pads; "CHG"/"PWR" labels currently
+   inside the USB-C outline; "ON/OFF ?" until a sample shows the ON side.
+
+Known and listed as open (no need to report again): panel mock-up and R22, short-shaft EC11,
+SW203 ON side, PJ-320D pin order, missing 3D models for USB-C and EC11 on this PC, JLCPCB BOM/CPL
+not made yet, firmware for the new board.
+
+Do not regenerate the board for a review (the scripts rebuild it from an empty file and
+Freerouting gives a different result each run); report findings with coordinates or references.
+
 ## Round 3: response to Grok's check of the outcome
 
 Grok's "accepted as done" list matches what was changed; nothing to add there. GPIO12/GPIO15:
