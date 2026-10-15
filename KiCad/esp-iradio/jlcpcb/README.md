@@ -20,8 +20,8 @@ parts (setup fee each). Stock checked 2026-10-16 against the JLCPCB Tools databa
 Before paying:
 - **U201 is the BQ24074RGTT (C2861252)**, the 250-piece reel of the BQ24074RGTR (C54313, out of
   stock at JLCPCB on 2026-10-16); same chip and package.
-- **CH340C**: JLCPCB's matcher picked the pre-order part C7464026 (~11 days lead time) instead of
-  C84681 (in stock) on 2026-10-16; set it back to C84681 in the BOM step.
+- **CH340C**: JLCPCB's matcher shows C7464026 instead of C84681: the same WCH CH340C in SOP-16
+  (a second LCSC number), no shortfall in the BOM step; either is fine.
 - **Check every part in JLCPCB's placement preview**: pin 1 of U1, U2, U3, U201-U207, Q201-Q203,
   the LEDs D202/D203 (cathode), the diodes D201/D204/D205, J201 (USB-C opening at the board
   edge), J4 (card opening at the right edge), J5, and the two sockets J3/J7 along the module rows.
