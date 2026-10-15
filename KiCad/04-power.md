@@ -13,13 +13,13 @@
 
 A plain USB-C sink: 5.1k pull-downs on CC1 and CC2 make any USB-C charger or power bank (PD-capable
 or not) deliver **5 V, up to 3 A**. No PD controller: higher PD voltages are not needed (the
-amplifier and the Olimex board run on 5 V; PAM8302A/PAM8403 allow 2.0-5.5 V, 6 V absolute
+amplifier and the Olimex board run on 5 V; the MAX98357A allows 2.5-5.5 V, 6 V absolute
 maximum).
 
 ## Power tree (recommended)
 
 ```
-USB-C VBUS --TVS-- polyfuse 2-3 A --+-- +5V_USBC --+-- +VAMP --> amplifier (bulk 220-470 uF + 10 uF + 1 uF)
+USB-C VBUS --TVS-- polyfuse 2-3 A --+-- +5V_USBC --+-- +VAMP --> amplifier (bulk 220-470 uF + 10 uF + 100 nF)
                                     |              |
                                     |              +-- ideal diode (U3) --> +5V_OLI (Olimex +5V pin)   [D7]
                                     |

@@ -9,7 +9,7 @@ libraries are in `esp-iradio/NOTES.md`.
 
 Today the radio is a hand-wired stack: an **Olimex ESP32-DevKit-LiPo** (ESP32-WROVER, Li-Po charger,
 USB) with jumper wires to a 1.69" ST7789 display. A rotary encoder, a microSD socket, a PCM5102A
-DAC (line out) and a PAM8403 amplifier (speaker) are ordered and planned.
+DAC (line out) and a MAX98357A I2S amplifier (speaker) work on the breadboard (2026-10-15).
 
 **Phase 1 (design this first): a carrier board.** The Olimex board plugs in on two 1x19 pin
 headers; the carrier holds the display, the encoder, the microSD socket, a PCM5102A DAC chip
@@ -41,7 +41,7 @@ charger and regulator on the PCB itself. Only after phase 1 works; notes in `01-
 - `AGENTS.md` (project root): the whole project, pin tables, pitfalls. Sections "Display wiring",
   "Battery measurement", "Hardware".
 - `src/config.h`: the pins the firmware uses (`TFT_*`, `SD_CS`, `BAT_SENSE_PIN`, `PWR_SENSE_PIN`).
-- `docs/speaker-output.md`: PCM5102A + PAM8403 plan (pins, jumpers, currents).
+- `docs/speaker-output.md`: PCM5102A line out and MAX98357A speaker on the breadboard (pins, tests).
 - `docs/display-research.md`: rotary encoder choice and pins.
 - `docs/olimex-jumpers-bottom.png`: the three solder jumpers for battery/USB sensing on the Olimex board.
 - Olimex ESP32-DevKit-LiPo **Rev.D** open hardware (KiCad sources, take the exact header

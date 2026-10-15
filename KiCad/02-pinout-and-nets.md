@@ -54,7 +54,7 @@ The radio has the WROVER (GPIO16/17 belong to the PSRAM).
 | 12 | GPIO16 | - | **leave open**: PSRAM on the WROVER |
 | 13 | GPIO4 | `SD_CS` | microSD chip select (10k pull-up so the card is deselected at boot) |
 | 14 | GPIO0 | - | **leave open**: boot strapping, used by the USB auto-reset |
-| 15 | GPIO2 | `AMP_SD` | amplifier shutdown, high = amplifier on. Strapping pin: **must be low or floating at boot** -> 100k pull-down only, never a pull-up |
+| 15 | GPIO2 | `AMP_SD` | MAX98357A SD_MODE: firmware drives it **low = amplifier off** and releases it (input) = on. Strapping pin: must be low or floating at boot - the 1M pull-up to `+VAMP` against the chip's internal 100k pull-down gives ~0.45 V, which reads low |
 | 16 | GPIO15 | - | **leave open**: strapping pin (boot log) |
 | 17 | GPIO8 | - | not connected (internal flash) |
 | 18 | GPIO7 | - | not connected (internal flash) |
@@ -130,23 +130,26 @@ Follow the reference circuit in the TI PCM510xA datasheet; take every component 
 Tip = `LINE_L`, ring = `LINE_R`, sleeve = `GND` (at the DAC's ground). No switch needed: the
 firmware decides between speaker and line out.
 
-### U_AMP: mono class-D amplifier
+### U_AMP: mono class-D amplifier (MAX98357A, since 2026-10-15)
 
-Recommended **PAM8302A** (mono, 2.5 W into 4 Ohm at 5 V, 2.0-5.5 V, SOP-8/MSOP-8, shutdown pin
-active low). Alternative PAM8403 (stereo, SOP-16) with only one channel used; the PAM8302A needs
-fewer parts for one speaker. Follow the Diodes Inc. datasheet application circuit.
+**MAX98357AETE+T** (Analog Devices/Maxim, TQFN-16 3x3 mm, KiCad `Audio:MAX98357A`): I2S input with
+its own DAC, mono (L+R)/2, 3.2 W into 4 Ohm at 5 V, 2.5-5.5 V. It listens to the same I2S lines as
+the PCM5102A (one transmitter, two receivers), so the line output and the speaker play the same;
+the firmware's software volume sets both. Replaces the analog PAM8302A route of the first draft
+(that needed the mono sum and input network below the DAC). Tested 2026-10-15 on a breakout board
+(firmware v1.37, web checkbox "Speaker").
 
 | Pin | Net | Note |
 |---|---|---|
-| VDD | `+VAMP` | USB-C 5 V branch, see `04-power.md`; 10 uF + 1 uF at the pin, bulk cap nearby |
-| GND | `GND` | |
-| IN+ | `AMP_INP`: 100 nF from `AMP_SUM` | mono sum: `LINE_L` and `LINE_R` each through 180k into `AMP_SUM` (Thevenin 90k = external Rin, gain 150k/(10k+Rin) ~ x1.5, so the DAC's 2.1 Vrms full scale gives ~2.5 W in 4 Ohm) |
-| IN- | `AMP_INN`: 91k + 100 nF to GND | matches the IN+ source impedance, single-ended drive of the differential input |
-| SD | `AMP_SD` | active low: 100k pull-down keeps the amplifier off at boot; GPIO2 high = on |
-| OUT+ / OUT- | `SPK+` / `SPK-` | bridged (BTL): neither side may touch GND; optional ferrite + 220 pF per output for EMI |
-
-Gain: set by the input resistors (see datasheet); the DAC delivers 2.1 Vrms, so keep the gain low
-(the firmware volume does the rest).
+| DIN (1) | `I2S_DATA` (GPIO13) | shared with the PCM5102A |
+| BCLK (16) | `I2S_BCK` (GPIO27) | shared |
+| LRCLK (14) | `I2S_LRCK` (GPIO14) | shared |
+| SD_MODE (4) | `AMP_SD` (GPIO2) + 1M to `+VAMP` | low = shutdown; released = (L+R)/2 (the 1M against the internal 100k pull-down gives ~0.45 V); never drive it to 3.3 V (that selects the left channel only) |
+| GAIN_SLOT (2) | open | 9 dB (to GND 12 dB, to VDD 6 dB, 100k to GND 15 dB, 100k to VDD 3 dB) |
+| VDD (7, 8) | `+VAMP` | 10 uF + 100 nF at the pins, 220 uF bulk nearby |
+| GND (3, 11, 15) + EP (17) | `GND` | exposed pad to the ground plane with vias |
+| OUTP / OUTN (9, 10) | `SPK+` / `SPK-` | bridged (BTL): neither side may touch GND; short-circuit and thermal protection in the chip; optional ferrite + capacitor per output for EMI with long speaker leads |
+| NC (5, 6, 12, 13) | - | not connected |
 
 ### J_SPK: speaker output
 

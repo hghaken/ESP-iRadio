@@ -47,12 +47,14 @@ The case is designed around the board, so the board files must give the case des
 - SPI (`SPI_SCK`, `SPI_MOSI`, `SPI_MISO`, CS lines): the display runs at 26.7 MHz. Keep them short
   (< 80 mm), over unbroken ground, no stubs; series resistors at the ESP32 end of `SPI_SCK`
   (R8, 22 Ohm) and `SPI_MOSI` (R9, 0 Ohm; 22-33 Ohm if ringing shows).
-- I2S (`I2S_BCK` 2.8 MHz, `I2S_LRCK`, `I2S_DATA`): short, over ground, away from the analog
-  output and the speaker traces.
+- I2S (`I2S_BCK` 1.4-2.8 MHz, `I2S_LRCK`, `I2S_DATA`): short, over ground, away from the analog
+  output and the speaker traces. They go to two chips (PCM5102A and MAX98357A): route them as a
+  short daisy chain or a short T, not as two long branches.
 - Analog line out (`LINE_L`, `LINE_R`, `AGND`): short, guarded by ground, away from the amplifier
   output and the SPI clock.
-- Amplifier: `+VAMP` and the speaker outputs >= 0.8 mm (1 mm preferred), the supply caps right at
-  the chip/module pins, outputs straight to the terminals.
+- Amplifier (MAX98357A, TQFN-16): `+VAMP` and the speaker outputs >= 0.8 mm (1 mm preferred), the
+  10 uF + 100 nF right at the VDD pins, exposed pad to the ground plane with several vias,
+  outputs straight to the terminals.
 - Encoder lines can be thin (0.25 mm) but keep them off the I2S lines.
 
 ## Fab and assembly rules (JLCPCB standard 2-layer + SMT assembly, decision D6)

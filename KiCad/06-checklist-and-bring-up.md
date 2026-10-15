@@ -9,10 +9,12 @@
       only against the PNG drawing).
 - [ ] GPIO35, GPIO39, GPIO12, GPIO0, GPIO15, GPIO16, GPIO17, GPIO6-11, GPIO1, GPIO3 and ESP_EN are
       not connected on the carrier.
-- [ ] GPIO2 (`AMP_SD`) has a pull-down only; GPIO5 (`LCD_CS`) and GPIO4 (`SD_CS`) have pull-ups.
+- [ ] GPIO2 (`AMP_SD`) only has the 1M to `+VAMP` (with the MAX98357A's internal 100k it reads low
+      at boot); GPIO5 (`LCD_CS`) and GPIO4 (`SD_CS`) have pull-ups.
 - [ ] PCM5102A SCK tied to GND; XSMT high; FMT, FLT, DEMP low; every value from the TI datasheet.
-- [ ] Amplifier: SD pin pulled down (off at boot), mono sum of `LINE_L`/`LINE_R` into its input,
-      gain low; speaker outputs not connected to GND anywhere.
+- [ ] Amplifier (MAX98357A): DIN/BCLK/LRCLK on the same I2S nets as the PCM5102A, SD_MODE on
+      `AMP_SD` with 1M to `+VAMP`, GAIN_SLOT open (9 dB), exposed pad to GND; speaker outputs not
+      connected to GND anywhere.
 - [ ] The amplifier is supplied from `+5V_USBC` only, not from `+3V3`.
 - [ ] USB-C: 5.1k on CC1 and CC2 separately (not one shared resistor), polyfuse, TVS, ideal diode
       U3 to the Olimex +5V pin; Olimex Rev.D schematic checked: its USB VBUS has a diode to the +5V
@@ -42,9 +44,9 @@
 6. USB-C: plug in a USB-C charger without the Li-Po and without the micro-USB; the radio must
    boot from USB-C alone. Then with the Li-Po: the Olimex charge LED lights. Then with the PC on
    the micro-USB as well: measure that no current flows back into either port (USB meter).
-7. DAC + amplifier: with the I2S firmware (planned), switch Bluetooth off on the web page; line out
-   first (headphones in the jack, low volume), then the speaker (USB-C plugged in). Check that
-   `AMP_SD` is low while Bluetooth is on (no hiss from the speaker).
+7. DAC + amplifier: switch Bluetooth off on the web page (firmware v1.37+); line out first
+   (headphones in the jack, low volume), then the speaker (USB-C plugged in, web checkbox
+   "Speaker"). Check that `AMP_SD` is low while Bluetooth is on or "Speaker" is off (no hiss).
 8. Long run: 1 h with the speaker on USB-C and 1 h on the battery (Bluetooth), watch `/api/status` (heap, underruns,
    brownouts in `diag`).
 

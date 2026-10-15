@@ -32,6 +32,10 @@ the revision history of the actual KiCad project.
   violations, and the netlist compared with the old hierarchical one (J1 pin n = MOD1 pin n, J2
   pin n = MOD1 pin n+19): identical connectivity, same 73 parts, values and footprints. The
   sub-sheet files were removed; the old version is in git (commit 50692fc).
+- 2026-10-15: speaker amplifier changed to the MAX98357A (see Decisions). Checked with kicad-cli:
+  every net outside the amplifier is unchanged (netlist compared with the previous version),
+  the I2S nets reach U1 and U2, `AMP_SD` = MOD1 pin 34 + R21 + U2 SD_MODE, U2 OUTP/OUTN to J6;
+  ERC 1 warning (exposed pad, see Decisions). 67 parts.
 
 ## Schematic (Rev A)
 
@@ -54,7 +58,7 @@ Still to add: `LCSC` and `MPN` fields (JLCPCB Tools).
 ## Decisions and deviations
 
 - References: MOD1 Olimex module (was J1/J2, two socket rows), J3 display, J4 microSD, J5 line jack, J6 speaker, J7 USB-C,
-  J8 spare header, U1 PCM5102APWR, U2 PAM8302AASCR (SO-8), U3 LM66100DCK, SW1 EC11, F1 polyfuse,
+  J8 spare header, U1 PCM5102APWR, U2 MAX98357AETE+T (TQFN-16; was PAM8302AASCR), U3 LM66100DCK, SW1 EC11, F1 polyfuse,
   D1 TVS, FB1/FB2 ferrites, H1-H4 M3 holes, TP1-TP8 test points.
 - Passives in 0603 (10 uF in 0805), JLCPCB basic-part sizes.
 - Power: TVS **SMAJ5.0CA** (bidirectional, KiCad `Device:D_TVS`) on `VBUS_C`, polyfuse 2 A hold to
@@ -68,12 +72,13 @@ Still to add: `LCSC` and `MPN` fields (JLCPCB Tools).
 - DAC (TI PCM510xA datasheet SLAS859C, Figure 33): 0.1 uF + 10 uF on DVDD, CPVDD, AVDD; 2.2 uF
   flying (CAPP-CAPM) and on VNEG; 0.1 uF on LDOO; 470 Ohm + 2.2 nF per output; AVDD through
   ferrite FB1 as `+3V3A`; SCK/FMT/FLT/DEMP to GND, XSMT 10k to 3V3.
-- Amplifier (Diodes PAM8302A datasheet DS41333): gain = 150k / (10k + Rin), 23.5 dB with no
-  external Rin. The DAC gives 2.1 Vrms full scale, so the mono sum is **LINE_L and LINE_R each
-  through 180k into one node (Thevenin 90k), 100 nF to IN+; IN- through 91k + 100 nF to GND**:
-  about x1.5 overall (2.1 Vrms -> ~3.2 Vrms, ~2.5 W in 4 Ohm, ~1.3 W in 8 Ohm) instead of the
-  10k summing resistors first written in `../02-pinout-and-nets.md`. Supply 10 uF + 1 uF + 220 uF.
-  `AMP_SD` 100k pull-down (GPIO2 strapping).
+- Amplifier (2026-10-15, owner's request after the breadboard test): **MAX98357AETE+T** instead of
+  the PAM8302A. It takes I2S directly (DIN/BCLK/LRCLK on the same nets as the PCM5102A), so the
+  analog mono sum (R18/R19 180k, C20, R20 91k, C21) is gone. SD_MODE on `AMP_SD` (GPIO2) with
+  R21 1M to `+VAMP` (was a 100k pull-down): released = ~0.45 V = on, (L+R)/2; GPIO2 low = off.
+  GAIN_SLOT open (9 dB, as on the tested breakout). Supply 10 uF (C22) + 100 nF (C23, was 1 uF)
+  + 220 uF (C24). ERC: one warning left, the exposed pad (pin type unspecified) on the GND net
+  with power-input pins; harmless.
 - PWR_FLAGs on `+5V_USBC`, `+VAMP`, `GND`, `+3V3`, `+3V3A` (sources come through passive pins).
 
 ## Tooling pitfall

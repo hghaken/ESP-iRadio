@@ -330,8 +330,8 @@ Hardware:
 - `docs/` - reference drawings (battery jumper locations), `display-research.md` (display + rotary
   encoder research; the user ordered a 1.69" IPS ST7789 and an EC11) and `speaker-output.md`
   (line + speaker output: PCM5102A I2S DAC on GPIO27/14/13, working since 2026-10-14, feeding
-  RCA/3.5 mm, and a planned PAM8403 amp with shutdown on GPIO2; output follows the Bluetooth
-  toggle), `framework-build.md` (self-built framework: plan, trials, results) and
+  RCA/3.5 mm, and the MAX98357A speaker amplifier with shutdown on GPIO2; output follows the
+  Bluetooth toggle), `framework-build.md` (self-built framework: plan, trials, results) and
   `icecast-burst-per-mount.xml` (proposed config for the user's own Icecast server, passwords as
   placeholders).
 - `nas/joe-relay/` - Liquidsoap relay on the user's Synology NAS (DS1522+, DSM 7.4, SSH host
@@ -366,11 +366,12 @@ Hardware:
   sheet in Elektuur style, module symbol MOD1, project libraries in `lib/`; status and decisions in
   its `NOTES.md`; no board layout yet) and the design input: `README.md` (overview, phase 1
   carrier board for the Olimex board with display, EC11 encoder, microSD, PCM5102A line out and
-  PAM8403 speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
+  MAX98357A speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
   `src/config.h`), `03-parts-and-footprints.md`, `04-power.md`, `05-layout-guidelines.md` (antenna
   keep-out, routing, fab rules), `06-checklist-and-bring-up.md`. Owner decisions 2026-10-11: DAC
-  and amplifier as chips (PCM5102APWR, mono PAM8302A recommended), display on the board,
+  and amplifier as chips (PCM5102APWR, mono amplifier MAX98357A since 2026-10-15, was PAM8302A),
+  display on the board,
   3D-printed case around the board (STEP/DXF export), one mono speaker of 4 or 8 Ohm (user's
   choice), a plain USB-C 5 V input (no PD) that powers the amplifier and, through an ideal diode
   into the Olimex +5V pin, also runs the radio and charges the Li-Po; JLCPCB with SMT assembly. A pin change on the board means
@@ -930,8 +931,8 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
 - Speaker: the MAX98357A plays (wired and heard on 2026-10-15, v1.37; the "Speaker" checkbox
   silences and restores it while the line output keeps playing, also verified).
   The PAM8403 mini board is a spare (analog, no shutdown pin). Details and wiring in
-  `docs/speaker-output.md`. Maybe a separate output choice instead of the Bluetooth toggle; the
-  KiCad design could swap its PAM8302A for a MAX98357A.
+  `docs/speaker-output.md`. Maybe a separate output choice instead of the Bluetooth toggle. The
+  KiCad schematic uses the MAX98357A since 2026-10-15.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
   the space under the battery line is still free (e.g. a volume or buffer bar). The EC11 rotary
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see

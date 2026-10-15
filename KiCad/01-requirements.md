@@ -31,7 +31,7 @@ JST-PH on the Olimex board), charged over USB.
 | R4 | microSD card socket, reachable from outside the case | push-push microSD socket | VSPI shared with the display, own CS |
 | R5 | Stereo line output ~2.1 Vrms | **PCM5102APWR** chip (TSSOP-20) | I2S: 3 GPIO |
 | R6 | 3.5 mm stereo jack for the line output | PCB jack at a board edge | analog |
-| R7 | Mono speaker amplifier ~2.5-3 W at 5 V | class-D chip: **PAM8302A** (mono, recommended) or PAM8403 with one channel used, see `03-parts-and-footprints.md` | analog in from the DAC (L+R summed), shutdown on GPIO2 |
+| R7 | Mono speaker amplifier ~3 W at 5 V | **MAX98357A** (I2S input with its own DAC, mono (L+R)/2, TQFN-16) on the same I2S lines as the PCM5102A; since 2026-10-15, replaces the analog PAM8302A route (tested on a breakout board on the radio, firmware v1.37) | I2S `I2S_BCK`/`I2S_LRCK`/`I2S_DATA`, `AMP_SD` (GPIO2) |
 | R8 | Speaker connection, bridged output | JST-PH 2-pin (or 2-pin terminal); speaker 4 or 8 Ohm, 2-3 W | never connect a speaker pin to GND |
 | R9 | USB-C power input (5 V, up to 3 A) for the amplifier, the radio and Li-Po charging | USB-C receptacle, 5.1k CC pull-downs (sink), polyfuse, TVS, ideal diode to the Olimex +5V pin | power only, no data |
 | R10 | Mounting holes for the 3D-printed case | 4 x M2.5 or M3 | |

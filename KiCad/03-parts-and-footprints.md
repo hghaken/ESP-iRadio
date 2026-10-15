@@ -31,7 +31,7 @@ footprint, from the datasheet or measured from the owner's part; record the sour
 | Ref | Part | KiCad symbol | Footprint | Notes |
 |---|---|---|---|---|
 | U1 | PCM5102APWR (TI) | check the KiCad `Audio` library for a PCM510x symbol; else a project symbol | `Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm` | reference circuit and values from the TI PCM510xA datasheet |
-| U2 | PAM8302AASCR (Diodes Inc., SOP-8) - or PAM8403 SOP-16 | project symbol if none in the library | `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` (PAM8403: `Package_SO:SOIC-16_3.9x9.9mm_P1.27mm`) | application circuit from the Diodes Inc. datasheet |
+| U2 | MAX98357AETE+T (Analog Devices, TQFN-16 3x3 mm) | `Audio:MAX98357A` | `Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0.5mm_EP1.23x1.23mm` | I2S mono amplifier on the DAC's I2S lines (since 2026-10-15; was PAM8302AASCR); exposed pad to GND with vias |
 | U3 | Ideal diode for `+5V_USBC` -> `+5V_OLI` (Olimex +5V pin), rated >= 1.5 A | e.g. TI LM66100 (SC-70-6, 1.5 A) or a P-MOSFET ideal-diode circuit for more margin | per part | required (decision D7): blocks backfeed from the Olimex micro-USB into the USB-C connector; see `04-power.md` |
 | D1 | TVS 5 V (unidirectional) at VBUS | `Device:D_TVS` | SOD-123 / SMA per part | USB-C input protection |
 | F1 | Polyfuse 2-3 A hold, 1206/1812 | `Device:Polyfuse` | `Fuse:Fuse_1812_4532Metric` (or 1206) | USB-C input |
@@ -44,14 +44,13 @@ footprint, from the datasheet or measured from the owner's part; record the sour
 | R_ENC_A, R_ENC_B, R_ENC_SW | 10k | encoder pull-ups to `+3V3` |
 | C_ENC_A, C_ENC_B, C_ENC_SW | 100 nF | encoder debounce to GND |
 | R_LCD_CS, R_SD_CS, R_MISO, R_DAT1, R_DAT2 | 10k | pull-ups (LCD_CS strapping GPIO5; SD lines) |
-| R_AMP_SD | 100k | pull-down on `AMP_SD` (GPIO2 strapping: never a pull-up) |
+| R21 (R_AMP_SD) | 1M | `AMP_SD` to `+VAMP`: with the MAX98357A's internal 100k pull-down ~0.45 V = on, (L+R)/2; GPIO2 low = off (reads low at boot) |
 | R_XSMT | 10k | PCM5102A XSMT to `+3V3` |
 | R_CC1, R_CC2 | 5.1k 1 % | USB-C CC pull-downs (sink) |
-| R_SUM_L, R_SUM_R | 10k | mono sum `LINE_L`/`LINE_R` -> `AMP_IN` |
 | R8 (SCK), R9 (MOSI) | R8 22 Ohm, R9 0 Ohm (22-33 Ohm if ringing) | series at the ESP32 end |
 | R_SPARE34, R_SPARE36 | 10k, DNP | optional pull-ups |
 | DAC caps | per TI datasheet | decoupling, charge pump, LDOO, output RC |
-| Amp caps | per Diodes datasheet | input coupling, 10 uF + 1 uF supply |
+| Amp caps | 10 uF + 100 nF | MAX98357A VDD decoupling (C22, C23) |
 | C_BULK | 220-470 uF / 10 V (electrolytic SMD or polymer) | `+VAMP` bulk near the amplifier |
 | C_SD | 10 uF + 100 nF | microSD supply |
 | C_LCD | 10 uF | display supply at J3 |
