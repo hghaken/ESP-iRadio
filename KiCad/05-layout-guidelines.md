@@ -1,5 +1,12 @@
 # 05 - Layout guidelines
 
+> **Status 2026-10-15:** written for the carrier board. For the integrated board: the Olimex
+> outline and the antenna keep-out do not apply (the WROVER-IE has no PCB antenna; keep its
+> U.FL connector reachable); board ~60 x 80 mm, **4 layers** with a solid GND plane on layer 2;
+> the audio, SPI, decoupling and fab-rule sections still apply. Add: BQ24074 thermal pad with
+> >= 5 vias and copper around it, short IN/OUT/BAT capacitors, USB D+/D- as a pair through the
+> USBLC6, the panel FPC pads at a board edge as decided with the paper mock-up.
+
 ## Board and mechanics
 
 - Start from the Olimex outline (from their Rev.D KiCad file) placed on a fab layer, so the

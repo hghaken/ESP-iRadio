@@ -1,6 +1,35 @@
 # 06 - Review checklist and bring-up
 
-## Before ordering (design review)
+## Integrated board (Rev B, 2026-10-15)
+
+Before the layout (details in `esp-iradio/NOTES.md`):
+- [x] Schematic Rev B: ERC 1 known warning (MAX98357A exposed pad), netlist checked with
+      `esp-iradio/tools/intcheck.py` against `07-integrated-board.md`, GPIOs compared with Rev A.
+- [ ] PJ-320D (J5) pin order S/R/T against a sample or the LCSC drawing.
+- [ ] MSK12C02 (SW203) footprint against the LCSC datasheet drawing.
+- [ ] EC11 with a short shaft for the recessed knob (D16); update SW1's part and footprint.
+- [ ] Display panel ordered; FPC pin 1 and contact side with a paper mock-up; R22 from its Vf.
+- [ ] TS-1187A pads 1 and 4 diagonal (LCSC drawing).
+
+Before ordering:
+- [ ] DRC clean with the JLCPCB 4-layer rules; BQ24074 thermal vias; U.FL reachable.
+- [ ] Every part has an `LCSC` field and is in stock (JLCPCB Tools), BOM and CPL exported, the
+      rotation of every part checked in JLCPCB's preview (QFNs, SOT-23, the USB-C connector).
+- [ ] STEP and DXF exported for the case; knob, display window and connectors line up.
+
+Bring-up (new board):
+1. Without cell, switch off: USB-C in, measure VBUS, VSYS (~4.4 V), +3V3 = 0 V; green LED on.
+2. Switch on: +3V3 and +3V3A at 3.3 V, current below ~50 mA without firmware.
+3. PC sees the CH340; `esptool flash-id` works (auto-reset), 16 MB flash.
+4. Full flash with a 16 MB partition table (ask the owner: new board, settings start empty),
+   then the firmware with `PWR_CAL_PERMILLE` ~2500 and the GPIO34/36 charge state.
+5. Display, backlight PWM (>= 20 kHz), microSD, encoder, line out, speaker, WiFi with the antenna.
+6. Cell (watch polarity; the P-FET blocks a reversed cell): charging with the red LED, about
+   0.8 A, the radio running from USB; then battery only and the switch.
+
+## Carrier board (phase 1, superseded)
+
+### Before ordering (design review)
 
 - [ ] Every net in `02-pinout-and-nets.md` exists in the schematic with the same GPIO; compare with
       `src/config.h` (`TFT_CS 5`, `TFT_DC 22`, `TFT_RST 21`, `TFT_BL 26`, `SD_CS 4`) and
@@ -30,7 +59,7 @@
 - [ ] Owner has answered the open questions in `01-requirements.md` and approved the layout
       (screenshot of the 3D view and the front panel positions).
 
-## Bring-up (first board)
+### Bring-up (first board)
 
 1. Visual check, then measure resistance `+3V3`-`GND`, `+5V_USBC`-`GND`, `+VAMP`-`GND`: no short.
 2. Without the Olimex board: apply 3.3 V from a lab supply with current limit (100 mA) to `+3V3`;

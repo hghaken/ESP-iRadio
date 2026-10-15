@@ -26,7 +26,15 @@ configuration (up to 60 stations), diagnostics and firmware updates.
   with WiFi held off until the page finishes. "Try again" pages again and wipes nothing.
 - SD card (microSD breakout on the SPI bus, CS GPIO4): daily log and measurement files with a chart
   on the web page, settings backup/restore, 64x64 station logos, copies of working firmware to roll
-  back without a PC. Built in, switched off (`SD_ENABLED` in `src/config.h`) until the reader is wired.
+  back without a PC, and a year of history (events, listening and stream statistics per station,
+  crash dumps) with tables on the web page.
+- Rotary encoder (EC11): turn for volume (a bar on the display), press to mute, hold to choose a
+  station.
+- Line output and speaker: with Bluetooth switched off the radio plays on a PCM5102A I2S DAC
+  (3.5 mm line out) and a MAX98357A I2S amplifier for a small speaker (web checkbox "Speaker").
+- PCB: the KiCad project in `KiCad/` holds the schematic of an integrated board (ESP32-WROVER-IE,
+  USB-C with charger and cell protection, display panel, DAC, amplifier, microSD, encoder, all
+  parts assembled by JLCPCB); no board layout yet. See `KiCad/README.md`.
 - WiFi: the radio reconnects to the mesh point it last used. A minute after every connect, and
   whenever the signal stays under a threshold on the web page (default -65 dBm), it looks for a
   point at least 12 dB stronger and moves there. The "Search" list shows every mesh point (channel,

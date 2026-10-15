@@ -1,5 +1,9 @@
 # 02 - Pinout and nets
 
+> **Status 2026-10-15:** written for phase 1 (Olimex headers EXT1/EXT2). The GPIO numbers and
+> functions stay the same on the integrated board; its full GPIO map (incl. the new GPIO0, EN,
+> UART, CHG/PGOOD and sense inputs) is in `07-integrated-board.md` and the schematic Rev B.
+
 All GPIO numbers are the ones the firmware uses (`src/config.h`, `docs/speaker-output.md`,
 `docs/display-research.md`). Net names are suggestions; keep them in the schematic.
 

@@ -1,5 +1,11 @@
 # 01 - Requirements
 
+> **Status 2026-10-15:** written for phase 1, the carrier board for the Olimex module. The owner
+> chose the integrated board instead (`07-integrated-board.md`, decisions D8-D18). Still valid
+> here: the product description and decisions D1-D4 and D6 (chips, display on the board, case,
+> one mono speaker, JLCPCB assembly); D5/D7 (USB-C feeding the Olimex board) are replaced by the
+> power design in 07.
+
 ## Product
 
 A battery-powered internet radio. The ESP32 streams internet radio over WiFi and plays it on

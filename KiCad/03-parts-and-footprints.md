@@ -1,5 +1,10 @@
 # 03 - Parts and footprints
 
+> **Status 2026-10-15:** phase 1 bill of materials (carrier board). The parts of the integrated
+> board, with LCSC numbers and stock, are in `07-integrated-board.md`; the libraries and
+> footprints actually used are listed in `esp-iradio/NOTES.md`. The rules below (LCSC field,
+> basic parts where possible, no codes from memory) still apply.
+
 Assembly: **JLCPCB SMT assembly** (decision D6). Every SMD part needs an LCSC part number; prefer
 JLCPCB "basic" parts (no extended-part fee) for passives, accept "extended" for the DAC, amplifier,
 USB-C connector and microSD socket. **Look the LCSC codes up in the JLCPCB parts library and check

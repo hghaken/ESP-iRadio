@@ -1,5 +1,9 @@
 # 04 - Power
 
+> **Status 2026-10-15:** phase 1 power tree (Olimex regulator, USB-C into the Olimex +5V pin).
+> Superseded by "Power" in `07-integrated-board.md` (USB-C -> BQ24074 power path -> VSYS ->
+> AP7361C / LP5907, cell protection, on/off switch on the LDO enable).
+
 ## Sources
 
 | Net | Present when | Max current for the carrier | Notes |

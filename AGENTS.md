@@ -969,6 +969,13 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   The PAM8403 mini board is a spare (analog, no shutdown pin). Details and wiring in
   `docs/speaker-output.md`. Maybe a separate output choice instead of the Bluetooth toggle. The
   KiCad schematic uses the MAX98357A since 2026-10-15.
+- PCB (integrated board, `KiCad/07-integrated-board.md`): schematic Rev B done 2026-10-15 (two
+  sheets, ERC and netlist checked). Before the layout: the checks listed in
+  `KiCad/esp-iradio/NOTES.md` (PJ-320D pin order, MSK12C02 footprint, short-shaft EC11, display
+  FPC pin 1 and backlight resistor from the real panel, TS-1187A pads), then board outline
+  (~60 x 80 mm, 4 layers), placement, routing, DRC, JLCPCB BOM/CPL, STEP/DXF for the case. The
+  firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500, charge state on
+  GPIO34/36, backlight PWM >= 20 kHz, a 16 MB partition table); pins stay.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
   the space under the battery line is still free (e.g. a volume or buffer bar). The EC11 rotary
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see
