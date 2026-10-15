@@ -65,45 +65,74 @@ the revision history of the actual KiCad project.
   0.1 mm from the next pad, below the fab minimum). Schematic symbol UUIDs are now fixed (sheet +
   reference), so a regenerated schematic stays linked to the board. Checked with kicad-cli: DRC
   0 errors, 0 unconnected items, 0 schematic parity issues; ERC 1 known warning; `intcheck.py` OK.
+- 2026-10-15/16 night: **display changed to the HS20S010B module** (owner's decision, 07 D8): the
+  bare 1.69" panel could not be bought or assembled through JLCPCB (no 1.69" display in the
+  JLCPCB/LCSC catalogue), and the owner wants one order for everything. The HS20S010B (LCSC
+  C5329586, 2.0" IPS, 320 x 240, ST7789V2, SPI, 63.2 x 36.2 mm module PCB with two 1x10 2.54 mm
+  rows and four M2.5 holes) is in that catalogue. It plugs into two 1x10 sockets J3 (CN1, the
+  signals) and J7 (CN2, only mechanical: its pins duplicate CN1 and stay open); the module has its
+  own backlight transistor, so Q1/R22/R23 went and `LCD_BL` (IO26) drives BLK directly (high =
+  on). FSO/FCS (the optional font chip, not fitted) stay open. Board 90 x 60 mm (was 80 x 60),
+  encoder beside the module. Schematic: ERC 1 known warning, `intcheck.py` OK (120 parts, 117
+  nets). Board: DRC 0 errors, 0 unconnected, 0 parity issues (40 silkscreen warnings).
 
-## Layout (Rev B draft, 2026-10-15)
+## Layout (Rev B draft, 2026-10-16)
 
-Board 80 x 60 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
+Board 90 x 60 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
 power, B.Cu signals and GND pour), 1.6 mm, every part on the top side. Rules: 0.2 mm tracks with
 0.15 mm clearance, Power class 0.5 mm (VSYS, VIN, VBUS, VBAT, BATN, cell +, +3V3, GND), Supply
-class 0.3 mm (+3V3A, backlight, speaker outputs), vias 0.55/0.3 mm (0.4/0.2 only where a pour
-island had no room), copper >= 0.6 mm from the edge (keep-out ring). Renders in `renders/`.
+class 0.3 mm (+3V3A, speaker outputs), vias 0.55/0.3 mm (0.4/0.2 only where a pour island had no
+room), copper >= 0.6 mm from the edge (keep-out ring). Custom rule `esp-iradio.kicad_dru`
+(written by `tools/pcbrules.py`): the courtyards of the module's standoff holes H1/H5-H7 may touch
+the sockets J3/J7 (by design); every other courtyard overlap still is an error. Renders in
+`renders/` (the module itself is not in the 3D view: it is a loose part).
 
 Floor plan (front view, origin top left; `tools/placement.py`):
-- display panel 37.43 x 30.07 mm over x 7-44.4, y 4-34.1 (outline on User.Drawings), on ~5 mm
-  spacers; its FPC folds down onto J3 (x 47, pads vertical); only low parts under the panel;
-- WROVER-IE horizontal under the panel, its U.FL end at the left edge outside the panel; 3.3 V
-  regulator and its capacitors below the module's 3V3 pin;
-- encoder SW1 top right (shaft at x 62, y 15), microSD J4 at the right edge (card from the
-  right), RESET/BOOT buttons at the left edge, recovery pads TP203-TP207 below the panel;
+- display module HS20S010B top left: module PCB over x 0.5-63.7, y 0.7-36.9 (outlines of the PCB,
+  glass and active area on User.Drawings), plugged into J7 (CN2, x 2.5, pin 1 at the bottom) and
+  J3 (CN1, x 61.7, pin 1 at the top); its four M2.5 holes on H1/H5/H6/H7. Height: 8.5 mm socket
+  + the header's 2.5 mm spacer = ~11 mm under the module PCB, so every other part fits under it;
+- WROVER-IE horizontal under the module, its U.FL end left (x ~8, y ~9): under the module, reached
+  with the module unplugged; the coax leaves through the ~11 mm gap. The antenna sits on the case
+  wall, away from the module, cell and speaker (WROVER-IE: no antenna on the module itself);
+- 3.3 V regulator and its capacitors below the WROVER 3V3 pin; RESET/BOOT buttons and recovery
+  pads TP203-TP207 below the module's left half;
+- encoder SW1 right of the module (shaft at x 76.5, y 15), microSD J4 at the right edge (card
+  from the right), encoder RC filters between them;
 - bottom edge from left: jack J5 (left edge), DAC U1 and LP5907, USB-C J201, charge LEDs, slide
   switch SW203, cell J202, speaker J6; CH340C and auto-reset above the USB-C; charger,
-  protection and battery divider bottom right; amplifier U2 next to J6.
+  protection and battery divider bottom right; amplifier U2 right of J6, turned 180 degrees so
+  its VDD pins face C22/C23 and its outputs face J6 (at 0 degrees the speaker tracks boxed the
+  VDD pins in and VSYS stayed unrouted).
+- board holes H2-H4 (M3) in the other three corners.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps
-signals off the GND plane; ~380 GND stitching vias; SMD pads join the outer pours solid, THT pads
+signals off the GND plane; ~420 GND stitching vias; SMD pads join the outer pours solid, THT pads
 with thermal reliefs. The USB pair is routed like any other signal (short, but not
-impedance-controlled).
+impedance-controlled). `tools/bridge.py` can join a pad the router left unconnected (F.Cu, or a
+stub + via + B.Cu/In2.Cu); not needed on the current board.
 
 Review (Grok and Claude, 2026-10-15/16, `grok-bevindingen.md` / `claude-bevindingen.md`, rounds
 4-5): floor plan, stack, power widths, USB lengths (full speed: no 90 Ohm pair needed), I2S
 detours (fine at 1.4 MHz) and the parts under the panel checked; the U.FL end is at the left
 edge outside the panel (a first note that it sat under the glass used a y-up rotation and was
 withdrawn). Hand edits by `tools/touchup.py` on the routed board: a fifth thermal via in the
-BQ24074 pad (at -0.59 mm x from the centre: the centre and the y positions collide with the
-PGOOD_N track on In2.Cu), four 0.4/0.2 mm vias at the inner corners of the WROVER ground land,
-the charge-LED labels as "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs (the
+BQ24074 pad (the first free spot of centre / +-0.59 mm; on the 90 x 60 board at +0.59 mm y),
+0.4/0.2 mm vias at the inner corners of the WROVER ground land (two of four on the 90 x 60 board:
+an RXD0 track on In2.Cu passes the other two; the land still has the module's GND pads and the
+pour), the charge-LED labels as "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs (the
 words did not fit off the USB-C body). DRC again: 0 errors, 0 unconnected, 0 parity issues.
+That review was of the 80 x 60 board with the bare panel; the 90 x 60 board with the module is
+new (round 6 in `claude-bevindingen.md`).
 
 Still to do on the layout (before ordering):
 - a last look at the routing in KiCad (autorouted; accepted in the review, detours included);
-- J3: pad orientation and pin 1 from the paper mock-up with the real panel; R22 value;
-- SW1: the short-shaft EC11 for the recessed knob (D16) and its footprint;
+- display module: check on the delivered module that CN1 pin 1 (GND) is at the top right as in
+  the datasheet drawing, and whether it comes with pin headers (the LCSC photo shows none: then
+  order two 1x10 2.54 mm male headers with it and solder them on, short side through the module);
+  measure the standoff height (socket + header spacer, ~11 mm: M2.5 standoffs of that length);
+- SW1: with the module ~11 mm above the board plus its glass, the front panel lies ~15 mm up; pick
+  the EC11 shaft length for that height (D16 assumed a recessed knob next to a low panel);
 - SW203: which slide position is ON (silk says "ON/OFF ?");
 - silkscreen warnings come from the footprints' own outlines (JLCPCB clips silk on pads);
 - two narrow necks (< 0.15 mm) in the B.Cu GND pour (warnings);
@@ -115,8 +144,9 @@ Still to do on the layout (before ordering):
 ## Schematic (Rev B, integrated board)
 
 Sheet 1 `esp-iradio.kicad_sch` ("radio"): U3 ESP32-WROVER-IE-N16R8 in the middle (symbol laid out
-like the former Olimex headers, so the Rev A wiring stayed), encoder left, display panel J3 (12-pin
-FPC pads) + backlight driver Q1/R22/R23 and microSD J4 right, PCM5102A + jack J5 and MAX98357A
+like the former Olimex headers, so the Rev A wiring stayed), encoder left, display module sockets
+J3 (CN1: GND, VCC, CLK, SDA, RES, DC, CS, BLK, FSO and FCS open) and J7 (CN2, all pins open) and
+microSD J4 right, PCM5102A + jack J5 and MAX98357A
 (on `VSYS`) at the bottom, sheet symbol top left. Sheet 2 `power_usb.kicad_sch`: USB-C J201 with
 CC resistors, TVS, polyfuse and USBLC6-2SC6; CH340C U203 with auto-reset Q201/Q202 and the RESET /
 BOOT buttons; BQ24074 U201 with its programming resistors, NTC, charge LEDs and BAT54WS isolation;
@@ -150,7 +180,8 @@ Symbol libraries (project tables `sym-lib-table` / `fp-lib-table`, files in `lib
   `ESP32-WROVER-IE_iRadio`, `Micro_SD_TF01A`, `AudioJack3_PJ320D` (TF-01A / PJ-320D pad numbers),
   `T-BJT-NPN_SOT23` and `T-IGFET-P_SOT23` (Elektuur transistors with SOT-23 pad numbers),
   `CH340C_3V3` (KiCad's CH340C with V3 passive: it is tied to VCC on 3.3 V, the power-output type
-  gave a false ERC error); footprints `FPC_12P_P0.70mm_Solder` (panel FPC pads) and `SW_TS-1187A`
+  gave a false ERC error); footprints `FPC_12P_P0.70mm_Solder` (pads for the bare panel's FPC,
+  unused since the HS20S010B module) and `SW_TS-1187A`
   (only two diagonal pads carry a net: a diagonal pair is across the switch whichever way the
   pins are paired inside). The Olimex module symbol/footprint of Rev A are still in the library.
 - `lcsc` (`lib/lcsc.kicad_sym`, `lib/lcsc.pretty`, `lib/lcsc.3dshapes`): parts from the LCSC/EasyEDA
@@ -169,8 +200,9 @@ To verify before the layout:
 - PJ-320D (J5) pin order S = 1, R = 2, T = 4 against a sample or the LCSC drawing.
 - MSK12C02 (SW203): the pad pitch (3.0 mm between pins 1 and 2, 1.5 mm between 2 and 3) is the
   Shouhan C431540 drawing (checked by Grok); which slide position is ON only shows on a sample.
-- EC11 (SW1): pick the short-shaft variant for the recessed knob (D16), C470754 is 24.5 mm tall.
-- Display panel FPC: pin 1 and contact side with a paper mock-up; R22 from the real panel's Vf.
+- EC11 (SW1): the shaft length for the front panel height (see "Still to do on the layout");
+  C470754 is 24.5 mm tall.
+- Display module HS20S010B: pin 1 of CN1 and whether pin headers come with it (see the layout).
 - TS-1187A: pads 1 and 4 diagonal, per the XKB drawing (Grok); a sample check is enough.
 - J4 TF-01A: symbol and footprint agree; not yet compared with a manufacturer drawing.
 

@@ -47,8 +47,11 @@ E = [
     ('Q201.3', 'R207.2', 'C205.1', 'SW201.4', 'U3.3', 'TP203.1'),         # EN + recovery pad
     ('Q202.3', 'R208.2', 'SW202.4', 'U3.25', 'TP204.1'),                  # GPIO0 + recovery pad
     # radio sheet: display backlight, amp supply
-    ('J3.2', 'R22.2'), ('R22.1', 'Q1.3'), ('Q1.1', 'R23.2', 'U3.11'),
-    ('J3.3', 'J3.4', 'C5.1'),
+    ('J3.8', 'U3.11'),                                                     # display BLK <- IO26 (PWM)
+    ('J3.2', 'C5.1', 'C25.1', 'U3.2'),                                     # display VCC = +3V3
+    ('J3.3', 'J4.5', 'R8.2'), ('J3.4', 'J4.3', 'R9.2'),                    # SPI CLK, MOSI (after R8/R9)
+    ('J3.5', 'U3.33'), ('J3.6', 'U3.36'), ('J3.7', 'R3.1', 'U3.29'),       # RES IO21, DC IO22, CS IO5
+    ('J3.1', 'U3.1'),                                                      # display GND
     ('U2.4', 'R21.1', 'U3.24'),
 ]
 bad = 0
@@ -58,7 +61,7 @@ for grp in E:
         bad += 1
         print('SPLIT', grp, '->', {x: where.get(x) for x in grp})
 # nets that must not exist any more (review 2026-10-15): no bulk electrolytic on VSYS
-for ref in ('C24',):
+for ref in ('C24', 'Q1', 'R22', 'R23'):        # removed: bulk cap on VSYS; panel backlight driver (module has its own)
     if any(x.startswith(ref + '.') for x in where):
         bad += 1
         print('STILL THERE', ref)

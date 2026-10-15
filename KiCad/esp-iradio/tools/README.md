@@ -8,9 +8,9 @@ are written again; the scripts check what they can as they go.
 
 | File | Purpose |
 |---|---|
-| `schgen.py` | small KiCad 9 schematic writer: symbols from the project/KiCad libraries, wires with automatic junctions, power symbols, local and global labels, a sheet symbol, sub-sheet instance paths; test pads, holes and J3 are kept out of the BOM |
+| `schgen.py` | small KiCad 9 schematic writer: symbols from the project/KiCad libraries, wires with automatic junctions, power symbols, local and global labels, a sheet symbol, sub-sheet instance paths; test pads and holes are kept out of the BOM |
 | `fieldcheck.py` | warns about reference/value texts that overlap each other, cross a wire or sit on a symbol |
-| `gen_radio.py` | sheet 1 (root): ESP32-WROVER-IE, display panel, microSD, encoder, audio |
+| `gen_radio.py` | sheet 1 (root): ESP32-WROVER-IE, display module sockets, microSD, encoder, audio |
 | `gen_power.py` | sheet 2: USB-C, CH340C + auto-reset, BQ24074 charger, cell protection, regulators, on/off switch, recovery pads |
 | `intcheck.py` | checks an exported netlist against `../../07-integrated-board.md`: groups of pins that must share a net, nets that must stay apart (VBUS/VIN, VSYS/VBAT, VSYS/+3V3, GND/BATN; local nets by their full sheet path), parts that must not come back. It does not check values, polarity or footprints |
 
@@ -27,17 +27,18 @@ python intcheck.py board.net
 Expected: ERC 1 warning (the MAX98357A exposed pad, pin type unspecified, on GND) and `OK` from
 `intcheck.py`. Close the schematic in KiCad first.
 
-## Board (first layout, Rev B draft)
+## Board (Rev B draft, 90 x 60 mm)
 
 | File | Purpose |
 |---|---|
-| `pcbrules.py` | design rules and net classes into `../esp-iradio.kicad_pro` (JLCPCB 4-layer: 0.2/0.15 mm default, Power 0.5 mm, Supply 0.3 mm, vias 0.55/0.3, edge 0.3 mm) |
+| `pcbrules.py` | design rules and net classes into `../esp-iradio.kicad_pro` (JLCPCB 4-layer: 0.2/0.15 mm default, Power 0.5 mm, Supply 0.3 mm, vias 0.55/0.3, edge 0.3 mm), plus `../esp-iradio.kicad_dru` (one custom rule: the display module's standoff holes may touch its sockets) |
 | `placement.py` | the floor plan: position and rotation of every part (comments explain the zones) |
-| `mkpcb.py` | builds the board from the netlist: empty file, 4 layers (In1.Cu = GND plane, layer type power), outline 80 x 60 mm, footprints with fields and schematic links, nets, placement, GND plane, 0.6 mm track/via keep-out along the edges. `--check` only reports overlaps (courtyard plus pads) |
+| `mkpcb.py` | builds the board from the netlist: empty file, 4 layers (In1.Cu = GND plane, layer type power), outline 90 x 60 mm, outlines of the display module (PCB, glass, active area) on User.Drawings, footprints with fields and schematic links, nets, placement, GND plane, 0.6 mm track/via keep-out along the edges. `--check` only reports overlaps (courtyard plus pads) |
 | `route.py` | Specctra DSN export, Freerouting, SES import, GND pours on F.Cu/B.Cu (SMD pads solid, THT pads thermal), zone fill. `--keep` routes only what is still open |
 | `stitch.py` | GND stitching vias on a 2.5 mm grid where the outer pours have room, a via (or a short track) for every pour island |
 | `silk.py` | silkscreen: references only on connectors, ICs, switches, LEDs and transistors; fields hidden; polarity and function markings, title |
 | `touchup.py` | hand edits on the routed board (review round 5): fifth BQ24074 thermal via, vias in the WROVER ground land, charge-LED labels "C"/"P"; checks every via against other-net copper and holes; idempotent |
+| `bridge.py` | joins a pad the router left unconnected: `bridge.py REF PAD`, straight/L track on F.Cu or a stub + new via + B.Cu/In2.Cu to a via of the net, every candidate checked against other-net copper and holes (not needed on the current board) |
 | `relink.py` | points every footprint at its schematic symbol again (path from the netlist) without touching the layout |
 | `fplib.py`, `netparse.py` | footprint loading and netlist reading for the board scripts |
 
@@ -60,8 +61,8 @@ python pcbrules.py
 kicad-cli pcb drc --schematic-parity --severity-all -o drc.rpt ../esp-iradio.kicad_pcb
 ```
 
-Expected: 0 errors, 0 unconnected items, 0 schematic parity issues; warnings for silkscreen (the
-footprints' own outlines) and two narrow necks in the B.Cu GND pour. Freerouting does not give the
+Expected: 0 errors, 0 unconnected items, 0 schematic parity issues; ~40 warnings, all silkscreen
+(the footprints' own outlines, texts near the edge). Freerouting does not give the
 same result twice: when a run leaves something open, run `route.py 40 --keep` again or move the
 part in `placement.py`. Close the board in KiCad first.
 

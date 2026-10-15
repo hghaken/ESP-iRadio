@@ -1,0 +1,5 @@
+(version 1)
+(rule "display module standoffs next to its sockets"
+  (condition "(A.Reference == 'H1' || A.Reference == 'H5' || A.Reference == 'H6' || A.Reference == 'H7') && (B.Reference == 'J3' || B.Reference == 'J7')")
+  (constraint courtyard_clearance)
+  (severity ignore))

@@ -396,9 +396,10 @@ Hardware:
   netlist check `intcheck.py`; stop regenerating once the board is edited by hand); project
   libraries in `lib/` incl. `lcsc` parts made with easyeda2kicad (STEP models git-ignored);
   status, decisions and open checks in its `NOTES.md`; Rev A, the carrier board for the Olimex
-  module, is in git history; first layout of Rev B on 2026-10-15: 80 x 60 mm, 4 layers, generated
-  and autorouted by the scripts in `tools/` (Freerouting), reviewed by Grok and Claude, hand edits
-  by `tools/touchup.py`, DRC clean, renders in `renders/`) and the design input: `README.md` (overview, phase 1
+  module, is in git history; layout of Rev B: 90 x 60 mm since 2026-10-16 (was 80 x 60), 4 layers,
+  generated and autorouted by the scripts in `tools/` (Freerouting), hand edits by
+  `tools/touchup.py`, DRC clean, renders in `renders/`; the 80 x 60 version was reviewed by Grok
+  and Claude) and the design input: `README.md` (overview, phase 1
   carrier board for the Olimex board with display, EC11 encoder, microSD, PCM5102A line out and
   MAX98357A speaker amplifier; phase 2 integrated board later), `01-requirements.md` (incl. open
   questions for the owner), `02-pinout-and-nets.md` (every header pin and connector, must match
@@ -406,8 +407,9 @@ Hardware:
   keep-out, routing, fab rules), `06-checklist-and-bring-up.md`, `07-integrated-board.md` (phase 2,
   chosen 2026-10-15: everything on one board - ESP32-WROVER-IE-N16R8 with an external antenna on
   its U.FL, USB-C + CH340C, BQ24074 power-path charger, cell protection, 3.3 V LDO with the on/off
-  switch on its EN, the bare display panel soldered by its 12-pin 0.7 mm FPC, every part from the
-  JLCPCB stock). Owner decisions 2026-10-11: DAC
+  switch on its EN, every part from the JLCPCB stock; display since 2026-10-16 the HS20S010B
+  module, 2.0" 320x240 ST7789V2, LCSC C5329586, on two 1x10 sockets with the encoder beside it,
+  because JLCPCB/LCSC sell no 1.69" display). Owner decisions 2026-10-11: DAC
   and amplifier as chips (PCM5102APWR, mono amplifier MAX98357A since 2026-10-15, was PAM8302A),
   display on the board,
   3D-printed case around the board (STEP/DXF export), one mono speaker of 4 or 8 Ohm (user's
@@ -978,13 +980,15 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   (`grok-bevindingen.md`, `claude-bevindingen.md` in the repository root) and the agreed changes
   worked in. The board must be powered from a USB source of at least 1.5 A (owner's choice: the
   charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). First
-  layout done the same night (80 x 60 mm, 4 layers, autorouted, DRC 0 errors / 0 unconnected / 0
-  parity issues), reviewed by Grok and Claude, hand edits applied. Still open
+  layout done the same night (80 x 60 mm), reviewed by Grok and Claude. 2026-10-16: display
+  changed to the HS20S010B module on sockets (one JLCPCB/LCSC order for everything), board 90 x
+  60 mm, DRC 0 errors / 0 unconnected / 0 parity issues; review round 6 pending. Still open
   (`KiCad/esp-iradio/NOTES.md`, "Layout"): a last look at the routing by the owner,
-  PJ-320D pin order and MSK12C02 ON position on samples, short-shaft EC11, display FPC pin 1 and
-  backlight resistor from the real panel, then JLCPCB BOM/CPL and STEP/DXF for the case. The
-  firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500, charge state on
-  GPIO34/36, backlight PWM >= 20 kHz, a 16 MB partition table); pins stay.
+  PJ-320D pin order and MSK12C02 ON position on samples, the EC11 shaft length for a front panel
+  ~15 mm above the board, the module's pin 1 and pin headers, then JLCPCB BOM/CPL and STEP/DXF
+  for the case. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
+  charge state on GPIO34/36, backlight PWM >= 20 kHz, the 320 x 240 display, a 16 MB partition
+  table); pins stay.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);
   the space under the battery line is still free (e.g. a volume or buffer bar). The EC11 rotary
   encoder works (volume, mute, station chooser; `src/encoder.*`); maybe a settings menu later; see

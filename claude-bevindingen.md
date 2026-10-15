@@ -1,8 +1,60 @@
 # Claude review of KiCad Rev B - outcome
 
-Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), two rounds, 2026-10-15. The owner
+Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout rounds 4-6 below. The owner
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
+
+## Round 6: new display, new board (90 x 60 mm) - please review
+
+The owner wants one JLCPCB/LCSC order for everything. The bare 1.69" panel (and any 1.69" display)
+is not in that catalogue, so the display is now the **HS20S010B module** (LCSC C5329586: 2.0" IPS,
+320 x 240, ST7789V2, SPI, module PCB 63.2 x 36.2 mm, four M2.5 holes, two 1x10 2.54 mm rows CN1/CN2)
+on two sockets, with the encoder beside it (owner's choice). Board regenerated from scratch by the
+`tools/` pipeline. Placement frame below: origin top left of the board, y down, mm.
+
+What changed:
+- Schematic (sheet 1): J3 = socket for CN1 (HCTL PM254-1-10-Z-8.5, C2897373): 1 GND, 2 VCC
+  (`+3V3`, C5 10 uF + C25 100 nF), 3 CLK (`SPI_SCK_BUS`), 4 SDA (`SPI_MOSI_BUS`), 5 RES
+  (`LCD_RST`), 6 DC (`LCD_DC`), 7 CS (`LCD_CS`, R3 pull-up), 8 BLK (`LCD_BL`, IO26), 9 FSO and
+  10 FCS open (the module's optional font chip, not fitted). J7 = the same socket for CN2, all
+  pins open (CN2 duplicates CN1; it only holds the module). Backlight driver Q1/R22/R23 removed:
+  the module has its own transistor, BLK high = on. Holes H1/H5/H6/H7 M2.5 for the module's
+  standoffs, H2-H4 M3 for the board. ERC 1 known warning, `intcheck.py` OK (new groups for J3),
+  120 parts, 117 nets.
+- Board 90 x 60 mm (was 80 x 60). Module PCB over x 0.5-63.7, y 0.7-36.9 (outline, glass and active
+  area on User.Drawings). J7 at x 2.5 (pin 1 at the bottom, y 30.23), J3 at x 61.7 (pin 1 at the
+  top, y 7.37), pins at y 7.37-30.23 as the datasheet's 6.67-29.53 + 0.7. Module holes H1 (3.5,
+  3.5), H5 (60.7, 3.5), H6 (3.5, 34.1), H7 (60.7, 34.1); board holes H2 (86.5, 3.5), H3 (3.5,
+  56.5), H4 (86.5, 56.5). Encoder SW1 shaft at (76.5, 15), microSD J4 at the right edge.
+- Height: socket 8.5 mm + the male header's 2.5 mm spacer = module PCB ~11 mm above the board.
+  Under it: the WROVER-IE (~3.2 mm), the SOT-89 regulator, the tact switches, recovery pads and
+  small parts. Male headers (if the module comes without, as the LCSC photo suggests): C492409
+  PZ254V-11-10P, 3 mm side through the module.
+- U.FL: U3 at (24.5, 17.6), 90 deg; courtyard x 5.6-37.1, y 8.6-26.6; the U.FL end at x ~5.6-12.4,
+  i.e. **under the module** now (x 0.5-63.7). This does not shield the antenna (the antenna is on
+  the pigtail, on the case wall); the plug is reached with the module unplugged and the coax
+  leaves through the ~11 mm gap.
+- U2 (MAX98357A) turned 180 deg: at 0 deg the speaker tracks to J6 boxed in the VDD pins (7/8) and
+  VSYS stayed unrouted; now the VDD pins face C22/C23 and the outputs face J6. All nets routed by
+  Freerouting, no hand bridge needed (`tools/bridge.py` exists for that case).
+- Custom DRC rule (`esp-iradio.kicad_dru`, written by `pcbrules.py`): courtyards of H1/H5/H6/H7
+  against J3/J7 are ignored (the module's standoffs sit next to its own sockets, as on the
+  module); every other courtyard overlap stays an error.
+- `touchup.py` on the new board: fifth BQ24074 via at +0.59 mm y; only two of the four WROVER
+  ground-land vias fit (an RXD0 track on In2.Cu passes the other two corners); LED labels C/P.
+- DRC with schematic parity: **0 errors, 0 unconnected items, 0 parity issues**, 40 warnings (all
+  silkscreen: footprint outlines and texts near the edge; the B.Cu narrow necks are gone).
+
+Please check:
+1. The socket and hole positions against the HS20S010B drawing (numbers above), and CN1's pin
+   order (1 GND at the top of the right-hand row, seen from the front).
+2. Whether two WROVER ground-land vias are enough (the land also has the module GND pads and the
+   F.Cu pour), or the RXD0 track on In2.Cu should move.
+3. The U.FL under the module: access and the coax exit; anything else under the module that is
+   taller than ~10 mm (I found none).
+4. U2 at 180 deg: decoupling at the VDD pins, outputs to J6, the exposed pad vias.
+5. The front: the panel lies ~15 mm above the board, so D16's recessed knob needs a longer EC11
+   shaft than the "short shaft" planned; any objection to choosing it on that height?
 
 ## Round 5: response to Grok's layout review
 

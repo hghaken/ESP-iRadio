@@ -130,26 +130,26 @@ gnd(P('C8', 2))
 s.text('CONTROLS: EC11 encoder (recessed knob)', (20.32, 99.06), 1.8, True)
 
 # ---------------------------------------------------------------- display + microSD (right)
-s.add('Connector_Generic:Conn_01x12', 'J3', 345.44, 63.5, 0, 'LCD 1.69in ST7789V2 panel, 12-pin FPC 0.7 mm',
-      'esp-iradio:FPC_12P_P0.70mm_Solder',
-      fields={'ref': (335.28, 35.56, 0, 'left'), 'val': (335.28, 38.1, 0, 'left')})
-# J3 (panel FPC): 1 GND, 2 LEDK, 3 LEDA, 4 VDD, 5 GND, 6 GND, 7 D/C, 8 CS, 9 SCL, 10 SDA, 11 RESET, 12 GND
-for k in (1, 5, 6, 12):
-    gnd(P('J3', k), 'left')
-W(P('J3', 3), (337.82, 55.88), (337.82, 58.42), P('J3', 4))
-W((337.82, 58.42), (332.74, 58.42))
-left('+3V3', (332.74, 58.42), False)
-# backlight: LEDK -> R22 -> Q1 (AO3400A) -> GND; gate = LCD_BL (GPIO26 PWM), R23 100k to GND
-s.add('Transistor_FET:AO3400A', 'Q1', 309.88, 48.26, 0, 'AO3400A', 'Package_TO_SOT_SMD:SOT-23',
-      extra={'LCSC': 'C20917'}, fields={'ref': (314.96, 50.8, 0, 'left'), 'val': (314.96, 53.34, 0, 'left')})
-R('R22', 322.58, 43.18, '5.6R', 90)
-W(P('Q1', 'D'), P('R22', 1))
-W(P('R22', 2), (332.74, 43.18), (332.74, 53.34), P('J3', 2))
-gnd(P('Q1', 'S'))
-R('R23', 299.72, 43.18, '100k', fields=lside(299.72, 43.18))
-gnd(P('R23', 1), 'up')
-W(P('R23', 2), P('Q1', 'G'))
-C('C5', 365.76, 66.04, '10uF', fp=FC8)
+# display module HS20S010B (LCSC C5329586, 2.0in 320x240 ST7789V2) on two 1x10 sockets (JLCPCB fits the
+# sockets; the module comes loose and gets its own 1x10 pin headers). CN1 carries the signals, CN2 holds
+# the other side (its pins duplicate CN1 and stay open). FSO/FCS belong to the optional font chip:
+# not fitted, left open (datasheet). BLK switches the module's own backlight transistor: high = on.
+s.add('Connector_Generic:Conn_01x10', 'J3', 345.44, 63.5, 0, 'Display HS20S010B CN1',
+      'Connector_PinSocket_2.54mm:PinSocket_1x10_P2.54mm_Vertical', extra={'LCSC': 'C2897373'},
+      fields={'ref': (335.28, 45.72, 0, 'left'), 'val': (335.28, 48.26, 0, 'left')})
+# J3 (CN1): 1 GND, 2 VCC, 3 CLK, 4 SDA, 5 RES, 6 DC, 7 CS, 8 BLK, 9 FSO, 10 FCS
+gnd(P('J3', 1), 'left')
+W(P('J3', 2), (335.28, P('J3', 2)[1]))
+left('+3V3', (335.28, P('J3', 2)[1]))
+s.nc(P('J3', 9))
+s.nc(P('J3', 10))
+s.add('Connector_Generic:Conn_01x10', 'J7', 370.84, 63.5, 0, 'Display CN2 (mechanical)',
+      'Connector_PinSocket_2.54mm:PinSocket_1x10_P2.54mm_Vertical', extra={'LCSC': 'C2897373'},
+      fields={'ref': (373.38, 81.28, 0, 'left'), 'val': (373.38, 83.82, 0, 'left')})
+for k in range(1, 11):
+    s.nc(P('J7', k))
+s.text('Module LCSC C5329586 (loose part)', (335.28, 86.36), 1.27, False)
+C('C5', 345.44, 96.52, '10uF', fp=FC8)
 up('+3V3', P('C5', 1), False)
 gnd(P('C5', 2))
 
@@ -163,7 +163,7 @@ gnd(P('J4', 'VSS'), 'left')
 gnd(P('J4', 'SHIELD'))
 C('C3', 375.92, 157.48, '10uF', fp=FC8)
 C('C4', 386.08, 157.48, '100nF')
-C('C25', 378.46, 66.04, '100nF')
+C('C25', 355.6, 96.52, '100nF')
 up('+3V3', P('C25', 1), False)
 gnd(P('C25', 2))
 for c in ('C3', 'C4'):
@@ -174,22 +174,25 @@ for c in ('C3', 'C4'):
 R('R8', 309.88, Rt(9)[1], '22R', 90)
 W(Rt(9), (299.72, 132.08), P('R8', 1))
 W(P('R8', 2), (317.5, 132.08), P('J4', 'CLK'))
-W((317.5, 132.08), (317.5, P('J3', 9)[1]), P('J3', 9))
+W((317.5, 132.08), (317.5, P('J3', 3)[1]), P('J3', 3))
 tp('TP5', (299.72, 132.08), 'SPI_SCK', 0, 'left')
 # SPI MOSI: module -> R9 -> MOSI_BUS column 320.04 -> J3 pin 4 and J4 CMD
 R('R9', 309.88, Rt(2)[1], '0R', 90)
 W(Rt(2), P('R9', 1))
 W(P('R9', 2), (320.04, 114.3))
-W((320.04, 114.3), (320.04, P('J3', 10)[1]), P('J3', 10))
+W((320.04, 114.3), (320.04, P('J3', 4)[1]), P('J3', 4))
 W((320.04, 114.3), (320.04, 127.0), P('J4', 'CMD'))
 # LCD_DC, LCD_RST, LCD_CS
-W(Rt(3), (297.18, Rt(3)[1]), (297.18, P('J3', 7)[1]), P('J3', 7))
-W(Rt(6), (299.72, Rt(6)[1]), (299.72, P('J3', 11)[1]), P('J3', 11))
-W(Rt(10), (302.26, Rt(10)[1]), (302.26, 86.36), (302.26, P('J3', 8)[1]), P('J3', 8))
+W(Rt(3), (297.18, Rt(3)[1]), (297.18, P('J3', 6)[1]), P('J3', 6))
+W(Rt(6), (299.72, Rt(6)[1]), (299.72, P('J3', 5)[1]), P('J3', 5))
+W(Rt(10), (302.26, Rt(10)[1]), (302.26, 86.36), (302.26, P('J3', 7)[1]), P('J3', 7))
 R('R3', 307.34, 86.36, '10k', 90)
 right('+3V3', P('R3', 2), False)
-# LCD_BL from module position 10 (left side) over the top to the backlight MOSFET
-W(L(10), (180.34, L(10)[1]), (180.34, 83.82), (294.64, 83.82), (294.64, 48.26), P('R23', 2))
+# LCD_BL from IO26 to the module's BLK pin (CN1 pin 8): labels, the signal columns are in the way
+W(L(10), (180.34, L(10)[1]), (180.34, 83.82), (187.96, 83.82))
+s.label('LCD_BL', (187.96, 83.82))
+W(P('J3', 8), (335.28, P('J3', 8)[1]))
+s.label('LCD_BL', (335.28, P('J3', 8)[1]), 180)
 # MISO -> J4 DAT0 + R5
 W(Rt(8), (292.1, Rt(8)[1]), (292.1, 137.16), (332.74, 137.16), P('J4', 'DAT0'))
 R('R5', 332.74, 142.24, '10k', fields={'ref': (328.93, 144.78, 0, 'right'), 'val': (328.93, 147.32, 0, 'right')})
@@ -205,7 +208,7 @@ down('+3V3', P('R6', 2), False)
 R('R7', 340.36, 116.84, '10k')
 W(P('J4', 'DAT2'), P('R7', 2))
 up('+3V3', P('R7', 1), False)
-s.text('DISPLAY (ST7789, SPI) AND microSD', (330.2, 30.48), 1.8, True)
+s.text('DISPLAY MODULE (2.0in ST7789, SPI) AND microSD', (330.2, 30.48), 1.8, True)
 
 # ---------------------------------------------------------------- audio (bottom)
 s.add('Audio:PCM5102A', 'U1', 200.66, 218.44, 0, 'PCM5102APWR', 'Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm',
@@ -309,9 +312,18 @@ down('+3V3', (391.16, 50.8), False)
 s.text('AUDIO: PCM5102A DAC, 3.5 mm line out, MAX98357A I2S mono amplifier (VSYS)', (101.6, 256.54), 1.8, True)
 
 # mounting holes
-for i, h in enumerate(('H1', 'H2', 'H3', 'H4')):
-    s.add('Mechanical:MountingHole', h, 30.48 + 10.16 * i, 241.3, 0, 'M3', 'MountingHole:MountingHole_3.2mm_M3',
-          fields={'ref': (30.48 + 10.16 * i, 236.22, 0, None), 'val': (30.48 + 10.16 * i, 246.38, 0, None)})
+# H2-H4 fix the board (M3); H1 and H5-H7 sit under the display module's own holes (M2.5 standoffs)
+for i, (h, val, fp) in enumerate((('H1', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
+                                  ('H2', 'M3', 'MountingHole:MountingHole_3.2mm_M3'),
+                                  ('H3', 'M3', 'MountingHole:MountingHole_3.2mm_M3'),
+                                  ('H4', 'M3', 'MountingHole:MountingHole_3.2mm_M3'),
+                                  ('H5', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
+                                  ('H6', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
+                                  ('H7', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'))):
+    x = 30.48 + 10.16 * (i % 4)
+    y = 241.3 if i < 4 else 226.06
+    s.add('Mechanical:MountingHole', h, x, y, 0, val, fp,
+          fields={'ref': (x, y - 5.08, 0, None), 'val': (x, y + 5.08, 0, None)})
 
 warn = s.finalize()
 import fieldcheck

@@ -74,7 +74,7 @@ for ref, name in (('TP203', 'EN'), ('TP204', 'IO0'), ('TP205', 'TX'), ('TP206', 
     x, y = pad_xy(ref, '1')
     text(name, x, y + 1.9, 0.8)
 # title
-text('ESP iRadio  Rev B  2026-10', 40.0, 1.6, 0.9)
+text('ESP iRadio Rev B', 74.0, 2.4, 0.9)
 
 board.Save(PCB)
 print('silkscreen updated')

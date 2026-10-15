@@ -1,7 +1,9 @@
 # 07 - Integrated board (phase 2, chosen 2026-10-15)
 
-The owner wants everything on one board: no Olimex dev board, no display module, no breakouts,
-and **every part assembled by JLCPCB from stock** (D17). This replaces the phase 1 carrier board
+The owner wants everything on one board: no Olimex dev board, no breakouts, **every part
+assembled by JLCPCB from stock** (D17) and everything in one JLCPCB/LCSC order. The display is
+the one exception to "one board": a 2.0" module from the LCSC catalogue plugged into sockets on
+the board (D8, changed 2026-10-16). This replaces the phase 1 carrier board
 (the A3 schematic of 2026-10-12/15 stays in git as the reference for every function that is
 already verified on the breadboard).
 
@@ -16,25 +18,27 @@ are worked in below). Schematic Rev B done the same evening (two A3 sheets, see
 (`grok-bevindingen.md`, `claude-bevindingen.md` in the repository root); the agreed changes are
 worked in: no bulk electrolytic on VSYS, polyfuse 2 A before the TVS, ILIM 1.13k, a high-ohmic USB
 divider, recovery pads, NPTH locating holes, no VIN-DPM in ILIM mode (power the board from a
-source of at least 1.5 A). First layout (Rev B draft, 80 x 60 mm, 4 layers) done the same night:
-DRC 0 errors, 0 unconnected, 0 schematic parity issues (`esp-iradio/NOTES.md`, "Layout"). Next:
-the open checks there (panel mock-up, short-shaft encoder, switch ON side), a review of the routing
-in KiCad, then the JLCPCB files.
+source of at least 1.5 A). First layout (Rev B draft, 80 x 60 mm, 4 layers) done the same night.
+2026-10-16: display changed to the HS20S010B module (D8: the bare 1.69" panel is not sold by
+JLCPCB/LCSC), board now 90 x 60 mm with the encoder beside the module; DRC 0 errors, 0
+unconnected, 0 schematic parity issues (`esp-iradio/NOTES.md`, "Layout"). Next: the open checks
+there (module pin 1 and headers, encoder shaft length, switch ON side), a review of the routing in
+KiCad, then the JLCPCB files.
 
 ## Owner decisions (2026-10-15)
 
 | # | Decision | Choice |
 |---|---|---|
-| D8 | Display | the bare 1.69" IPS panel (ST7789V2, 240x280) soldered by its FPC to the board; backlight driver on the board |
+| D8 | Display | **HS20S010B module** (LCSC C5329586: 2.0" IPS, 320x240, ST7789V2, SPI, backlight transistor on the module) on two 1x10 sockets, ordered loose with the board (2026-10-16; was the bare 1.69" panel soldered by its FPC, which JLCPCB/LCSC do not sell) |
 | D9 | ESP32 | **ESP32-WROVER-IE-N16R8** module (16 MB flash, 8 MB PSRAM, U.FL connector for an external 2.4 GHz antenna; owner's choice 2026-10-15, was the -E with PCB antenna); a chip-down ESP32 is not wanted (antenna and RF tuning, no module certification, extended-part fees) |
 | D10 | Battery charging | **power-path charger** (TI BQ24074): the radio runs from USB while the cell charges separately |
 | D11 | Speaker | also on battery: the MAX98357A runs from the system rail (4.4 V on USB, the cell voltage on battery) |
 | D12 | On/off switch | **slide switch on the 3.3 V LDO's enable**: off = the radio is off, also on USB; the cell still charges on USB. (The BQ24075/79 have a SYSOFF pin that would also stop charging; the BQ24074 has none.) |
-| D13 | Display position | on the front of the board: panel on ~5 mm spacers (see D16), FPC folded to pads on the same side |
+| D13 | Display position | on the front of the board, top left, plugged into the sockets (~11 mm above the board) and held by four M2.5 standoffs; the encoder beside it (2026-10-16) |
 | D14 | Charge LEDs | red on CHG (charging), green on PGOOD (USB power); they light also while the radio is off |
-| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board |
-| D16 | Encoder | **recessed**: nothing sticks out of the front panel. EC11 with push switch and a short shaft, a low knob (~15-18 mm across, ~6 mm high) in a round pocket (~22 mm) of the front panel, its top flush with the panel. The EC11 body is ~6.5 mm high, so the front panel sits at least that far above the board and the display goes on ~5 mm spacers to bring its glass right behind the window. |
-| D17 | Assembly | **every part from the JLCPCB stock**, the whole board assembled by JLCPCB (SMT and THT). Only exceptions: the display panel (soldered by its FPC afterwards), the cell and the speaker |
+| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board. 90 x 60 mm since the 2.0" module (63.2 x 36.2 mm) with the encoder beside it |
+| D16 | Encoder | **recessed**: nothing sticks out of the front panel. EC11 with push switch, a low knob (~15-18 mm across, ~6 mm high) in a round pocket (~22 mm) of the front panel, its top flush with the panel. With the module on sockets the front panel lies ~15 mm above the board (module ~11 mm up plus its own PCB and glass), so the shaft length is chosen for that height (open) |
+| D17 | Assembly | **every part from the JLCPCB stock**, the whole board assembled by JLCPCB (SMT and THT, the display sockets included). Not assembled: the display module (LCSC part in the same order, plugged in; its two pin headers soldered by the owner if it comes without), the cell, the speaker and the antenna |
 | D18 | Battery protection | **on the board**: DW01A + FS8205A (over-discharge, over-current, short) and a P-MOSFET against a reversed cell; works also with a pack that has its own protection |
 
 Earlier decisions that stay: one mono speaker 4-8 Ohm (D4), USB-C 5 V without PD (D5), JLCPCB with
@@ -50,7 +54,7 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
         +-- VBUS -- polyfuse -- VIN: SMAJ5.0A, USBLC6 VBUS, USB divider -- BQ24074 IN
                                               |  OUT = VSYS (4.4 V on USB, VBAT on battery)
                                               |    +-- AP7361C-33Y5 (EN = slide switch) -- +3V3
-                                              |    |      ESP32-WROVER-IE, CH340C, display VDD + LEDA,
+                                              |    |      ESP32-WROVER-IE, CH340C, display module VCC,
                                               |    |      PCM5102A DVDD/CPVDD, microSD, pull-ups
                                               |    +-- LP5907-3.3 -- +3V3A (PCM5102A AVDD)
                                               |    +-- MAX98357A VDD (10 uF + 100 nF)
@@ -147,7 +151,11 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   same pads and outline as the WROVER-E). No PCB antenna, so no antenna keep-out at a board edge:
   a 2.4 GHz antenna with an IPEX/U.FL pigtail (bought separately, not assembled) plugs into the
   module and goes to the case wall. Keep the U.FL connector reachable (no tall parts next to it,
-  room for the plug); never transmit without an antenna connected.
+  room for the plug); never transmit without an antenna connected. On the 90 x 60 board the U.FL
+  lies under the display module: the module does not shield the antenna (that is on the cable),
+  but the plug is only reachable with the module unplugged, and the coax leaves through the
+  ~11 mm gap under the module. Put the antenna on the case wall, >= 10-15 mm from the module, the
+  cell and the speaker magnet.
 - Strapping (reviewed): GPIO12 (MTDI) **must be low at boot** (high selects 1.8 V flash): nothing
   connected (optionally burn the VDD_SDIO eFuse to 3.3 V). GPIO0 10k up; GPIO2 low at reset (its
   internal pull-down beats the MAX98357A network, also in download mode); GPIO5 10k up (LCD_CS);
@@ -157,39 +165,40 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   (one full flash over USB on a new board; settings start empty).
 - **PCB: 4 layers** (layer 2 a solid GND plane): audio and the charger's heat. Cheap at JLCPCB.
 
-## Display: bare panel on the board (D8)
+## Display: HS20S010B module on sockets (D8, 2026-10-16)
 
-Panel class: 1.69" IPS, ST7789V2, 240x280, 4-wire SPI, **12-pin FPC, 0.7 mm pitch, soldered**
-(not a ZIF connector). Reference: Unvision UN169T-IG01 (the panel of the lcdwiki MSP1691 module,
-same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that is ordered).
+Why a module: JLCPCB/LCSC sell no 1.69" display (bare panel or module), and the owner wants one
+order for everything. The HS20S010B (LCSC C5329586, ~$5.4, ~100 in stock) is the closest fit: 2.0"
+IPS, **320 x 240** (was 280 x 240), ST7789V2, 4-wire SPI, 3.3 V, module PCB 63.2 x 36.2 mm with
+four M2.5 holes (3.2 mm, at 3.0/60.2 x 2.8/33.4 mm from the top-left corner), glass 51.8 mm wide,
+active area 40.86 x 30.6 mm. Two 1x10 2.54 mm rows: CN1 at the right end (x 61.2), CN2 at the
+left end (x 2.0), both at y 6.67-29.53. CN2 duplicates CN1's signals; the board connects CN1 only
+and uses CN2 to hold the module.
 
-| FPC pin | Signal | Board net |
+| CN1 pin | Signal | Board net |
 |---|---|---|
 | 1 | GND | GND |
-| 2 | LEDK | backlight cathode -> driver |
-| 3 | LEDA | `+3V3` (+ 10 uF) |
-| 4 | VDD | `+3V3` (2.5-3.3 V, ~8 mA) + 100 nF + 10 uF |
-| 5, 6 | GND | GND |
-| 7 | D/C | `LCD_DC` GPIO22 |
-| 8 | CS | `LCD_CS` GPIO5 (10k pull-up) |
-| 9 | SCL | `SPI_SCK_BUS` (after R8 22 Ohm) GPIO18 |
-| 10 | SDA | `SPI_MOSI_BUS` (after R9) GPIO23 |
-| 11 | RESET | `LCD_RST` GPIO21 |
-| 12 | GND | GND |
+| 2 | VCC | `+3V3` + 10 uF (C5) + 100 nF (C25) |
+| 3 | CLK | `SPI_SCK_BUS` (after R8 22 Ohm) GPIO18 |
+| 4 | SDA | `SPI_MOSI_BUS` (after R9) GPIO23 |
+| 5 | RES | `LCD_RST` GPIO21 |
+| 6 | DC | `LCD_DC` GPIO22 |
+| 7 | CS | `LCD_CS` GPIO5 (10k pull-up R3) |
+| 8 | BLK | `LCD_BL` GPIO26 (PWM; the module's own transistor, high = on) |
+| 9, 10 | FSO, FCS | open (the optional font chip, not fitted) |
 
-- Backlight: 3 white LEDs in parallel, Vf 2.8-3.2 V, 60 mA typical (90 mA max). Low-side driver as
-  on the module but with a logic-level N-MOSFET: LEDK -> R_BL -> AO3400A drain, source GND, gate =
-  `LCD_BL` GPIO26 (PWM) with 100k to GND (dark until the firmware runs). **R_BL in 0603, value
-  from the real panel's Vf** (5.6 Ohm on the module; from 3.3 V that gives 18-89 mA across the
-  Vf spread): measure the delivered panel before ordering. Firmware: backlight PWM to >= 20 kHz
-  (5 kHz current pulses on +3V3 can be heard through the amplifier).
-- Pads: 12 x 0.7 mm pitch, ~0.4 x 2.0 mm, in a row matching the FPC end (11.4 mm wide), soldered
-  by hand (or hot-bar) after the assembly. A panel on the front with its FPC folded back mirrors
-  the contact side: **check pin 1 and the contact side with a paper mock-up** before the pads are
-  placed. Panel 30.07 x 37.43 x 1.56 mm, active area 27.97 x 32.63 mm, FPC bend zone 10 mm (see
-  the drawing in the panel spec).
-- Sources: lcdwiki "1.69inch IPS Module" (MSP1691) with the panel spec SPEC_UN169T-IG01 and the
-  module schematic (QDtech), 2026-10-15.
+- Sockets J3 (CN1) and J7 (CN2): HCTL PM254-1-10-Z-8.5 (LCSC C2897373, 8.5 mm), assembled by
+  JLCPCB. The LCSC photo shows the module without pin headers: order two 1x10 male headers
+  (e.g. C492409 PZ254V-11-10P: 2.5 mm spacer, 3 mm short side through the module, 6 mm into the
+  socket) and solder them on. Module PCB then ~11 mm above the board; four M2.5 standoffs of that
+  length on H1/H5/H6/H7 hold it.
+- Under the module (~11 mm free): the WROVER-IE (its U.FL included), the 3.3 V regulator, the
+  buttons and recovery pads, most of the small parts.
+- Backlight: no driver on the board any more (Q1/R22/R23 removed). Firmware: backlight PWM
+  >= 20 kHz still (5 kHz current pulses on +3V3 can be heard through the amplifier).
+- Firmware: `init(240, 320)` and a new layout for 320 x 240 (the 280 x 240 layout in
+  `display.cpp` gets 40 px more width).
+- Source: the HS20S010B datasheet with the mechanical drawing (LCSC C5329586), 2026-10-16.
 
 ## Unchanged blocks (verified on the breadboard)
 
@@ -223,7 +232,8 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 | 39 | USB voltage | 330k/220k + 100 nF |
 
 Firmware changes for this board: `PWR_CAL_PERMILLE` ~2500, charge state from GPIO34/36 (polled),
-backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder stay.
+backlight PWM >= 20 kHz, the 320 x 240 display, a 16 MB partition table; pins, I2S, SPI and
+encoder stay.
 
 ## Parts and JLCPCB stock (D17; JLCPCB Tools database of 2026-10-11)
 
@@ -242,7 +252,9 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 | BAT54WS (SOD-323) | C7502694 | 405154 | preferred; 2x, CHG/PGOOD isolation |
 | LED red / green 0603 | C2286 / C12624 | 3941052 / 354847 | red basic, green extended |
 | polyfuse 1206L200/16NR (2 A hold, 16 V) | C22374899 | 34396 | VBUS, before the TVS |
-| AO3400A | C20917 | 1071707 | basic; backlight |
+| HS20S010B display module 2.0" 320x240 | C5329586 | 113 | loose part in the same order, plugged in (D8) |
+| socket 1x10 2.54 mm, 8.5 mm (PM254-1-10-Z-8.5) | C2897373 | 17742 | 2x, J3/J7, assembled |
+| pin header 1x10 2.54 mm (PZ254V-11-10P) | C492409 | 38097 | 2x loose, soldered to the module if it comes without |
 | MMBT3904 | C7420353 | 5024877 | preferred; auto-reset |
 | USBLC6-2SC6 | C2827654 | 105627 | USB ESD |
 | SMAJ5.0A | C113952 | 602831 | VBUS TVS |
@@ -257,13 +269,15 @@ backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder sta
 | R/C | basic parts | | LCSC numbers from JLCPCB Tools when the BOM is made |
 
 Stock is a snapshot; JLCPCB Tools checks it again when the BOM is made. Not assembled: the display
-panel (hand-soldered FPC), the cell, the speaker.
+module (plugged in), the cell, the speaker, the antenna. Stock database of 2026-10-11; the
+HS20S010B, socket and header rows were checked on 2026-10-16.
 
 ## Sources
 
 - TI BQ24072/3/4/5/9 datasheet (ZHCSIF0N / SLUSA19): BQ24074 OUT 4.4 V typ (4.3-4.5 V), OVP 10.5 V;
   ISET/ILIM/TMR/ITERM/EN1-EN2/TS from the same datasheet (SLUS810N, checked in the schematic step).
-- Panel: lcdwiki.com/1.69inch_IPS_Module (SPEC_UN169T-IG01.pdf, 1.69IPS_MSP1691_Schematic.pdf).
+- Display module: HS20S010B datasheet with the mechanical drawing (LCSC C5329586). The former
+  bare-panel plan used lcdwiki.com/1.69inch_IPS_Module (SPEC_UN169T-IG01.pdf).
 - Olimex ESP32-DevKit-LiPo Rev.D hardware files (github.com/OLIMEX/ESP32-DevKit-LiPo): CH340X,
   BL4054B charger, HX6211 3.3 V LDO.
 - Espressif ESP32-WROVER-E / -IE datasheet and hardware design guidelines (strapping, antenna).

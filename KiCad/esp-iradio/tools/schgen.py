@@ -283,8 +283,8 @@ class Sheet:
         out += '\t\t(unit %d)\n' % s['unit']
         if s['style'] != 1:
             out += '\t\t(convert %d)\n' % s['style']
-        # test pads, mounting holes and the panel's FPC pads are not assembled parts: not in the BOM
-        in_bom = 'no' if ref.startswith(('TP', 'H')) or ref == 'J3' else 'yes'
+        # test pads and mounting holes are not assembled parts: not in the BOM
+        in_bom = 'no' if ref.startswith(('TP', 'H')) else 'yes'
         # fixed symbol UUID (sheet + reference): the board's footprints point to it, so a regenerated
         # schematic stays linked to the layout ("Update PCB from Schematic" matches on it)
         sym_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'esp-iradio/%s/%s' % (self.file_uuid, ref)))

@@ -555,14 +555,6 @@
       },
       {
         "netclass": "Supply",
-        "pattern": "Net-(J3-Pin_2)"
-      },
-      {
-        "netclass": "Supply",
-        "pattern": "Net-(Q1-D)"
-      },
-      {
-        "netclass": "Supply",
         "pattern": "Net-(J6-Pin_1)"
       },
       {

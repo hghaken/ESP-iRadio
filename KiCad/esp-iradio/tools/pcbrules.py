@@ -17,8 +17,8 @@ def netclass(name, track, clearance, via_d, via_drill, prio):
 
 # nets that carry current: VBUS/VIN up to 1.4 A, cell and VSYS up to ~2 A peaks, speaker ~1 A
 POWER = ['VSYS', 'GND', '+3V3', PS + 'VBUS', PS + 'VIN', PS + 'VBAT', PS + 'BATN', 'Net-(J202-Pin_1)']
-# 0.3 mm: DAC supply, backlight (~90 mA), speaker outputs (they leave a 0.5 mm pitch QFN)
-LIGHT = ['+3V3A', 'Net-(J3-Pin_2)', 'Net-(Q1-D)', 'Net-(J6-Pin_1)', 'Net-(J6-Pin_2)']
+# 0.3 mm: DAC supply, speaker outputs (they leave a 0.5 mm pitch QFN)
+LIGHT = ['+3V3A', 'Net-(J6-Pin_1)', 'Net-(J6-Pin_2)']
 
 d = json.load(open(PRO, encoding='utf-8'))
 ns = d.setdefault('net_settings', {})
@@ -35,3 +35,16 @@ rules.update({'min_clearance': 0.15, 'min_track_width': 0.15, 'min_connection': 
               'min_silk_clearance': 0.0, 'min_resolved_spokes': 1, 'min_text_height': 0.8, 'min_text_thickness': 0.12})
 json.dump(d, open(PRO, 'w', encoding='utf-8', newline='\n'), indent=2)
 print('rules and net classes written to', PRO)
+
+# custom rule: the display module's M2.5 standoffs (H1, H5-H7) sit next to its sockets (J3, J7) by design;
+# their courtyards touch, the parts do not (standoffs up to 4.5 mm round). Every other overlap still counts.
+DRU = PRO[:-len('.kicad_pro')] + '.kicad_dru'
+HOLES = "(A.Reference == 'H1' || A.Reference == 'H5' || A.Reference == 'H6' || A.Reference == 'H7')"
+SOCKS = "(B.Reference == 'J3' || B.Reference == 'J7')"
+open(DRU, 'w', encoding='utf-8', newline='\n').write(
+    '(version 1)\n'
+    '(rule "display module standoffs next to its sockets"\n'
+    '  (condition "%s && %s")\n'
+    '  (constraint courtyard_clearance)\n'
+    '  (severity ignore))\n' % (HOLES, SOCKS))
+print('custom rules written to', DRU)

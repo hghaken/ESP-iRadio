@@ -9,8 +9,9 @@ Before the layout (details in `esp-iradio/NOTES.md`):
       agreed changes in the schematic and the libraries.
 - [ ] PJ-320D (J5) pin order S/R/T against a sample (the Shouhan drawing only says OA-OD).
 - [ ] MSK12C02 (SW203): which slide position is ON, on a sample (for the silk).
-- [ ] EC11 with a short shaft for the recessed knob (D16); update SW1's part and footprint.
-- [ ] Display panel ordered; FPC pin 1 and contact side with a paper mock-up; R22 from its Vf.
+- [ ] EC11 shaft length for the front panel ~15 mm above the board (D16); update SW1's part.
+- [ ] Display module HS20S010B (C5329586): CN1 pin 1 position on the delivered module; pin
+      headers included or two C492409 ordered with it; standoff height (~11 mm) measured.
 - [ ] TS-1187A pads 1 and 4 diagonal (LCSC drawing).
 
 Layout:
@@ -19,6 +20,9 @@ Layout:
 - [x] Layout reviewed by Grok and Claude (round 4-5): placement, U.FL at the left edge, power
       widths, USB lengths, I2S detours accepted.
 - [x] BQ24074 5 thermal vias, WROVER ground-land vias (`tools/touchup.py`); LED labels "C"/"P".
+- [x] 2026-10-16: board 90 x 60 mm for the HS20S010B module on sockets, encoder beside it, U2
+      turned 180 degrees; DRC 0 errors, 0 unconnected, 0 parity issues.
+- [ ] Review of the 90 x 60 board by Grok and Claude (round 6).
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:

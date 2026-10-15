@@ -102,6 +102,9 @@ def build(netfile, check_only=False):
             bx0, by0, bx1, by1 = boxes[b]
             ox = min(ax1, bx1) - max(ax0, bx0)
             oy = min(ay1, by1) - max(ay0, by0)
+            # the display module's M2.5 holes sit 3.9 mm from its header ends: standoffs <= 4.5 mm round
+            if {a[0], b[0]} == {'H', 'J'} and {a, b} & {'J3', 'J7'}:
+                continue
             if ox > 0.05 and oy > 0.05:
                 print('OVERLAP %-6s %-6s %.2f x %.2f' % (a, b, ox, oy))
                 bad += 1
@@ -126,13 +129,14 @@ def build(netfile, check_only=False):
         seg(layer, x1, y1, x0, y1, w); seg(layer, x0, y1, x0, y0, w)
 
     rect(pcbnew.Edge_Cuts, 0, 0, placement.W, placement.H, 0.1)
-    rect(pcbnew.Dwgs_User, *placement.PANEL, w=0.15)
-    txt = pcbnew.PCB_TEXT(board)
-    txt.SetText('display panel 37.43 x 30.07 (on 5 mm spacers), FPC to J3')
-    txt.SetPosition(vec(placement.PANEL[0] + 1, placement.PANEL[1] + 1.5))
-    txt.SetLayer(pcbnew.Dwgs_User)
-    txt.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
-    board.Add(txt)
+    for k, (label, box) in enumerate(placement.OUTLINES):
+        rect(pcbnew.Dwgs_User, *box, w=0.15)
+        txt = pcbnew.PCB_TEXT(board)
+        txt.SetText(label)
+        txt.SetPosition(vec(box[0] + 1, box[1] + 1.5 + 1.6 * k))
+        txt.SetLayer(pcbnew.Dwgs_User)
+        txt.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
+        board.Add(txt)
 
     # GND plane on In1.Cu (the router connects GND pads to it with vias)
     z = pcbnew.ZONE(board)

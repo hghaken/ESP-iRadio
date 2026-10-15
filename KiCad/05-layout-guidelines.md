@@ -5,16 +5,18 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
 
 ## Board and mechanics
 
-- About **60 x 80 mm** (D15), **4 layers**, 1.6 mm FR-4: layer 2 a solid GND plane, layer 3
+- **90 x 60 mm** (D15; was about 60 x 80 before the 2.0in display module), **4 layers**, 1.6 mm FR-4: layer 2 a solid GND plane, layer 3
   power (VSYS, +3V3) and some signals, top and bottom signals. Stitch GND vias along the edge and
   next to signal vias that change layer.
-- **Front (top) side**: the display panel on ~5 mm spacers (D13/D16) and the recessed EC11
-  encoder; the case front panel lies at least the encoder body height (~6.5 mm) above the board.
-  Agree the front layout with the owner first (screenshot of the 3D view).
-- **Display FPC pads (J3)** at the edge where the folded FPC arrives; pin 1 and the contact side
-  only after the paper mock-up with the real panel (NOTES.md). Keep the bend zone (10 mm) free.
+- **Front (top) side**: the HS20S010B display module top left on two 1x10 sockets (J7 CN2 left,
+  J3 CN1 right) and four M2.5 standoffs (H1, H5-H7), its PCB ~11 mm above the board; the EC11
+  encoder beside it (D13/D16). Only parts lower than ~10 mm under the module. The case front
+  panel lies ~15 mm above the board (module + glass); agree the front with the owner first.
+- **Display sockets**: positions and the module holes follow the HS20S010B drawing
+  (`tools/placement.py`); the module outline, glass and active area are drawn on User.Drawings.
 - **ESP32-WROVER-IE**: no PCB antenna, so no keep-out at a board edge. Keep its **U.FL connector
-  reachable** (no tall parts within ~5 mm, room for the plug and the pigtail to the case wall).
+  reachable** (no tall parts within ~5 mm, room for the plug and the pigtail to the case wall). On
+  the 90 x 60 board it lies under the display module: plug the antenna in before the module.
   The ground land is the Espressif 3 x 3 array (datasheet figure 15): add the **thermal vias
   between the squares** and do not flood it with one paste opening.
 - **Edge connectors**: USB-C (J201), 3.5 mm jack (J5), speaker (J6) and the cell (J202) on edges
@@ -22,7 +24,8 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
   the slide switch (SW203, side-actuated) at an edge, its actuator reachable through the case.
 - RESET/BOOT buttons and the recovery pads (TP203-TP207, TP4) reachable with the case open.
 - The NTC (RT201) next to where the cell lies (it measures the cell temperature).
-- 4 mounting holes, one per corner (M2.5/M3 into heat-set inserts), 1 mm keep-out around the head.
+- 3 board mounting holes (M3, H2-H4) in the free corners; the fourth corner carries the module's
+  standoff H1. 1 mm keep-out around the heads.
 
 ## 3D-printed case (decision D3)
 
@@ -60,13 +63,12 @@ The case is designed around the board, so the board files must give the case des
 - **Amplifier (MAX98357A, TQFN-16, ThermalVias footprint)**: VSYS and the speaker outputs >= 0.8 mm
   (1 mm preferred), C22 10 uF + C23 100 nF right at the VDD pins, exposed pad to the GND plane,
   outputs straight to J6. Never tie an output to ground.
-- **Backlight**: Q1/R22 near J3; the LEDK trace carries up to ~90 mA.
 - Encoder lines can be thin (0.25 mm); keep them off the I2S lines.
 
 ## Fab and assembly rules (JLCPCB 4-layer + SMT assembly, D6/D17)
 
 - Track/space 0.15/0.15 mm minimum (0.25 mm signals by default), via 0.3 mm drill / 0.6 mm pad.
-  The finest pitches on the board are 0.5 mm (USB-C, both QFNs); the FPC pads have a 0.3 mm gap.
+  The finest pitches on the board are 0.5 mm (USB-C, both QFNs).
 - Copper 0.3 mm from the board edge.
 - Locating holes of the LCSC footprints are NPTH (fixed in `lib/lcsc.pretty` 2026-10-15); check
   any new EasyEDA footprint for plated holes with drill = pad.
@@ -74,8 +76,8 @@ The case is designed around the board, so the board files must give the case des
   (speaker)** - Li-Po lead colours are not the same between makers; "5V" at USB-C; ON/OFF at the
   slide switch once a sample shows which position is on; names at the recovery pads.
 - Run DRC with the JLCPCB 4-layer rule set; export Gerbers and the Excellon drill file.
-- Assembly: SMD parts on the top side (one-sided assembly); the through-hole parts (encoder, JST
-  connectors) on one side too. BOM with the `LCSC` field and the CPL file from JLCPCB Tools; check
+- Assembly: SMD parts on the top side (one-sided assembly); the through-hole parts (encoder,
+  display sockets) on one side too. BOM with the `LCSC` field and the CPL file from JLCPCB Tools; check
   every rotation in JLCPCB's preview (QFNs, SOT-23, SOIC/TSSOP pin 1, the USB-C connector).
-- Not assembled: the display panel (hand-soldered FPC), the cell, the speaker, the antenna pigtail.
+- Not assembled: the display module (plugged in), the cell, the speaker, the antenna pigtail.
 - 3 fiducials (1 mm copper, 2 mm mask opening) if JLCPCB asks for them; tooling rails if panelized.

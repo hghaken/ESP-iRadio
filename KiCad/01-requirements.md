@@ -80,7 +80,7 @@ JST-PH on the Olimex board), charged over USB.
 
 The owner skipped phase 1: the integrated board is the current design. Its requirements and
 decisions D8-D18 are in `07-integrated-board.md` (WROVER-IE-N16R8, USB-C + CH340C, BQ24074 power
-path with cell protection, 3.3 V LDO with the on/off switch, bare display panel, everything
+path with cell protection, 3.3 V LDO with the on/off switch, a 2.0in display module on sockets, everything
 assembled by JLCPCB). The early notes that stood here (10k/22k USB divider, "after phase 1") are
 superseded.
 
