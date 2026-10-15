@@ -14,13 +14,13 @@ print(len(nets), 'nets')
 
 E = [
     # USB-C
-    ('J201.A4B9', 'J201.B4A9', 'F201.1', 'U202.5'),                       # VBUS (connector side of the fuse)
+    ('J201.A4B9', 'J201.B4A9', 'F201.1'),                                 # VBUS (connector side of the fuse)
     ('J201.A6', 'J201.B6', 'U202.1'), ('U202.6', 'U203.5'),         # USBLC6 passes D+ through inside (1-6)
     ('J201.A7', 'J201.B7', 'U202.3'), ('U202.4', 'U203.6'),
     ('J201.A5', 'R201.1'), ('J201.B5', 'R202.1'),
     ('J201.A1B12', 'J201.B1A12', 'J201.1', 'J201.2', 'J201.3', 'J201.4', 'R201.2', 'R202.2', 'D201.2', 'U202.2',
      'U203.1', 'U201.8', 'U201.17', 'U201.4', 'U201.6', 'U3.1', 'U3.15', 'U3.38', 'U205.3', 'R220.2', 'RT201.2', 'C214.2', 'TP207.1'),
-    ('F201.2', 'D201.1', 'U201.13', 'R203.1', 'C201.1', 'TP201.1'),     # VIN: TVS behind the fuse
+    ('F201.2', 'D201.1', 'U202.5', 'U201.13', 'R203.1', 'C201.1', 'TP201.1'),  # VIN: every clamp behind the fuse
     ('R203.2', 'R204.1', 'C214.1', 'U3.5'),            # VBUS_SENSE -> IO39
     # charger
     ('U201.10', 'U201.11', 'U201.5', 'C202.1', 'U206.4', 'U207.1', 'SW203.1', 'U2.7', 'R212.1', 'R214.1'),  # VSYS
@@ -62,14 +62,15 @@ for ref in ('C24',):
     if any(x.startswith(ref + '.') for x in where):
         bad += 1
         print('STILL THERE', ref)
-APART = [('VSYS', 'VBAT'), ('VSYS', '+3V3'), ('GND', 'BATN')]
+PS = '/Power, charger and USB/'
+APART = [(PS + 'VBUS', PS + 'VIN'), ('VSYS', PS + 'VBAT'), ('VSYS', '+3V3'), ('GND', PS + 'BATN')]
 for a, b in APART:
-    if a in nets and b in nets and nets[a] & nets[b]:
+    if a not in nets or b not in nets:
+        bad += 1
+        print('NET MISSING', a if a not in nets else b)
+    elif nets[a] & nets[b]:
         bad += 1
         print('SHORT', a, b)
-# net names expected
-for name in ('VSYS', '+3V3', '+3V3A', 'GND', 'VBUS', 'VBAT', 'BATN', 'EN_3V3', '/ESP_EN', 'ESP_EN', 'CHG', 'PGOOD', 'TXD0', 'RXD0'):
-    pass
 print('pin count of the WROVER: %d connected pins' % sum(1 for x in where if x.startswith('U3.')))
 print('OK' if not bad else '%d problems' % bad)
 for n in sorted(nets):

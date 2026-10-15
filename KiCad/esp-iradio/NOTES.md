@@ -54,6 +54,11 @@ the revision history of the actual KiCad project.
   TP203-TP207; LCSC fields on U1, U2, J6; U2 on the ThermalVias footprint; NPTH locating holes in
   the four EasyEDA footprints; two comments in `gen_radio.py`. ERC 1 known warning, `intcheck.py`
   OK, 119 parts.
+- Third round (Grok, same night): the USBLC6 VBUS pin (U202 pin 5) was still on the connector side
+  of F201; its internal clamp would have bypassed the fuse. Moved to the fused rail, now named
+  `VIN`. `tools/intcheck.py` expects it there and its rail-separation check now uses the full
+  sheet paths of local nets (it silently skipped `VBAT`/`BATN` before) and fails on a missing net.
+  ERC 1 known warning, `intcheck.py` OK.
 
 ## Schematic (Rev B, integrated board)
 
@@ -69,7 +74,8 @@ TXD0, RXD0, GND) bottom left. Sheet 2 references are numbered 2xx.
 
 Between the sheets: global power nets `VSYS`, `+3V3`, `+3V3A`, `GND` and global labels `ESP_EN`,
 `ESP_IO0`, `TXD0`, `RXD0`, `CHG`, `PGOOD`, `VBUS_SENSE`, `VBAT_SENSE`. Local labels on sheet 2:
-`VBUS` (connector side of the fuse; `VIN` after it is unnamed), `USB_D+`/`USB_D-` (connector
+`VBUS` (connector side of the fuse, only J201 and F201), `VIN` (after F201: TVS, USBLC6 VBUS,
+USB divider, BQ24074 IN), `USB_D+`/`USB_D-` (connector
 side; the USBLC6 passes each line through inside, pins 1-6
 and 3-4, so the CH340C side is a separate net), `VBAT`, `BATN` (cell minus), `CHG_N`, `PGOOD_N`,
 `EN_3V3`.

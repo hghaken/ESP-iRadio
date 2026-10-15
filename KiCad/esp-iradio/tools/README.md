@@ -10,7 +10,7 @@ placement as they go.
 | `fieldcheck.py` | warns about reference/value texts that overlap each other, cross a wire or sit on a symbol |
 | `gen_radio.py` | sheet 1 (root): ESP32-WROVER-IE, display panel, microSD, encoder, audio |
 | `gen_power.py` | sheet 2: USB-C, CH340C + auto-reset, BQ24074 charger, cell protection, regulators, on/off switch |
-| `intcheck.py` | checks an exported netlist against `../../07-integrated-board.md` (expected connections, no shorts between the rails) |
+| `intcheck.py` | checks an exported netlist against `../../07-integrated-board.md`: groups of pins that must share a net, nets that must stay apart (VBUS/VIN, VSYS/VBAT, VSYS/+3V3, GND/BATN; local nets by their full sheet path), parts that must not come back. It does not check values, polarity or footprints |
 
 Run from this folder (Python 3, no packages needed; `PRJ` = the KiCad project folder):
 

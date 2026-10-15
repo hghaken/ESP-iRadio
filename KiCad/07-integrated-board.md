@@ -42,9 +42,9 @@ amplifier, microSD, EC11 encoder.
 
 ```
 USB-C --+-- CC1, CC2: 5.1k each (sink)
-        +-- D+/D- (A6/B6, A7/B7 tied) -- USBLC6-2 -- CH340C -- TXD0/RXD0 (GPIO1/3)
+        +-- D+/D- (A6/B6, A7/B7 tied) -- USBLC6-2 (VBUS pin on VIN) -- CH340C -- TXD0/RXD0 (GPIO1/3)
         |                                         +-- DTR/RTS -- auto-reset (2x NPN) -- EN, GPIO0
-        +-- VBUS -- polyfuse -- SMAJ5.0A -- BQ24074 IN
+        +-- VBUS -- polyfuse -- VIN: SMAJ5.0A, USBLC6 VBUS, USB divider -- BQ24074 IN
                                               |  OUT = VSYS (4.4 V on USB, VBAT on battery)
                                               |    +-- AP7361C-33Y5 (EN = slide switch) -- +3V3
                                               |    |      ESP32-WROVER-IE, CH340C, display VDD + LEDA,
@@ -63,8 +63,11 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
 - **USB-C** (TYPE-C-31-M-12, 16 pins): one 5.1k per CC pin (never shared), D+/D- pairs tied
   (A6/B6, A7/B7), a polyfuse **2 A hold** (1206L200/16NR) and behind it the **SMAJ5.0A**
   (unidirectional: BQ24074 IN must not go below -0.3 V). Fuse first: a wrong adapter (above the
-  TVS's ~6.4 V) then opens the fuse instead of burning the TVS into a short. One connector
-  powers, charges and flashes.
+  TVS's ~6.4 V) then opens the fuse instead of burning the TVS into a short. The USBLC6-2SC6's
+  VBUS pin (its own clamp to GND, VBR 6 V min) sits on the same fused rail `VIN` (third review
+  round): no clamp is left in front of the fuse. Its clamp starts below the SMAJ's, so a wrong
+  adapter may still kill the small USBLC6, but the fault current then runs through the fuse. One
+  connector powers, charges and flashes.
 - **USB source of at least 1.5 A (owner's decision 2026-10-15, option a).** In ILIM mode the
   BQ24074 has **no input-voltage regulation**: VIN-DPM only works in the USB100/USB500 modes
   (EN2 = 0, SLUS810N 9.3.4.1.1), and DPPM only cuts the charge current to keep OUT up. The board

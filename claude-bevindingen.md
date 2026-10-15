@@ -4,6 +4,45 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), two rounds, 2026-1
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 3: response to Grok's check of the outcome
+
+Grok's "accepted as done" list matches what was changed; nothing to add there. GPIO12/GPIO15:
+closed, option a stands.
+
+### USBLC6 VBUS pin before the fuse - agree, move it
+
+Confirmed in `tools/gen_power.py`: U202 pin 5 gets the local label `VBUS` (line 140-141), which is
+the connector side of F201, and `intcheck.py` expects `U202.5` together with `F201.1`. The
+USBLC6-2SC6 has its own clamp from VBUS (pin 5) to GND; a sustained overvoltage at the connector
+would flow through that clamp with no fuse in front of it. Moving pin 5 to the fused net (with
+D201 pin 1, U201 IN, R203, C201) puts every clamp behind F201. The data pins stay as they are
+(1/3 connector side, 6/4 CH340C side); the 2 A polyfuse drops only tens of mV.
+
+One limit to write down (not a reason to do it differently): the USBLC6 clamp starts lower than
+the SMAJ5.0A (ST: VBR 6 V min at 1 mA; SMAJ5.0A: VBR 6.40-7.07 V at 10 mA). With a wrong adapter the
+small USBLC6 may still take the first current and fail before the polyfuse trips (trip time is in
+seconds); after the move that current at least runs through the fuse, so the board is no longer
+fed through a shorted part. A USB-C source without PD never exceeds 5.25 V, so this only matters
+for a broken or wrong adapter; it does not need more parts.
+
+**Done** (owner's go):
+1. `gen_power.py`: the fused net is named `VIN` (label on the rail behind F201); U202 pin 5 is on
+   `VIN`. The `VBUS` net now holds only J201 and F201 pin 1.
+2. `intcheck.py`: `U202.5` is in the VIN group. While doing that, a weakness in the checker itself
+   showed up: its "must stay apart" test compared `VBAT` and `BATN` by their short names, but
+   local nets carry the sheet path (`/Power, charger and USB/VBAT`), so those two checks were
+   skipped without a message. They now use the full names, VBUS/VIN was added, and a missing net
+   counts as an error.
+3. `07` (USB-C bullet, block diagram), NOTES.md and `tools/README.md` updated.
+Checks: field check 0 issues, ERC 1 known warning (MAX98357A exposed pad), `intcheck.py` OK,
+the corner of sheet 2 checked in the PDF render.
+
+### Still open (agreed)
+
+Unchanged: J5 pin order and SW203 ON position on samples, J4 drawing, short-shaft EC11, FPC pin 1
+and R22, thermal vias (BQ24074, WROVER land) and "+"/"-" silk in the layout; firmware for the new
+board only.
+
 ## Status of every point
 
 | # | Point | Outcome |

@@ -138,7 +138,7 @@ s.label('USB_D+', (53.34, P('U202', '1')[1]), 180)
 W(P('U202', '3'), (53.34, P('U202', '3')[1]))
 s.label('USB_D-', (53.34, P('U202', '3')[1]), 180)
 W(P('U202', '5'), (UX, UY - 7.62))
-s.label('VBUS', (UX, UY - 7.62), 90)
+s.label('VIN', (UX, UY - 7.62), 90)          # its VBUS clamp behind the fuse too
 gnd(P('U202', '2'))
 
 # ================================================================ USB serial CH340C + auto-reset (bottom left)
@@ -225,6 +225,7 @@ s.add('Battery_Management:BQ24074RGT', 'U201', BX, BY, 0, 'BQ24074RGTR',
       fields={'ref': (BX - 2.54, BY - 19.05, 0, 'right'), 'val': (BX - 2.54, BY - 16.51, 0, 'right')})
 # IN from the VIN rail, 4.7 uF
 W((91.44, VR), (BX, VR), P('U201', 'IN'))
+s.label('VIN', (116.84, VR))                  # fused rail: D201, U202 VBUS clamp, R203, BQ24074 IN
 C('C201', 152.4, VR + 5.08, '4.7uF 25V', fp=FC8, fields=lside(152.4, VR + 5.08))
 gnd(P('C201', 2))
 flag('#FLG203', (BX, VR), 0)
