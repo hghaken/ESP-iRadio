@@ -1,12 +1,16 @@
 # 07 - Integrated board (phase 2, chosen 2026-10-15)
 
-The owner wants everything on one board: no Olimex dev board, no display module, no breakouts.
-This replaces the phase 1 carrier board (the A3 schematic of 2026-10-12/15 stays in git as the
-reference for every function that is already verified on the breadboard).
+The owner wants everything on one board: no Olimex dev board, no display module, no breakouts,
+and **every part assembled by JLCPCB from stock** (D17). This replaces the phase 1 carrier board
+(the A3 schematic of 2026-10-12/15 stays in git as the reference for every function that is
+already verified on the breadboard).
 
 None of the module schematics are needed: every block comes from a chip datasheet or reference
 design. The Olimex ESP32-DevKit-LiPo is open hardware; its Rev.D KiCad files are in
 `esp-iradio/ref/` (git-ignored) and show the proven USB, charger and regulator circuits.
+
+Status: design input, reviewed 2026-10-15 (reviewer agent: architecture sound; its must-fix items
+are worked in below). Next: the schematic.
 
 ## Owner decisions (2026-10-15)
 
@@ -16,6 +20,13 @@ design. The Olimex ESP32-DevKit-LiPo is open hardware; its Rev.D KiCad files are
 | D9 | ESP32 | **ESP32-WROVER-E-N16R8** module (16 MB flash, 8 MB PSRAM); a chip-down ESP32 is not wanted (antenna and RF tuning) |
 | D10 | Battery charging | **power-path charger** (TI BQ24074): the radio runs from USB while the cell charges separately |
 | D11 | Speaker | also on battery: the MAX98357A runs from the system rail (4.4 V on USB, the cell voltage on battery) |
+| D12 | On/off switch | **slide switch on the 3.3 V LDO's enable**: off = the radio is off, also on USB; the cell still charges on USB. (The charger's SYSOFF pin would stop charging while off; not used, tied to GND.) |
+| D13 | Display position | on the front of the board: panel on ~5 mm spacers (see D16), FPC folded to pads on the same side |
+| D14 | Charge LEDs | red on CHG (charging), green on PGOOD (USB power); they light also while the radio is off |
+| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board |
+| D16 | Encoder | **recessed**: nothing sticks out of the front panel. EC11 with push switch and a short shaft, a low knob (~15-18 mm across, ~6 mm high) in a round pocket (~22 mm) of the front panel, its top flush with the panel. The EC11 body is ~6.5 mm high, so the front panel sits at least that far above the board and the display goes on ~5 mm spacers to bring its glass right behind the window. |
+| D17 | Assembly | **every part from the JLCPCB stock**, the whole board assembled by JLCPCB (SMT and THT). Only exceptions: the display panel (soldered by its FPC afterwards), the cell and the speaker |
+| D18 | Battery protection | **on the board**: DW01A + FS8205A (over-discharge, over-current, short) and a P-MOSFET against a reversed cell; works also with a pack that has its own protection |
 
 Earlier decisions that stay: one mono speaker 4-8 Ohm (D4), USB-C 5 V without PD (D5), JLCPCB with
 SMT assembly (D6), 3D-printed case around the board, PCM5102A line out, MAX98357A speaker
@@ -24,66 +35,96 @@ amplifier, microSD, EC11 encoder.
 ## Block diagram
 
 ```
-USB-C --+-- CC1/CC2 5.1k (sink)
-        +-- D+/D- -- ESD (USBLC6-2) -- CH340C -- TXD0/RXD0 (GPIO1/3)
-        |                                 +-- DTR/RTS -- auto-reset (2x NPN) -- EN, GPIO0
-        +-- VBUS -- TVS -- polyfuse -- BQ24074 IN ---- OUT = VSYS (4.4 V on USB, VBAT on battery)
-                                         |  BAT -- Li-Po (JST-PH 2)          |
-                                         |  CHG -> GPIO34, PGOOD -> GPIO36   +-- MAX98357A VDD (+ 220 uF)
-                                         |                                   +-- LDO 3.3 V 1 A -- +3V3
-        VBUS divider -> GPIO39 (USB voltage)                                     |
-        VBAT divider 470k/470k -> GPIO35 (battery voltage)                       +-- ESP32-WROVER-E
-                                                                                 +-- PCM5102A (AVDD via ferrite)
-                                                                                 +-- display VDD + backlight (LEDA)
-                                                                                 +-- microSD, encoder pull-ups
+USB-C --+-- CC1, CC2: 5.1k each (sink)
+        +-- D+/D- (A6/B6, A7/B7 tied) -- USBLC6-2 -- CH340C -- TXD0/RXD0 (GPIO1/3)
+        |                                         +-- DTR/RTS -- auto-reset (2x NPN) -- EN, GPIO0
+        +-- VBUS -- SMAJ5.0A -- polyfuse -- BQ24074 IN
+                                              |  OUT = VSYS (4.4 V on USB, VBAT on battery)
+                                              |    +-- AP7361C-33Y5 (EN = slide switch) -- +3V3
+                                              |    |      ESP32-WROVER-E, CH340C, display VDD + LEDA,
+                                              |    |      PCM5102A DVDD/CPVDD, microSD, pull-ups
+                                              |    +-- LP5907-3.3 -- +3V3A (PCM5102A AVDD)
+                                              |    +-- MAX98357A VDD (10 uF + 100 nF + 220 uF)
+                                              |    +-- charge LEDs (anodes)
+                                              |  BAT -- P-FET (reverse cell) -- JST-PH 2 -- cell
+                                              |         cell negative -- FS8205A (DW01A) -- GND
+                                              |  CHG -> GPIO34, PGOOD -> GPIO36 (via BAT54)
+        VBUS -- 33k/22k -> GPIO39 (USB voltage); VBAT -- 470k/470k (+100 nF) -> GPIO35
 ```
 
 ## Power
 
-- **USB-C input** as in the carrier design: 5.1k on CC1 and CC2, TVS (SMAJ5.0CA) and a polyfuse
-  (1.5-2 A hold). One connector now powers, charges and flashes.
-- **Charger BQ24074** (TI, VQFN-16 3x3): input OVP 10.5 V, OUT regulated to 4.4 V while USB is
-  present, battery regulation 4.2 V. Settings by resistors: ISET for the charge current
-  (~1 A for the 5000 mAh cell), ILIM for the input limit (1.5 A), EN1/EN2 = ILIM mode, CE low.
-  TS: the cell has no thermistor wire -> 10k to GND (as the datasheet allows; with a 3-wire pack
-  the NTC goes here). SYSOFF: slide switch (D12). CHG and PGOOD are open-drain: pull-ups to
-  +3V3, read on GPIO34 and GPIO36 (input-only pins, free on this board), plus a red (CHG) and a
-  green (PGOOD) LED (D14).
-- **3.3 V: LDO, 1 A class** (e.g. Diodes AP7361C-33 or TI TLV75733P), fed from VSYS. Olimex uses
-  a 500 mA LDO (HX6211) and the radio ran 14 h on battery with it; 1 A gives margin for WiFi and
-  Bluetooth peaks plus the backlight (60 mA). A switcher would gain a little runtime between
-  3.5 V and 3.3 V of the cell but puts switching noise near the DAC; the firmware already stops at
-  3.45 V (power guard). Input 10 uF, output 22 uF + 100 nF near the WROVER.
+- **USB-C** (TYPE-C-31-M-12, 16 pins): one 5.1k per CC pin (never shared), D+/D- pairs tied
+  (A6/B6, A7/B7), **SMAJ5.0A** (unidirectional: BQ24074 IN must not go below -0.3 V) and a polyfuse
+  (1.5-2 A hold). One connector powers, charges and flashes. On a 500 mA PC port the board may
+  ask for more than the port gives; the charger's input-voltage regulation (DPM) softens that, an
+  old PC port may still switch off (accepted).
+- **Charger BQ24074RGTR** (VQFN-16 3x3):
+  - OUT regulated to 4.4 V while USB is present (4.3-4.5 V), battery 4.2 V, input OVP 10.5 V;
+    the system load comes first, the cell supplements above the input limit.
+  - **EN1 to GND, EN2 to OUT** = ILIM mode (0/0 would be 100 mA, 1/1 USB suspend; EN2 not to IN:
+    7 V abs max; not to +3V3: that rail can be off).
+  - **ISET 1.1k** -> ~0.8 A charge (K_ISET ~890 A*Ohm): a 5000 mAh cell in ~6-7 h. 1 A would
+    heat the VQFN by ~65-70 C in a closed case (input FET 5.0 -> 4.4 V plus charge FET).
+  - **ILIM 1.05k** -> ~1.5 A input limit (K_ILIM ~1550 A*Ohm).
+  - **TMR 68k** -> fast-charge safety timer ~9 h (open = 5 h default, which a 5000 mAh cell
+    would hit: charging stops with a fault until USB is replugged).
+  - **TS: 10k NTC (B ~3435) on the board where the cell lies** (with a 3-wire pack: its NTC).
+    A plain 10k resistor would mean no temperature protection at all.
+  - **CE to GND** (charging enabled), **SYSOFF to GND** (D12: not used for the switch).
+  - Thermal pad with >= 5 vias into the GND plane; copper around it.
+  - CHG and PGOOD are open-drain: LEDs (red CHG, green PGOOD) with their anodes on VSYS through
+    1k, so they also light while the radio is off; each pin also reaches its GPIO through a
+    **BAT54** (cathode at the charger pin) with **100k to +3V3** at the GPIO side, so an off
+    +3V3 rail is not back-fed and the GPIO reads low when the charger pulls low.
+- **3.3 V: AP7361C-33Y5-13** (1 A, SOT-89-5, **with EN**), from VSYS. EN = slide switch MSK12C02
+  (SPDT: ON to VSYS, OFF to GND) plus 100k to GND. Dropout ~0.36 V at 1 A: a 3.45 V cell at a
+  0.5 A WiFi/BT peak still gives ~3.15 V (ESP32 min 3.0 V; the firmware's power guard stops at
+  3.45 V). ~0.3 W at 4.4 V in: SOT-89 with copper. Capacitors: 10 uF in, 10 uF at the LDO out,
+  22 uF + 100 nF at the WROVER 3V3 pin. A buck-boost is not needed.
+- **+3V3A for the DAC: LP5907-3.3** (TPLP5907MFX-3.3, 300 mA, SOT-23-5, low noise) from VSYS, EN
+  tied to the LDO's EN net (off with the switch). Replaces the ferrite from the WiFi rail.
 - **Speaker supply** = VSYS directly (MAX98357A 2.5-5.5 V): 4.4 V on USB (~2.4 W in 4 Ohm),
-  3.5-4.2 V on battery (~1.3-1.8 W). 10 uF + 100 nF at the pins, 220 uF bulk. The BQ24074 input
-  limit (1.5 A) covers ESP32 + backlight + speaker peaks; above that the cell supplements.
-- **Measurement**: VBAT -> 470k/470k -> GPIO35 (as on the Olimex board, the firmware calibration
-  stays). VBUS -> 22k/22k -> GPIO39 (x2; the Olimex had x1.4545 on its diode-fed 5 V rail):
-  firmware constant `PWR_CAL_PERMILLE` changes. PGOOD and CHG give "on USB" and "charging"
-  without the ADC.
+  3.5-4.2 V on battery (~1.3-1.8 W). 10 uF + 100 nF at the pins, 220 uF bulk. Its SD_MODE pull-up
+  (1M) goes to **+3V3** (not VSYS): with the switch off the amplifier is then really off
+  (VSYS would leave ~0.3 V on SD_MODE and keep it on). 1M against the internal 100k gives 0.30 V,
+  inside the (L+R)/2 window (0.16-0.77 V); GPIO2 low = off.
+- **Battery protection (D18)**: DW01A + FS8205A in the cell's negative lead (standard one-cell
+  protection: over-discharge ~2.4-2.5 V, over-charge 4.3 V, over-current, short). Reverse cell:
+  a P-MOSFET (DMG2305UX) in the positive lead between the JST connector and the charger's BAT
+  (gate to GND through 10k-100k, conducts both ways with a correct cell, blocks a reversed one).
+  Big +/- on the silkscreen next to the JST-PH (pin order is not standardised between vendors).
+- **Measurement**: VBAT -> 470k/470k -> GPIO35 with **100 nF** at the pin (the source is too
+  high-ohmic for the ADC sample capacitor; the Olimex board has the same). VBUS -> **33k/22k**
+  -> GPIO39 (x0.4: 2.0 V at 5 V, inside the linear 11 dB range; 22k/22k would put 2.5 V there,
+  above it). Firmware: `PWR_CAL_PERMILLE` ~2500 (was 1457), `BAT_CAL_PERMILLE` stays.
+  PGOOD and CHG give "on USB" and "charging" without the ADC.
 
 ## USB serial and boot
 
-- **CH340C** (SOP-16, internal clock; or the CH340X/CH340K of the Olimex boards) on D+/D-, its
-  TXD to GPIO3 (RXD0) and RXD to GPIO1 (TXD0); supplied from +3V3 (V3 pin tied to VCC at 3.3 V).
-  The PC sees the same CH340 as today, so `scripts/flash_usb.ps1` and the USB update in the
-  firmware keep working.
-- **Auto-reset**: the usual two-NPN circuit (DTR/RTS -> EN and GPIO0) as on every ESP32 dev board;
-  EN with 10k pull-up and 1 uF to GND (clean power-on reset); GPIO0 with 10k pull-up.
-- **Buttons**: RESET (EN) and BOOT (GPIO0), small SMD tact switches (needed only for recovery).
+- **CH340C** (SOP-16, internal clock) on D+/D- (after the USBLC6-2), supplied from +3V3 with V3
+  tied to VCC plus 100 nF; its TXD to GPIO3 (RXD0), RXD to GPIO1 (TXD0); 3.3 V levels, so no
+  isolation diodes (the Olimex needed them because its CH340X ran from 5 V). With the switch off
+  the CH340C is unpowered too (flashing needs the radio switched on). The PC sees the same CH340
+  as today: `scripts/flash_usb.ps1` and the firmware's USB update keep working.
+- **Auto-reset**: the standard two-NPN circuit (DTR/RTS -> EN and GPIO0, MMBT3904); EN with 10k
+  pull-up and 1 uF to GND; GPIO0 with 10k pull-up.
+- **Buttons**: RESET (EN) and BOOT (GPIO0), TS-1187A SMD tact switches (recovery only).
 
 ## ESP32-WROVER-E-N16R8
 
-- KiCad symbol and footprint: `RF_Module:ESP32-WROVER-E` (check the library), antenna at a board
-  edge with the keep-out from the Espressif hardware design guidelines (no copper, no parts, no
-  case metal under and beside the antenna).
-- Strapping: GPIO12 (MTDI) must be **low at boot** (high selects 1.8 V flash and the module will
-  not boot): no pull-up, nothing that drives it at reset. GPIO0 high (boot), GPIO2 low or floating
-  (the MAX98357A SD_MODE network reads low), GPIO5 high (LCD_CS pull-up), GPIO15 open.
+- KiCad `RF_Module:ESP32-WROVER-E` (check the library); antenna at a board edge with the keep-out
+  from the Espressif hardware design guidelines (no copper on any layer, no parts, no case metal
+  under and beside the antenna).
+- Strapping (reviewed): GPIO12 (MTDI) **must be low at boot** (high selects 1.8 V flash): nothing
+  connected (optionally burn the VDD_SDIO eFuse to 3.3 V). GPIO0 10k up; GPIO2 low at reset (its
+  internal pull-down beats the MAX98357A network, also in download mode); GPIO5 10k up (LCD_CS);
+  GPIO15 open.
 - PSRAM: 8 MB on the module, the ESP32 maps 4 MB directly (the rest only through the himem API):
   same as today for the firmware. Flash: 16 MB -> a new partition table with larger OTA slots
-  (one full flash over USB when the board is new; the radio's settings start empty).
-- Decoupling: 22 uF + 100 nF at the 3V3 pin.
+  (one full flash over USB on a new board; settings start empty).
+- **PCB: 4 layers** (layer 2 a solid GND plane): RF keep-out, audio and the charger's heat. Cheap
+  at JLCPCB.
 
 ## Display: bare panel on the board (D8)
 
@@ -95,7 +136,7 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 |---|---|---|
 | 1 | GND | GND |
 | 2 | LEDK | backlight cathode -> driver |
-| 3 | LEDA | `+3V3` |
+| 3 | LEDA | `+3V3` (+ 10 uF) |
 | 4 | VDD | `+3V3` (2.5-3.3 V, ~8 mA) + 100 nF + 10 uF |
 | 5, 6 | GND | GND |
 | 7 | D/C | `LCD_DC` GPIO22 |
@@ -105,24 +146,26 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 | 11 | RESET | `LCD_RST` GPIO21 |
 | 12 | GND | GND |
 
-- Backlight: 3 white LEDs in parallel, Vf 2.8-3.2 V, 60 mA typical (90 mA max). Driver as on the
-  module (low side), but with a logic-level N-MOSFET: LEDK -> 5.6 Ohm -> AO3400A drain, source GND,
-  gate = `LCD_BL` GPIO26 (PWM, the firmware dims it) with 100k to GND (dark until the firmware
-  runs). The datasheet recommends a constant-current driver (AW9364); the resistor works on the
-  module and is cheaper.
-- Pads: 12 x 0.7 mm pitch, ~0.4 x 2.0 mm, in a row matching the FPC end (11.4 mm wide); the FPC is
-  hand-soldered (or hot-bar) after the SMT assembly. Mechanics: FPC bend zone 10 mm, panel
-  30.07 x 37.43 x 1.56 mm, active area 27.97 x 32.63 mm (see the drawing in the panel spec).
-  The panel sits on the front of the board (D13).
+- Backlight: 3 white LEDs in parallel, Vf 2.8-3.2 V, 60 mA typical (90 mA max). Low-side driver as
+  on the module but with a logic-level N-MOSFET: LEDK -> R_BL -> AO3400A drain, source GND, gate =
+  `LCD_BL` GPIO26 (PWM) with 100k to GND (dark until the firmware runs). **R_BL in 0603, value
+  from the real panel's Vf** (5.6 Ohm on the module; from 3.3 V that gives 18-89 mA across the
+  Vf spread): measure the delivered panel before ordering. Firmware: backlight PWM to >= 20 kHz
+  (5 kHz current pulses on +3V3 can be heard through the amplifier).
+- Pads: 12 x 0.7 mm pitch, ~0.4 x 2.0 mm, in a row matching the FPC end (11.4 mm wide), soldered
+  by hand (or hot-bar) after the assembly. A panel on the front with its FPC folded back mirrors
+  the contact side: **check pin 1 and the contact side with a paper mock-up** before the pads are
+  placed. Panel 30.07 x 37.43 x 1.56 mm, active area 27.97 x 32.63 mm, FPC bend zone 10 mm (see
+  the drawing in the panel spec).
 - Sources: lcdwiki "1.69inch IPS Module" (MSP1691) with the panel spec SPEC_UN169T-IG01 and the
   module schematic (QDtech), 2026-10-15.
 
 ## Unchanged blocks (verified on the breadboard)
 
 - PCM5102APWR line out (I2S BCK GPIO27, LRCK GPIO14, DATA GPIO13; SCK to GND, XSMT pull-up, FMT/
-  FLT/DEMP low; 470R + 2.2 nF per output; 3.5 mm jack J5), AVDD through ferrite FB1 (`+3V3A`).
-- MAX98357A speaker amplifier on the same I2S nets; SD_MODE = `AMP_SD` GPIO2 with 1M to its VDD
-  (now VSYS), GAIN open (9 dB); speaker J6.
+  FLT/DEMP low; 470R + 2.2 nF per output; 3.5 mm jack), AVDD now from the LP5907 (`+3V3A`).
+- MAX98357A speaker amplifier on the same I2S nets; SD_MODE = `AMP_SD` GPIO2 with 1M to +3V3,
+  GAIN open (9 dB); speaker on a JST-PH 2.
 - microSD socket (CS GPIO4, MISO GPIO19, shared SCK/MOSI), pull-ups, 10 uF + 100 nF.
 - EC11 encoder: A GPIO32, B GPIO33, switch GPIO25, each 10k pull-up + 100 nF (tested smooth).
 
@@ -142,29 +185,54 @@ same pin order as the owner's ZJY169S0800TG01 module; confirm on the panel that 
 | 18, 19, 23 | SPI SCK, MISO, MOSI | display + microSD |
 | 21, 22 | `LCD_RST`, `LCD_DC` | |
 | 25, 32, 33 | encoder switch, A, B | |
-| 26 | `LCD_BL` | backlight PWM |
-| 34 | `CHG` (BQ24074) | input only, pull-up to +3V3 |
-| 35 | battery voltage | 470k/470k divider |
-| 36 | `PGOOD` (BQ24074) | input only, pull-up to +3V3 |
-| 39 | USB voltage | 22k/22k divider |
+| 26 | `LCD_BL` | backlight PWM (>= 20 kHz) |
+| 34 | `CHG` (BQ24074, via BAT54) | input only, 100k pull-up to +3V3 |
+| 35 | battery voltage | 470k/470k + 100 nF |
+| 36 | `PGOOD` (BQ24074, via BAT54) | input only, 100k pull-up; ESP32 errata: glitches low ~80 ns while ADC/WiFi run -> poll with debounce, no interrupt |
+| 39 | USB voltage | 33k/22k |
 
-Firmware changes for this board: `PWR_CAL_PERMILLE` (new divider), charge status from GPIO34/36,
-a 16 MB partition table; everything else (pins, I2S, SPI, encoder) stays.
+Firmware changes for this board: `PWR_CAL_PERMILLE` ~2500, charge state from GPIO34/36 (polled),
+backlight PWM >= 20 kHz, a 16 MB partition table; pins, I2S, SPI and encoder stay.
 
-## Owner decisions on the details (2026-10-15)
+## Parts and JLCPCB stock (D17; JLCPCB Tools database of 2026-10-11)
 
-| # | Question | Choice |
-|---|---|---|
-| D12 | On/off switch | **yes**: a slide switch on the BQ24074 SYSOFF pin (off = the cell is cut from the system, no drain; with USB plugged in the radio still runs and the cell still charges) |
-| D13 | Display position | **on the front of the board**: panel on spacers or double-sided tape, FPC folded to the pads on the same side |
-| D14 | Charge LEDs | **yes**: red on CHG (charging), green on PGOOD (USB power), besides the screen |
-| D15 | Board size | as small as reasonable, about **60 x 80 mm**; the case is designed around the board |
-| D16 | Encoder | **recessed**: nothing may stick out of the front panel. EC11 with push switch and a shorter shaft (the carrier footprint is for H20 mm), a low knob (about 15-18 mm across, ~6 mm high) in a round pocket in the front panel (about 22 mm across) with its top flush with the panel. The EC11 body is ~6.5 mm high, so the front panel sits at least that far above the board and the display goes on ~5 mm spacers to bring its glass right behind the window. Alternative if the owner prefers a flat front: a thumbwheel encoder on a case edge. |
+| Part | LCSC | Stock | Note |
+|---|---|---|---|
+| ESP32-WROVER-E-N16R8 | C529589 | 1515 | extended |
+| BQ24074RGTR | C54313 | 816 | extended; fallback BQ24073RGTR C15220 (33782 in stock, same 4.4 V OUT, 6.6 V OVP, TD pin instead of ITERM) |
+| CH340C | C84681 | 143702 | |
+| MAX98357AETE+T | C910544 | 28887 | |
+| PCM5102APWR | C107671 | 1570 | |
+| AP7361C-33Y5-13 (SOT-89-5, EN) | C460397 | 5968 | 3.3 V 1 A |
+| TPLP5907MFX-3.3 | C5370990 | 194731 | DAC supply |
+| DW01A | C351410 | 117507 | cell protection |
+| FS8205A | C2830320 | 55880 | protection FETs |
+| DMG2305UX-7 | C5261054 | 9017 | reverse-cell P-FET |
+| BAT54 (single) | to pick | - | 2x, CHG/PGOOD isolation (BAT54C/S in stock as pairs) |
+| AO3400A | C20917 | 1071707 | basic; backlight |
+| MMBT3904 | C7420353 | 5024877 | preferred; auto-reset |
+| USBLC6-2SC6 | C2827654 | 105627 | USB ESD |
+| SMAJ5.0A | C113952 | 602831 | VBUS TVS |
+| NTC 10k B3435 0603 (NCP18XH103F03RB) | C13564 | 206858 | TS |
+| TYPE-C-31-M-12 | C165948 | 90528 | USB-C 16 pins |
+| microSD push-push (TF-01A) | C91145 | 205737 | footprint to match |
+| EC11E with switch, short shaft | e.g. C470754 EC11E15244B2 | 6196 | THT; confirm shaft length/type for D16 |
+| MSK12C02 slide switch | C431540 | 166028 | on/off |
+| TS-1187A-B-A-B | C318884 | 498821 | basic; RESET, BOOT |
+| JST S2B-PH-K-S (side) / B2B-PH-K-S (top) | C173752 / C131337 | 193749 / 87147 | cell, speaker |
+| PJ-320D 3.5 mm jack (SMD) | C431535 | 60364 | line out |
+| polyfuse, ferrites, R/C, LEDs | basic parts where possible | | picked in the schematic step |
+
+Stock is a snapshot; JLCPCB Tools checks it again when the BOM is made. Not assembled: the display
+panel (hand-soldered FPC), the cell, the speaker.
 
 ## Sources
 
-- TI BQ24072/3/4/5/9 datasheet (ZHCSIF0N / SLUSA19): BQ24074 OUT 4.4 V typ (4.3-4.5 V), OVP 10.5 V.
+- TI BQ24072/3/4/5/9 datasheet (ZHCSIF0N / SLUSA19): BQ24074 OUT 4.4 V typ (4.3-4.5 V), OVP 10.5 V;
+  ISET/ILIM/TMR/EN1-EN2/SYSOFF/TS from the same datasheet (values as given by the review; check
+  against the PDF in the schematic step).
 - Panel: lcdwiki.com/1.69inch_IPS_Module (SPEC_UN169T-IG01.pdf, 1.69IPS_MSP1691_Schematic.pdf).
 - Olimex ESP32-DevKit-LiPo Rev.D hardware files (github.com/OLIMEX/ESP32-DevKit-LiPo): CH340X,
   BL4054B charger, HX6211 3.3 V LDO.
 - Espressif ESP32-WROVER-E datasheet and hardware design guidelines (antenna keep-out, strapping).
+- JLCPCB parts: the JLCPCB Tools plugin database (`current-parts-fts5.db`, 2026-10-11).
