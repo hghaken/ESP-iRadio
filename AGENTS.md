@@ -927,7 +927,8 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
 (2026-10-11) about twice that is expected, not measured yet.
 
 ## Open points
-- Speaker: the MAX98357A plays (wired and heard on 2026-10-15, v1.37, checkbox "Speaker").
+- Speaker: the MAX98357A plays (wired and heard on 2026-10-15, v1.37; the "Speaker" checkbox
+  silences and restores it while the line output keeps playing, also verified).
   The PAM8403 mini board is a spare (analog, no shutdown pin). Details and wiring in
   `docs/speaker-output.md`. Maybe a separate output choice instead of the Bluetooth toggle; the
   KiCad design could swap its PAM8302A for a MAX98357A.

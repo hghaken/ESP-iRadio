@@ -32,7 +32,8 @@ Recommendation given: the MAX98357A for a single built-in speaker (no analog wir
 switched off). Built 2026-10-15 (v1.37): web checkbox "Speaker" (on = the MAX98357A plays with
 the line output, off = line output only; both silent while Bluetooth is on); GPIO2 low = off,
 released = on, switched on after I2S starts and off before it stops. Wired on the breadboard
-the same day (GAIN open, 9 dB) and heard playing next to the line output. The KiCad design still has the analog route (PCM5102APWR + PAM8302A); a
+the same day (GAIN open, 9 dB) and heard playing next to the line output; the checkbox
+silences and restores the speaker while the line output keeps playing. The KiCad design still has the analog route (PCM5102APWR + PAM8302A); a
 MAX98357A there would save the PAM8302A and its input network.
 
 Goal: besides the Bluetooth headphones, add (1) a line output on RCA/3.5 mm for an amplifier or active
