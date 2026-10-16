@@ -79,6 +79,11 @@ the revision history of the actual KiCad project.
   RCA outputs L/R (J8, LCSC C53431212), H8, new floor plan display / encoder / connectors on a
   122 x 72 mm board, spread to 122 x 76 mm the same day for hand soldering (see "Layout"). Schematic: ERC 1 known warning, `intcheck.py` OK (122 parts,
   117 nets). Board: DRC 0 errors, 0 unconnected, 0 parity issues.
+- 2026-10-16 evening: silkscreen references placed per Grok round 9 (every one clearly nearer its
+  own part, none on a body); USB-C J201 0.5 mm past the bottom edge and its 3D model aligned on
+  its own pegs; cell connector J202 to the right edge beside the cell protection; speaker J6 and
+  switch SW203 moved left into J202's old place (see "Layout"). Board re-routed: DRC 0 errors,
+  0 unconnected, 0 parity issues. Schematic unchanged.
 
 ## Layout (Rev C, 2026-10-16: hand assembly)
 
@@ -161,6 +166,9 @@ Review history: Rev B (80 x 60 with the bare panel, then 90 x 60 with the module
 Grok and Claude in rounds 4-6 (`grok-bevindingen.md`, `claude-bevindingen.md`); Rev C in round 7:
 RCA pinout confirmed from the maker's drawing, the switch moved off the USB-C, two tight 1206
 pairs opened to 5.3 mm, F201 nudged; the J5 orientation was questioned and is right as placed.
+Round 8 (spread board): nothing to move, C207 moved to the ADC pin. Round 9 (C207, LEDs, 3D,
+silkscreen): nothing to move, the optional silk nudge done. Not reviewed yet: the connector moves
+of the evening of 2026-10-16 (J201 0.5 mm over the edge, J202 on the right edge, J6/SW203 left).
 
 Still to do on the layout (before ordering):
 - RCA jack J8 (CAX AV-210-WR): footprint and 3D model from EasyEDA; the maker's drawing (Zhejiang
@@ -313,3 +321,5 @@ symbol (KiCad 9: angle 0 justify left, 90 left, 180 right, 270 right).
 
 - Rev A (2026-10-11 .. 10-15): carrier board for the Olimex ESP32-DevKit-LiPo, one A3 sheet.
 - Rev B (2026-10-15): integrated board, two A3 sheets (see Schematic (Rev B)).
+- Rev C (2026-10-16): same schematic, board for hand assembly (1206, RCA outputs, 122 x 76 mm,
+  display / encoder / connectors from top to bottom; see Layout).

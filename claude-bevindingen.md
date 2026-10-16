@@ -4,6 +4,23 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Since round 9 (not reviewed yet)
+
+Owner's changes on the evening of 2026-10-16, each re-routed (Freerouting) with DRC 0 errors,
+0 unconnected, 0 parity issues; schematic unchanged:
+1. USB-C J201 at (77.0, 72.85): the receptacle front (F.Fab, 3.65 mm below the origin) 0.5 mm
+   past the bottom edge, to sit flush with the case wall; the front shell-tab pads end 1.05 mm
+   inside the edge. Its 3D model was 2.2 mm behind the part (aligned on the EasyEDA footprint's
+   pegs); it is now aligned on the pegs inside the model (offset y -0.80, `tools/fp3d.py`).
+2. Cell connector J202 (JST-PH vertical) from the bottom edge to the right edge: (119.0, 27.5),
+   rotation 270, pin 1 (+) on top, beside U204/U205/Q203 (the cell path is much shorter); R216 to
+   x 113.0 for room; silk "+" above, "-" and "CELL" below.
+3. Speaker J6 to (86.5, 72.2) and switch SW203 to (96.0, 72.62), into J202's old place; J6 stays
+   between the USB-C and the switch so a plug does not cover the switch.
+
+Worth a look: the cell path from J202 to Q203/U204 and BATN, the USB-C tabs against the edge, and
+the switch next to J6.
+
 ## Round 9 closed
 
 Grok measured `e6b5f01`: nothing has to move before an order. C207 sits 3.39 mm of track from IO35

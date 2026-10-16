@@ -987,11 +987,12 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   passives, RCA outputs L/R (J8) next to the 3.5 mm jack, a 122 x 76 mm board with display,
   encoder and connectors from top to bottom (parts left and right of the encoder; USB-C 0.5 mm past
   the bottom edge, the cell connector on the right edge); DRC 0 errors /
-  0 unconnected / 0 parity issues; review round 7 pending. Order files in
+  0 unconnected / 0 parity issues; reviewed by Grok in rounds 7-9 (nothing left to move; the
+  connector moves of the evening of 2026-10-16 are not reviewed yet). Order files in
   `KiCad/esp-iradio/jlcpcb/` (made by `tools/jlcfab.py`): Gerber zip (PCBs + stencil at JLCPCB),
   `esp-iradio_lcsc_order.csv` (parts for 2 boards at LCSC, ~$60 with the display), assembly
-  drawing PDF. Nothing ordered yet. Still open (`KiCad/esp-iradio/NOTES.md`, "Layout"): the RCA
-  jack's pinout on the part, a last look at the routing by the owner, PJ-320D pin order and
+  drawing PDF. Nothing ordered yet. Still open (`KiCad/esp-iradio/NOTES.md`, "Layout"): a meter
+  check of the RCA jack's pinout on the part, a last look at the routing by the owner, PJ-320D pin order and
   MSK12C02 ON position on samples, the EC11 shaft length for a front panel ~15 mm above the board,
   the module's pin 1 and pin headers, and STEP/DXF for the case. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
   charge state on GPIO34/36, backlight PWM >= 20 kHz, the 320 x 240 display, a 16 MB partition
