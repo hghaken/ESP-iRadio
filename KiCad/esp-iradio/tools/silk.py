@@ -4,6 +4,7 @@ F.Fab assembly layer keeps every reference); board markings (title, cell/speaker
 meaning, recovery pad names, USB). Saves the board."""
 import os
 import pcbnew
+import placement
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PCB = os.path.join(os.path.dirname(HERE), 'esp-iradio.kicad_pcb')
@@ -52,6 +53,11 @@ def pad_xy(ref, num):
     raise KeyError((ref, num))
 
 
+def fp_xy(ref):
+    q = board.FindFootprintByReference(ref).GetPosition()
+    return pcbnew.ToMM(q.x) - OX, pcbnew.ToMM(q.y) - OY
+
+
 # cell and speaker polarity (pin 1 = +)
 for ref in ('J202', 'J6'):
     x1, y1 = pad_xy(ref, '1')
@@ -67,14 +73,20 @@ x, y = pad_xy('D202', '1')
 text('CHG', x - 2.6, y, 0.8, 0, pcbnew.GR_TEXT_H_ALIGN_RIGHT)
 x, y = pad_xy('D203', '1')
 text('PWR', x - 2.6, y, 0.8, 0, pcbnew.GR_TEXT_H_ALIGN_RIGHT)
-text('5V', 35.5, 49.3, 0.8)
-text('ON/OFF ?', 48.5, 53.4, 0.8)                 # ON side: check on a sample (NOTES.md)
+x, y = fp_xy('J201')
+text('5V', x, y - 6.6, 0.8)
+x, y = fp_xy('SW203')
+text('ON/OFF ?', x, y - 3.2, 0.8)                # ON side: check on a sample (NOTES.md)
+# RCA jacks: white = L at pad 2 (x -9 from the origin), red = R at pad 4 side (x +5)
+x, y = fp_xy('J8')
+text('L', x - 9.0, y - 3.5, 1.0)
+text('R', x + 5.0, y - 3.5, 1.0)
 # recovery pads
 for ref, name in (('TP203', 'EN'), ('TP204', 'IO0'), ('TP205', 'TX'), ('TP206', 'RX'), ('TP207', 'GND')):
     x, y = pad_xy(ref, '1')
     text(name, x, y + 1.9, 0.8)
 # title
-text('ESP iRadio Rev B', 74.0, 2.4, 0.9)
+text('ESP iRadio Rev C', placement.TITLE[0], placement.TITLE[1], 0.9)
 
 board.Save(PCB)
 print('silkscreen updated')

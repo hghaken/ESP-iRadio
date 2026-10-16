@@ -27,29 +27,29 @@ OUT = os.path.join(PRJ, 'jlcpcb')
 CLI = r'C:\Program Files\KiCad\9.0\bin\kicad-cli.exe'
 
 # plain R/C without an LCSC field: (footprint name, value) -> LCSC (JLCPCB basic unless noted)
-PASSIVES = {
-    ('R_0603_1608Metric', '0R'): 'C21189',
-    ('R_0603_1608Metric', '22R'): 'C23345',
-    ('R_0603_1608Metric', '100R'): 'C22775',
-    ('R_0603_1608Metric', '470R'): 'C23179',
-    ('R_0603_1608Metric', '1k'): 'C21190',
-    ('R_0603_1608Metric', '1.1k'): 'C22764',        # preferred
-    ('R_0603_1608Metric', '1.13k'): 'C22833',       # extended (BQ24074 ILIM, 1 %)
-    ('R_0603_1608Metric', '5.1k'): 'C23186',
-    ('R_0603_1608Metric', '10k'): 'C25804',
-    ('R_0603_1608Metric', '68k'): 'C23231',
-    ('R_0603_1608Metric', '100k'): 'C25803',
-    ('R_0603_1608Metric', '220k'): 'C22961',
-    ('R_0603_1608Metric', '330k'): 'C23137',
-    ('R_0603_1608Metric', '470k'): 'C23178',
-    ('R_0603_1608Metric', '1M'): 'C22935',
-    ('C_0603_1608Metric', '2.2nF'): 'C1604',        # 50 V X7R
-    ('C_0603_1608Metric', '100nF'): 'C14663',       # 50 V X7R
-    ('C_0603_1608Metric', '1uF'): 'C15849',         # 50 V X5R
-    ('C_0603_1608Metric', '2.2uF'): 'C23630',       # 16 V X5R (DAC, 3.3 V)
-    ('C_0805_2012Metric', '4.7uF 25V'): 'C1779',    # 25 V X5R
-    ('C_0805_2012Metric', '10uF'): 'C15850',        # 25 V X5R
-    ('C_0805_2012Metric', '22uF'): 'C45783',        # 25 V X5R
+PASSIVES = {                                     # Rev C: 1206 (hand assembly)
+    ('R_1206_3216Metric', '0R'): 'C17888',
+    ('R_1206_3216Metric', '22R'): 'C17958',
+    ('R_1206_3216Metric', '100R'): 'C17901',
+    ('R_1206_3216Metric', '470R'): 'C2933707',
+    ('R_1206_3216Metric', '1k'): 'C4410',
+    ('R_1206_3216Metric', '1.1k'): 'C2933580',
+    ('R_1206_3216Metric', '1.13k'): 'C5204018',     # BQ24074 ILIM, 1 %
+    ('R_1206_3216Metric', '5.1k'): 'C2933721',
+    ('R_1206_3216Metric', '10k'): 'C17902',
+    ('R_1206_3216Metric', '68k'): 'C2933748',
+    ('R_1206_3216Metric', '100k'): 'C17900',
+    ('R_1206_3216Metric', '220k'): 'C2933643',
+    ('R_1206_3216Metric', '330k'): 'C17929',
+    ('R_1206_3216Metric', '470k'): 'C2933709',
+    ('R_1206_3216Metric', '1M'): 'C17927',
+    ('C_1206_3216Metric', '2.2nF'): 'C9191',         # X7R (1 kV rating, the common 1206 part)
+    ('C_1206_3216Metric', '100nF'): 'C24497',        # 50 V X7R
+    ('C_1206_3216Metric', '1uF'): 'C1848',           # 50 V X7R
+    ('C_1206_3216Metric', '2.2uF'): 'C50254',        # 50 V X7R
+    ('C_1206_3216Metric', '4.7uF 25V'): 'C29823',    # 50 V X7R
+    ('C_1206_3216Metric', '10uF'): 'C13585',         # 50 V X5R
+    ('C_1206_3216Metric', '22uF'): 'C12891',         # 25 V X5R
 }
 
 # rotation corrections of the JLCPCB Tools plugin (jlcpcb/corrections.db) that apply to KiCad's own
@@ -146,6 +146,25 @@ with open(os.path.join(OUT, 'esp-iradio_cpl.csv'), 'w', newline='', encoding='ut
     w.writerow(['Designator', 'Mid X', 'Mid Y', 'Layer', 'Rotation'])
     w.writerows(cpl)
 print('BOM: %d lines, %d parts; CPL: %d placements' % (len(groups), sum(len(g['refs']) for g in groups.values()), len(cpl)))
+
+# hand assembly (Rev C): LCSC order list for BOARDS boards plus spares, the parts the board does not
+# carry (display module, headers, antenna, encoder) listed separately in ../jlcpcb/README.md
+BOARDS = int(os.environ.get('BOARDS', '2'))
+with open(os.path.join(OUT, 'esp-iradio_lcsc_order.csv'), 'w', newline='', encoding='utf-8') as f:
+    w = csv.writer(f)
+    w.writerow(['LCSC Part Number', 'Quantity', 'Per board', 'Comment', 'Designator', 'Footprint'])
+    for key, g in sorted(groups.items(), key=lambda kv: refkey(kv[1]['refs'][0])):
+        if not key[0]:
+            continue
+        n = len(g['refs'])
+        spare = max(2, -(-n * BOARDS // 5)) if key[1].startswith(('R_', 'C_')) else 0 if key[0] == 'C701352' else 1
+        w.writerow([key[0], n * BOARDS + spare, n, ' / '.join(g['vals']), ','.join(g['refs']), key[1]])
+print('LCSC order list for %d boards: esp-iradio_lcsc_order.csv' % BOARDS)
+# assembly drawing for hand assembly: every reference (F.Fab), pad outlines, silkscreen and outline
+subprocess.run([CLI, 'pcb', 'export', 'pdf', '--layers', 'F.Fab,F.Silkscreen,Edge.Cuts', '--mode-single',
+                '--sp', '--ibt', '--black-and-white', '-o', os.path.join(OUT, 'esp-iradio_assembly.pdf'), PCB],
+               check=True, capture_output=True)
+print('assembly drawing: esp-iradio_assembly.pdf')
 if missing:
     print('no LCSC number (not placed by JLCPCB):', ' '.join(missing))
 

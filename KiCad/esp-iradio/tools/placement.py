@@ -1,85 +1,84 @@
-"""Placement of the integrated board: ref -> (x, y, rotation in degrees), board coordinates in mm with the
-origin at the top-left corner of the 90 x 60 mm outline, seen from the front (top side). Every part
-is on the top side.
+"""Placement of the integrated board, Rev C (hand assembly, 2026-10-16): ref -> (x, y, rotation in
+degrees), board coordinates in mm with the origin at the top-left corner of the 122 x 72 mm outline,
+seen from the front (top side). Every part is on the top side.
 
-Floor plan (NOTES.md "Layout"):
-- display module HS20S010B (63.2 x 36.2 mm PCB, 2.0in glass) top left, plugged into two 1x10 sockets
-  (J7 = CN2 left, J3 = CN1 right, 8.5 mm high); its four M2.5 holes sit on H1, H5, H6, H7. Only parts
-  lower than ~7 mm under the module (everything except the connectors and the encoder);
-- WROVER-IE horizontal under the module, U.FL end left (reachable with the module unplugged);
-- encoder right of the module, microSD at the right edge, jack at the left edge, USB-C, charge LEDs,
-  slide switch, cell and speaker connectors at the bottom edge."""
+Floor plan, top to bottom (owner's wish): display, encoder, connectors.
+- display module HS20S010B (63.2 x 36.2 mm PCB, 320 px axis horizontal) centred at the top, plugged
+  into two 1x10 sockets (J7 = CN2 left, J3 = CN1 right, 8.5 mm high); its four M2.5 holes on H1, H5,
+  H6, H7. Under it (~11 mm free): the WROVER-IE (U.FL end left), its decoupling, the SPI series
+  resistors, the display decoupling;
+- left strip beside the display: 3.3 V regulator, RESET/BOOT buttons, recovery pads;
+- right strip beside the display: charger BQ24074 and the cell protection;
+- encoder SW1 centred under the display; left of it the DAC with its filters and LDO and the encoder
+  RC filters, right of it USB/CH340 with auto-reset, the amplifier and the charge LEDs; the microSD
+  pull-ups between the encoder and the card socket;
+- bottom edge from left: RCA L/R (J8), 3.5 mm jack (J5), microSD (J4, under the encoder), USB-C
+  (J201), on/off switch (SW203), cell (J202), speaker (J6); M3 holes in the four corners."""
 
-W, H = 90.0, 60.0
-MOD_X, MOD_Y = 0.5, 0.7                        # display module PCB top-left corner on the board
+W, H = 122.0, 72.0
+MOD_X, MOD_Y = (W - 63.2) / 2, 1.0             # display module PCB top-left corner on the board
 # outlines drawn on User.Drawings: module PCB, glass, active area (datasheet HS20S010B, mechanical drawing)
 OUTLINES = [
     ('display module HS20S010B 63.2 x 36.2 (on 8.5 mm sockets)', (MOD_X, MOD_Y, MOD_X + 63.2, MOD_Y + 36.2)),
     ('glass 51.8', (MOD_X + 5.94, MOD_Y, MOD_X + 5.94 + 51.8, MOD_Y + 36.2)),
     ('active area 40.86 x 30.6', (MOD_X + 63.2 - 8.04 - 40.86, MOD_Y + 2.8, MOD_X + 63.2 - 8.04, MOD_Y + 2.8 + 30.6)),
 ]
+TITLE = (17.0, 3.6)              # the title text (silk.py), top of the left strip
+ENC_SHAFT = (W / 2, 45.0)        # encoder shaft centre (case: knob hole)
 
 P = {
-    # mechanics: H2-H4 fix the board (M3), H1/H5/H6/H7 carry the display module (M2.5)
+    # mechanics: H2-H4 and H8 fix the board (M3, corners), H1/H5/H6/H7 carry the display module (M2.5)
     'H1': (MOD_X + 3.0, MOD_Y + 2.8, 0), 'H5': (MOD_X + 60.2, MOD_Y + 2.8, 0),
     'H6': (MOD_X + 3.0, MOD_Y + 33.4, 0), 'H7': (MOD_X + 60.2, MOD_Y + 33.4, 0),
-    'H2': (86.5, 3.5, 0), 'H3': (3.5, 56.5, 0), 'H4': (86.5, 56.5, 0),
+    'H8': (3.5, 3.5, 0), 'H2': (W - 3.5, 3.5, 0), 'H3': (3.5, H - 3.5, 0), 'H4': (W - 3.5, H - 3.5, 0),
     # display module sockets: CN2 pin 1 at the bottom (pins upwards), CN1 pin 1 at the top
     'J7': (MOD_X + 2.0, MOD_Y + 29.53, 180), 'J3': (MOD_X + 61.2, MOD_Y + 6.67, 0),
-    'C5': (58.0, 9.6, 90), 'C25': (58.0, 13.0, 90), 'R3': (58.0, 22.6, 90),
-    # WROVER-IE under the module, U.FL end left
-    'U3': (24.5, 17.6, 90),
-    'R8': (23.2, 5.6, 0), 'R9': (14.3, 5.6, 0), 'TP5': (26.6, 5.6, 0),
-    # 3.3 V regulator at the WROVER 3V3 pin (bottom row x 14.3, y 26.6)
-    'C210': (15.0, 31.4, 90), 'C211': (15.9, 28.6, 0),
-    'U206': (18.9, 32.0, 0), 'C209': (23.4, 29.4, 0), 'C208': (23.4, 32.4, 0), 'R221': (17.4, 58.4, 0),
-    'TP4': (26.9, 31.6, 0),
-    'SW202': (10.2, 30.4, 0), 'SW201': (10.2, 35.8, 0),        # BOOT, RESET (under the module edge)
-    # encoder right of the module, its RC filters below it; microSD at the right edge
-    'SW1': (69.0, 12.5, 0),                                   # EC11, shaft at (76.5, 15)
-    'R10': (65.4, 31.0, 0), 'R11': (65.4, 33.0, 0), 'R12': (65.4, 35.0, 0),
-    'C6': (68.6, 31.0, 0), 'C7': (68.6, 33.0, 0), 'C8': (68.6, 35.0, 0),
-    'J4': (80.5, 32.0, 90),                                   # card from the right edge
-    'R4': (71.2, 27.2, 90), 'R5': (73.0, 34.6, 90), 'R6': (71.2, 34.6, 90), 'R7': (73.0, 27.2, 90),
-    'C3': (71.2, 31.0, 90), 'C4': (73.2, 31.0, 90),
-    'TP2': (73.0, 38.4, 0),
-    # recovery pads, below the module
-    'TP203': (15.2, 38.2, 0), 'TP204': (18.0, 38.2, 0), 'TP205': (20.8, 38.2, 0), 'TP206': (23.6, 38.2, 0),
-    'TP207': (26.4, 38.2, 0),
-    # jack at the left edge, DAC next to it
-    'J5': (9.4, 47.5, 0),
-    'U1': (22.4, 46.6, 0),
-    'R16': (16.1, 43.4, 90), 'R17': (16.1, 46.6, 90), 'C18': (16.1, 49.8, 90), 'C19': (16.1, 53.0, 90),
-    'C15': (27.5, 43.6, 90), 'C16': (27.5, 46.8, 90), 'C17': (27.5, 50.0, 90), 'R15': (27.0, 40.6, 0),
-    'C9': (18.4, 52.0, 0), 'C11': (21.4, 52.0, 0), 'C13': (24.4, 52.0, 0),
-    'C10': (18.6, 54.3, 0), 'C12': (22.2, 54.3, 0), 'C14': (25.8, 54.3, 0),
-    'U207': (21.0, 58.0, 0), 'C212': (25.4, 57.4, 0), 'C213': (13.0, 55.6, 0),
-    'TP6': (18.6, 40.9, 0), 'TP7': (21.4, 40.9, 0), 'TP8': (24.2, 40.9, 0),
-    # USB-C, ESD, fuse, TVS, CC, sense divider
-    'J201': (35.5, 55.9, 0),
-    'U202': (33.6, 47.6, 90), 'R201': (30.0, 49.0, 0), 'R202': (30.0, 46.6, 0),
-    'F201': (37.4, 47.4, 90), 'TP201': (37.4, 43.6, 0),
-    'D201': (45.6, 51.0, 0),
-    'R203': (40.4, 46.2, 90), 'R204': (40.4, 42.8, 270), 'C214': (40.4, 39.4, 90),
-    # USB serial and auto-reset
-    'U203': (47.6, 41.0, 0), 'C204': (41.8, 35.6, 0),
-    'Q201': (34.0, 38.6, 0), 'Q202': (34.0, 43.2, 0), 'R205': (37.8, 37.6, 90), 'R206': (37.8, 40.8, 90),
-    'R207': (29.6, 36.6, 0), 'C205': (30.0, 40.0, 90), 'R208': (30.0, 43.2, 90),
-    # bottom edge: charge LEDs, switch, cell, speaker
-    'D202': (42.6, 56.9, 0), 'D203': (42.6, 58.9, 0),
-    'SW203': (48.5, 56.62, 0),
-    'J202': (61.0, 56.6, 0), 'J6': (68.5, 56.6, 0),
-    'R212': (56.4, 52.6, 0), 'R214': (56.4, 50.4, 0),
-    # charger
-    'U201': (63.2, 45.6, 0), 'C201': (59.0, 41.6, 0), 'C202': (67.6, 42.2, 90), 'C203': (67.6, 46.8, 90),
-    'R209': (59.0, 44.4, 0), 'R210': (59.0, 46.4, 0), 'R211': (59.0, 48.4, 0),
-    'D204': (58.8, 39.2, 0), 'D205': (62.4, 39.2, 0), 'R213': (54.6, 38.0, 0), 'R215': (54.6, 39.8, 0),
-    # cell path: reverse P-FET, NTC, protection, battery divider
-    'Q203': (63.5, 51.2, 0), 'R216': (60.0, 51.0, 90), 'RT201': (67.6, 51.6, 90),
-    'U204': (72.0, 43.0, 0), 'U205': (72.0, 47.0, 0), 'R219': (76.6, 41.2, 0), 'C206': (75.6, 43.6, 0),
-    'R220': (75.6, 45.6, 0),
-    'R217': (80.6, 42.6, 90), 'R218': (80.6, 45.8, 90), 'C207': (80.6, 49.0, 90),
-    'TP202': (78.0, 47.8, 0),
-    # amplifier next to the speaker connector
-    'U2': (75.4, 55.4, 180), 'C22': (72.0, 52.0, 0), 'C23': (75.4, 52.0, 0), 'R21': (78.8, 51.0, 90),
+    'C5': (MOD_X + 56.1, 10.0, 90), 'C25': (MOD_X + 56.1, 15.3, 90), 'R3': (MOD_X + 56.1, 20.6, 90),
+    # WROVER-IE under the module, U.FL end left; SPI series resistors above it, 3V3 decoupling at pad 2
+    'U3': (53.0, 17.6, 90),
+    'R9': (42.8, 5.6, 0), 'R8': (51.7, 5.6, 0), 'TP5': (57.5, 5.6, 0),
+    'C211': (43.5, 28.9, 0), 'C210': (40.0, 32.5, 90),
+    # left strip: recovery buttons and pads, 3.3 V regulator
+    'SW202': (9.0, 12.0, 0), 'SW201': (9.0, 19.0, 0),                     # BOOT, RESET
+    'TP203': (4.5, 25.5, 0), 'TP204': (8.0, 25.5, 0), 'TP205': (11.5, 25.5, 0), 'TP206': (15.0, 25.5, 0),
+    'TP207': (18.5, 25.5, 0),
+    'R221': (16.5, 31.0, 90), 'C208': (19.5, 31.0, 90), 'C209': (22.5, 31.0, 90), 'U206': (26.6, 31.0, 0),
+    'TP4': (24.5, 35.8, 0),
+    # encoder centred under the display; RC filters left of it
+    'SW1': (ENC_SHAFT[0] - 7.5, ENC_SHAFT[1] - 2.5, 0),
+    'R10': (49.5, 40.5, 90), 'R11': (49.5, 45.8, 90), 'R12': (49.5, 51.1, 90),
+    'C6': (46.5, 40.5, 90), 'C7': (46.5, 45.8, 90), 'C8': (46.5, 51.1, 90),
+    # DAC left of the encoder, output filters above the RCA jack, DAC LDO
+    'U1': (17.0, 46.6, 0),
+    'C11': (11.5, 41.3, 90), 'C12': (8.5, 41.3, 90), 'C15': (11.5, 46.6, 90), 'C16': (8.5, 46.6, 90),
+    'C13': (11.5, 51.9, 90), 'C14': (8.5, 51.9, 90),
+    'C9': (22.5, 41.3, 90), 'C10': (25.5, 41.3, 90), 'C17': (22.5, 46.6, 90), 'R15': (25.5, 46.6, 90),
+    'R16': (8.0, 57.0, 0), 'C18': (13.3, 57.0, 0), 'R17': (18.6, 57.0, 0), 'C19': (23.9, 57.0, 0),
+    'U207': (31.5, 46.6, 0), 'C212': (31.5, 41.3, 0), 'C213': (31.5, 51.9, 0),
+    'TP6': (36.5, 41.3, 0), 'TP7': (36.5, 44.8, 0), 'TP8': (36.5, 48.3, 0),
+    # microSD: decoupling left, pull-ups in a row between the encoder and the socket
+    'C3': (40.5, 53.5, 90), 'C4': (43.5, 53.5, 90),
+    'R4': (55.0, 54.75, 0), 'R5': (60.2, 54.75, 0), 'R6': (65.4, 54.75, 0), 'R7': (70.6, 54.75, 0),
+    # bottom edge connectors
+    'J8': (23.7, H - 8.2, 0), 'J5': (42.5, H - 9.5, 90), 'J4': (W / 2, H - 9.6, 0),
+    'J201': (75.35, H - 4.1, 0), 'SW203': (85.8, H - 3.38, 0), 'J202': (93.5, H - 3.8, 0), 'J6': (102.5, H - 3.8, 0),
+    # USB input, ESD, CC, USB sense, CH340C and auto-reset right of the encoder
+    'TP201': (72.5, 49.0, 0), 'D201': (79.5, 52.0, 0), 'F201': (79.0, 56.3, 0), 'U202': (74.5, 59.5, 0),
+    'R201': (81.5, 60.0, 90), 'R202': (84.5, 60.0, 90),
+    'R203': (88.0, 60.0, 90), 'R204': (91.0, 60.0, 90), 'C214': (94.0, 60.0, 90),
+    'U203': (80.0, 44.0, 0), 'C204': (86.5, 40.0, 90),
+    'Q201': (91.0, 41.0, 0), 'Q202': (91.0, 46.0, 0), 'R205': (96.0, 41.0, 90), 'R206': (96.0, 46.0, 90),
+    'R207': (99.5, 41.0, 90), 'C205': (99.5, 46.0, 90), 'R208': (102.5, 41.0, 90),
+    # amplifier next to the speaker connector, charge LEDs at the right edge
+    'U2': (104.0, 58.0, 180), 'C22': (100.0, 58.0, 90), 'C23': (108.5, 58.0, 90), 'R21': (111.5, 58.0, 90),
+    'D202': (110.5, 65.9, 0), 'D203': (110.5, 69.4, 0), 'R212': (116.0, 59.5, 90), 'R214': (119.0, 59.5, 90),
+    # right strip: charger and cell path
+    'U201': (104.0, 18.0, 0),
+    'R209': (95.5, 13.0, 90), 'R210': (95.5, 18.3, 90), 'R211': (95.5, 23.6, 90),
+    'C201': (98.5, 13.0, 90), 'C202': (110.0, 15.0, 90), 'C203': (110.0, 21.0, 90),
+    'D204': (115.5, 12.0, 0), 'D205': (115.5, 15.5, 0), 'R213': (115.5, 19.0, 0), 'R215': (115.5, 22.5, 0),
+    'RT201': (106.5, 25.5, 90), 'TP2': (119.5, 26.0, 0), 'TP202': (119.5, 29.5, 0),
+    'U204': (100.0, 30.0, 0), 'U205': (104.5, 30.0, 0), 'Q203': (110.0, 30.0, 0), 'R216': (114.5, 30.0, 90),
+    'R219': (96.0, 34.5, 0), 'C206': (101.5, 34.5, 0), 'R220': (107.0, 34.5, 0), 'R217': (112.5, 34.5, 0),
+    'R218': (118.0, 34.5, 0), 'C207': (98.5, 25.0, 90),
 }

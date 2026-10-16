@@ -5,27 +5,28 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
 
 ## Board and mechanics
 
-- **90 x 60 mm** (D15; was about 60 x 80 before the 2.0in display module), **4 layers**, 1.6 mm FR-4: layer 2 a solid GND plane, layer 3
+- **122 x 72 mm** (Rev C, D15: display, encoder and connectors from top to bottom; 90 x 60 mm in
+  Rev B), **4 layers**, 1.6 mm FR-4: layer 2 a solid GND plane, layer 3
   power (VSYS, +3V3) and some signals, top and bottom signals. Stitch GND vias along the edge and
   next to signal vias that change layer.
-- **Front (top) side**: the HS20S010B display module top left on two 1x10 sockets (J7 CN2 left,
-  J3 CN1 right) and four round M2.5 standoffs, ~4 mm across (H1, H5-H7), its PCB ~11 mm above the board; the EC11
-  encoder beside it (D13/D16). Only parts lower than ~10 mm under the module. The case front
+- **Front (top) side**, from top to bottom (Rev C): the HS20S010B display module centred on two
+  1x10 sockets (J7 CN2 left, J3 CN1 right) and four round M2.5 standoffs, ~4 mm across (H1,
+  H5-H7), its PCB ~11 mm above the board; the EC11 encoder centred under it; the connectors along
+  the bottom edge; the other parts left and right of the encoder and beside the module (D13/D16). Only parts lower than ~10 mm under the module. The case front
   panel lies ~15 mm above the board (module + glass); agree the front with the owner first.
 - **Display sockets**: positions and the module holes follow the HS20S010B drawing
   (`tools/placement.py`); the module outline, glass and active area are drawn on User.Drawings.
 - **ESP32-WROVER-IE**: no PCB antenna, so no keep-out at a board edge. Keep its **U.FL connector
   reachable** (no tall parts within ~5 mm, room for the plug and the pigtail to the case wall). On
-  the 90 x 60 board it lies under the display module: plug the antenna in before the module.
+  the 90 x 60 and 122 x 72 boards it lies under the display module: plug the antenna in before
+  the module.
   The ground land is the Espressif 3 x 3 array (datasheet figure 15): add the **thermal vias
   between the squares** and do not flood it with one paste opening.
-- **Edge connectors**: USB-C (J201), 3.5 mm jack (J5), speaker (J6) and the cell (J202) on edges
-  the case can open to; microSD (J4) at an edge where a card can go in with the board in the case;
-  the slide switch (SW203, side-actuated) at an edge, its actuator reachable through the case.
+- **Edge connectors** (Rev C: all along the bottom edge): RCA L/R (J8), 3.5 mm jack (J5), microSD
+  (J4, card from the bottom), USB-C (J201), slide switch (SW203), cell (J202), speaker (J6).
 - RESET/BOOT buttons and the recovery pads (TP203-TP207, TP4) reachable with the case open.
 - The NTC (RT201) next to where the cell lies (it measures the cell temperature).
-- 3 board mounting holes (M3, H2-H4) in the free corners; the fourth corner carries the module's
-  standoff H1. 1 mm keep-out around the heads.
+- 4 board mounting holes (M3, H2-H4, H8) in the corners. 1 mm keep-out around the heads.
 
 ## 3D-printed case (decision D3)
 
@@ -77,8 +78,10 @@ The case is designed around the board, so the board files must give the case des
   (speaker)** - Li-Po lead colours are not the same between makers; "5V" at USB-C; ON/OFF at the
   slide switch once a sample shows which position is on; names at the recovery pads.
 - Run DRC with the JLCPCB 4-layer rule set; export Gerbers and the Excellon drill file.
-- Assembly: SMD parts on the top side (one-sided assembly); the through-hole parts (encoder,
-  display sockets) on one side too. BOM with the `LCSC` field and the CPL file from JLCPCB Tools; check
-  every rotation in JLCPCB's preview (QFNs, SOT-23, SOIC/TSSOP pin 1, the USB-C connector).
-- Not assembled: the display module (plugged in), the cell, the speaker, the antenna pigtail.
+- Assembly (Rev C, D17): by hand with solder paste, a stencil (paste layer F.Paste, from JLCPCB)
+  and a heat gun, then the through-hole parts with an iron; all SMD on the top side, R/C in 1206.
+  Parts list `jlcpcb/esp-iradio_lcsc_order.csv`, assembly drawing `jlcpcb/esp-iradio_assembly.pdf`.
+  The BOM/CPL for JLCPCB assembly are still generated (and their rotations checked) if that route
+  is ever taken again.
+- Not on the board: the display module (plugged in), the cell, the speaker, the antenna pigtail.
 - 3 fiducials (1 mm copper, 2 mm mask opening) if JLCPCB asks for them; tooling rails if panelized.

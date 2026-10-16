@@ -24,6 +24,10 @@ Layout:
 - [x] 2026-10-16: board 90 x 60 mm for the HS20S010B module on sockets, encoder beside it, U2
       turned 180 degrees; DRC 0 errors, 0 unconnected, 0 parity issues.
 - [x] Review of the 90 x 60 board by Grok and Claude (round 6): no layout change.
+- [x] 2026-10-16: **Rev C for hand assembly**: 1206 passives, RCA L/R (J8), H8, 122 x 72 mm with
+      display / encoder / connectors from top to bottom; DRC 0 errors, 0 unconnected, 0 parity.
+- [ ] Review of the Rev C board by Grok and Claude (round 7).
+- [ ] RCA J8 pinout (large pads 1/3 = sleeve/GND assumed) checked with a meter on the part.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:
@@ -33,8 +37,9 @@ Before ordering:
 - [ ] SW1: the EC11 part (shaft length) chosen and its `LCSC` field set (not placed until then).
 - [x] The rotation of every part checked in JLCPCB's placement preview (2026-10-16, six part
       types corrected in `tools/jlcfab.py`, `PART_CORRECTIONS`).
-- [ ] Decide the assembly scope (full JLCPCB, hybrid or self-assembly; quote and options in
-      `esp-iradio/jlcpcb/README.md`), then upload, check the preview again and order.
+- [x] Assembly scope decided 2026-10-16: hand assembly by the owner (paste, stencil, heat gun).
+- [ ] Order: bare PCBs + stencil at JLCPCB (Gerber zip), parts at LCSC
+      (`esp-iradio/jlcpcb/esp-iradio_lcsc_order.csv` + the loose parts in the README there).
 - [ ] STEP and DXF exported for the case; knob, display window and connectors line up.
 
 Bring-up (new board):

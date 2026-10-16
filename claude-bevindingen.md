@@ -4,6 +4,43 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 7: Rev C for hand assembly - please review
+
+After the JLCPCB assembly quote ($207 for 5 boards) the owner decided to assemble the boards by
+hand (solder paste, stencil, heat gun). Owner's
+choices 2026-10-16: 1206 passives, the MAX98357A stays (QFN, tested; an SOP-8 NS4168 was offered),
+RCA outputs L/R next to the 3.5 mm jack, microSD at the bottom with the other connectors, and a
+new floor plan: display on top, encoder centred under it, all connectors along the bottom edge,
+the other parts left and right of the encoder; the board may be wider than the display.
+
+What changed (details in `KiCad/esp-iradio/NOTES.md`, "Layout (Rev C)"):
+- Schematic: every R/C footprint 1206 (LCSC numbers in `tools/jlcfab.py` `PASSIVES`), LEDs 1206
+  (C965822 / C965825), BAT54W SOD-123 (C7502705), NTC 0805 3435K (C2889056; no 1206 NTC at LCSC).
+  New J8: CAX AV-210-WR dual RCA jack (C53431212, footprint and 3D model from EasyEDA) as a
+  `Conn_01x04`: 1 = L sleeve (GND), 2 = L (J5 tip net, after R16/C18), 3 = R sleeve (GND), 4 = R
+  (J5 ring net, after R17/C19). White = L at the pads 1/2 jack, red = R (3D model colours). Pads
+  1/3 are the large front ones (2.1 mm drill), 2/4 the small rear ones: taken as sleeve and
+  centre; no datasheet drawing was found. New H8 (M3) for the fourth corner. ERC 1 known warning,
+  `intcheck.py` OK (new groups for J8), 122 parts, 117 nets.
+- Board 122 x 72 mm, regenerated (mkpcb, Freerouting, stitch, silk, touchup). Display module
+  centred (x 29.4-92.6, y 1.0-37.2), WROVER under it as before (U.FL end left), encoder shaft at
+  (61, 45); left strip: RESET/BOOT, recovery pads, 3.3 V regulator; right strip: charger and cell
+  protection; left of the encoder the DAC block, right of it USB/CH340/auto-reset, amplifier and
+  LEDs; bottom edge: J8, J5, J4, J201, SW203, J202, J6; M3 holes in the four corners.
+- DRC with schematic parity: 0 errors, 0 unconnected, 0 parity issues; 36 warnings (silkscreen and
+  the two expected `lib_footprint_mismatch` on the QFN thermal vias). Two of four WROVER
+  ground-land vias again (a DAT0 track on In2.Cu passes the other two).
+- Order files: Gerber zip (PCB + stencil), `esp-iradio_lcsc_order.csv` (2 boards), assembly PDF.
+
+Please check:
+1. The RCA J8 pinout assumption (large front pads = sleeve) against anything you can find on the
+   CAX AV-210-WR or similar dual RCA jacks.
+2. The floor plan: anything hard to hand-solder or to rework (parts too close to the connectors,
+   the QFNs, the WROVER land), and the bottom-edge connector order for the case.
+3. Audio: the DAC outputs now run to two connectors (J5 and J8) in parallel; routing of the
+   analog lines past the I2S and the amplifier.
+4. Anything the move to 1206 broke (pad spacing, the 2.2 nF 1 kV X7R part in the output filter).
+
 ## Round 6 closed
 
 Grok's check of `8ba0d64`: both sentences aligned. The coax runs in the ~11 mm gap and comes out

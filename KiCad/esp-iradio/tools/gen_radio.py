@@ -15,9 +15,10 @@ s = Sheet(libs, ROOT_UUID, 'esp-iradio', 'A3')
 W = s.wire
 P = s.P
 
-FR = 'Resistor_SMD:R_0603_1608Metric'
-FC6 = 'Capacitor_SMD:C_0603_1608Metric'
-FC8 = 'Capacitor_SMD:C_0805_2012Metric'
+# Rev C: every R/C in 1206 (hand assembly with paste and hot air, 2026-10-16); FC6/FC8 kept as names
+FR = 'Resistor_SMD:R_1206_3216Metric'
+FC6 = 'Capacitor_SMD:C_1206_3216Metric'
+FC8 = 'Capacitor_SMD:C_1206_3216Metric'
 FTP = 'TestPoint:TestPoint_Pad_D1.5mm'
 
 
@@ -274,6 +275,16 @@ s.add('esp-iradio:AudioJack3_PJ320D', 'J5', 281.94, 210.82, 0, 'Line out 3.5mm P
 W(P('R16', 2), (251.46, 203.2), (271.78, 203.2), (271.78, 213.36), P('J5', 'T'))
 W(P('R17', 2), (251.46, 218.44), (260.35, 218.44), (266.7, 218.44), (266.7, 210.82), P('J5', 'R'))
 gnd(P('J5', 'S'), 'up')
+# RCA line outputs (owner's request 2026-10-16), in parallel with J5: CAX AV-210-WR dual jack (LCSC
+# C53431212), white = L on pads 1/2, red = R on pads 3/4 (from the 3D model). The large front pads
+# (1, 3) are taken as the sleeves (GND), the small rear pads (2, 4) as the centre contacts: check on
+# the part with a meter before soldering.
+s.add('Connector_Generic:Conn_01x04', 'J8', 281.94, 233.68, 0, 'Line out RCA L/R AV-210-WR', 'lcsc:RCA-TH_AV-210-WR',
+      extra={'LCSC': 'C53431212'}, fields={'ref': (284.48, 243.84, 0, 'left'), 'val': (284.48, 246.38, 0, 'left')})
+W((271.78, 213.36), (271.78, P('J8', 2)[1]), P('J8', 2))
+W((266.7, 218.44), (266.7, P('J8', 4)[1]), P('J8', 4))
+W(P('J8', 1), (274.32, P('J8', 1)[1]), (274.32, P('J8', 3)[1]), P('J8', 3))
+gnd((274.32, P('J8', 1)[1]), 'up')
 # amplifier: MAX98357A (I2S in, mono (L+R)/2 out) on the same I2S lines as the DAC
 UX, UY = 320.04, 175.26
 s.add('Audio:MAX98357A', 'U2', UX, UY, 0, 'MAX98357AETE+T',
@@ -312,14 +323,16 @@ down('+3V3', (391.16, 50.8), False)
 s.text('AUDIO: PCM5102A DAC, 3.5 mm line out, MAX98357A I2S mono amplifier (VSYS)', (101.6, 256.54), 1.8, True)
 
 # mounting holes
-# H2-H4 fix the board (M3); H1 and H5-H7 sit under the display module's own holes (M2.5 standoffs)
+# H2-H4 and H8 fix the board (M3, the four corners since Rev C); H1 and H5-H7 sit under the display
+# module's own holes (M2.5 standoffs)
 for i, (h, val, fp) in enumerate((('H1', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
                                   ('H2', 'M3', 'MountingHole:MountingHole_3.2mm_M3'),
                                   ('H3', 'M3', 'MountingHole:MountingHole_3.2mm_M3'),
                                   ('H4', 'M3', 'MountingHole:MountingHole_3.2mm_M3'),
                                   ('H5', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
                                   ('H6', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
-                                  ('H7', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'))):
+                                  ('H7', 'M2.5', 'MountingHole:MountingHole_2.7mm_M2.5'),
+                                  ('H8', 'M3', 'MountingHole:MountingHole_3.2mm_M3'))):
     x = 30.48 + 10.16 * (i % 4)
     y = 241.3 if i < 4 else 226.06
     s.add('Mechanical:MountingHole', h, x, y, 0, val, fp,

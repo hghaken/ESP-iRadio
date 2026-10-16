@@ -75,70 +75,76 @@ the revision history of the actual KiCad project.
   on). FSO/FCS (the optional font chip, not fitted) stay open. Board 90 x 60 mm (was 80 x 60),
   encoder beside the module. Schematic: ERC 1 known warning, `intcheck.py` OK (120 parts, 117
   nets). Board: DRC 0 errors, 0 unconnected, 0 parity issues (40 silkscreen warnings).
+- 2026-10-16: **Rev C for hand assembly** (owner's decision after the JLCPCB quote): 1206 passives,
+  RCA outputs L/R (J8, LCSC C53431212), H8, new floor plan display / encoder / connectors on a
+  122 x 72 mm board (see "Layout"). Schematic: ERC 1 known warning, `intcheck.py` OK (122 parts,
+  117 nets). Board: DRC 0 errors, 0 unconnected, 0 parity issues.
 
-## Layout (Rev B draft, 2026-10-16)
+## Layout (Rev C, 2026-10-16: hand assembly)
 
-Board 90 x 60 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
+Owner's decision 2026-10-16: no JLCPCB assembly (the quote of $207 for 5 boards was too much for
+2-5 radios). The owner assembles the boards with solder paste, a stencil and a heat gun,
+so every R/C is now **1206** (LEDs 1206, BAT54W in SOD-123, NTC 0805: no 1206 NTC at LCSC); the
+ICs keep their packages (the BQ24074 and the MAX98357A exist only as QFN, the PCM5102A only as
+TSSOP-20; the owner kept the tested MAX98357A over an SOP-8 NS4168). New: RCA outputs L/R (J8) next
+to the 3.5 mm jack, a fourth M3 hole (H8). New floor plan, top to bottom: display, encoder,
+connectors.
+
+Board 122 x 72 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
 power, B.Cu signals and GND pour), 1.6 mm, every part on the top side. Rules: 0.2 mm tracks with
 0.15 mm clearance, Power class 0.5 mm (VSYS, VIN, VBUS, VBAT, BATN, cell +, +3V3, GND), Supply
-class 0.3 mm (+3V3A, speaker outputs), vias 0.55/0.3 mm (0.5/0.3 where a pour island or a land had no room);
-**no hole below 0.3 mm** (2026-10-16: JLCPCB's standard process; 0.2 mm holes added $37.55 to
-the 5-board price, $45.55 instead of $8.00, through a 4-wire test and TG155 material; rule
-`min_through_hole_diameter` 0.3). The QFN ThermalVias footprints of U2 and U201 carry 0.3 mm
-thermal vias set by `tools/touchup.py` (DRC warns `lib_footprint_mismatch` for those two: expected;
-do not "update footprints from library" or the 0.2 mm holes come back), copper >= 0.6 mm from the edge (keep-out ring). Custom rule `esp-iradio.kicad_dru`
-(written by `tools/pcbrules.py`): the courtyards of the module's standoff holes H1/H5-H7 may touch
-the sockets J3/J7 (by design); every other courtyard overlap still is an error. Renders in
-`renders/` (the module itself is not in the 3D view: it is a loose part).
+class 0.3 mm (+3V3A, speaker outputs), vias 0.55/0.3 mm (0.5/0.3 where a pour island or a land had
+no room); **no hole below 0.3 mm** (JLCPCB's standard process; 0.2 mm holes had added $37.55 to the
+5-board PCB price; rule `min_through_hole_diameter` 0.3). The QFN ThermalVias footprints of U2 and
+U201 carry 0.3 mm thermal vias set by `tools/touchup.py` (DRC warns `lib_footprint_mismatch` for
+those two: expected; do not "update footprints from library" or the 0.2 mm holes come back),
+copper >= 0.6 mm from the edge (keep-out ring). Custom rule `esp-iradio.kicad_dru` (written by
+`tools/pcbrules.py`): the courtyards of the module's standoff holes H1/H5-H7 may touch the sockets
+J3/J7 (by design); every other courtyard overlap still is an error. Renders in `renders/` (the
+module itself is not in the 3D view: it is a loose part).
 
 Floor plan (front view, origin top left; `tools/placement.py`):
-- display module HS20S010B top left: module PCB over x 0.5-63.7, y 0.7-36.9 (outlines of the PCB,
-  glass and active area on User.Drawings), plugged into J7 (CN2, x 2.5, pin 1 at the bottom) and
-  J3 (CN1, x 61.7, pin 1 at the top); its four M2.5 holes on H1/H5/H6/H7. Height: 8.5 mm socket
-  + the header's 2.5 mm spacer = ~11 mm under the module PCB, so every other part fits under it;
-- WROVER-IE horizontal under the module, its U.FL end left (x ~8, y ~9): under the module, reached
-  with the module unplugged; the coax runs in the ~11 mm gap and comes out below the module's bottom edge (past y 36.9;
-  not past the left edge, the module starts at x 0.5): the case slot goes there. The antenna sits on the case
-  wall, away from the module, cell and speaker (WROVER-IE: no antenna on the module itself);
-- 3.3 V regulator and its capacitors below the WROVER 3V3 pin; RESET/BOOT buttons and recovery
-  pads TP203-TP207 below the module's left half;
-- encoder SW1 right of the module (shaft at x 76.5, y 15), microSD J4 at the right edge (card
-  from the right), encoder RC filters between them;
-- bottom edge from left: jack J5 (left edge), DAC U1 and LP5907, USB-C J201, charge LEDs, slide
-  switch SW203, cell J202, speaker J6; CH340C and auto-reset above the USB-C; charger,
-  protection and battery divider bottom right; amplifier U2 right of J6, turned 180 degrees so
-  its VDD pins face C22/C23 and its outputs face J6 (at 0 degrees the speaker tracks boxed the
-  VDD pins in and VSYS stayed unrouted).
-- board holes H2-H4 (M3) in the other three corners.
+- display module HS20S010B centred at the top (320 px axis horizontal): module PCB over x 29.4-92.6,
+  y 1.0-37.2 (outlines of the PCB, glass and active area on User.Drawings), plugged into J7 (CN2,
+  x 31.4, pin 1 at the bottom) and J3 (CN1, x 90.6, pin 1 at the top); its four M2.5 holes on
+  H1/H5/H6/H7. Height: 8.5 mm socket + the header's 2.5 mm spacer = ~11 mm under the module PCB;
+- under the module: the WROVER-IE horizontal (U.FL end left, x ~35, y ~17: reached with the module
+  unplugged; the coax runs in the ~11 mm gap and comes out below the module's bottom edge), its
+  3V3 decoupling C210/C211, the SPI series resistors R8/R9 and TP5, the display decoupling C5/C25
+  and R3 next to J3;
+- left strip beside the module: RESET/BOOT (SW201/SW202), recovery pads TP203-TP207 (EN, IO0, TX,
+  RX, GND) reachable from the front, the 3.3 V regulator U206 with C208/C209/R221 and TP4;
+- right strip beside the module: charger U201 with its programming resistors and capacitors, the
+  NTC, the BAT54W isolation diodes and pull-ups, the cell protection U204/U205, the reverse-cell
+  FET Q203, the battery divider, TP2 (VSYS) and TP202 (VBAT);
+- encoder SW1 centred under the display (shaft at x 61, y 45); left of it its RC filters, the DAC
+  U1 with its capacitors, the output filters R16/R17/C18/C19 above the RCA jack, the LP5907 and the
+  I2S test pads; right of it the USB input (TVS, fuse, ESD, CC resistors, USB sense), the CH340C
+  with auto-reset, the amplifier U2 (turned 180 degrees: VDD pins to C22/C23, outputs to J6) and
+  the charge LEDs D202/D203 at the right edge; the microSD pull-ups R4-R7 in a row between the
+  encoder and the card socket;
+- bottom edge from left: RCA L/R J8 (the barrels stick out ~7.6 mm past the edge), 3.5 mm jack J5
+  (mouth at the edge), microSD J4 (card from the bottom, under the encoder), USB-C J201, on/off
+  switch SW203, cell J202, speaker J6; M3 holes H8/H2/H3/H4 in the four corners.
 
-Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps
-signals off the GND plane; ~420 GND stitching vias; SMD pads join the outer pours solid, THT pads
-with thermal reliefs. The USB pair is routed like any other signal (short, but not
-impedance-controlled). `tools/bridge.py` can join a pad the router left unconnected (F.Cu, or a
-stub + via + B.Cu/In2.Cu); not needed on the current board.
+Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
+the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal
+reliefs. The USB pair is routed like any other signal (short, full speed). `tools/touchup.py`: the
+QFN thermal vias to 0.3 mm, a fifth BQ24074 thermal via (in the centre on this board), two of the
+four WROVER ground-land vias (a microSD DAT0 track on In2.Cu passes the other two), the charge-LED
+labels "C"/"P". DRC with schematic parity 2026-10-16: 0 errors, 0 unconnected, 0 parity issues;
+36 warnings (silkscreen, and the two expected footprint mismatches).
 
-Review (Grok and Claude, 2026-10-15/16, `grok-bevindingen.md` / `claude-bevindingen.md`, rounds
-4-5): floor plan, stack, power widths, USB lengths (full speed: no 90 Ohm pair needed), I2S
-detours (fine at 1.4 MHz) and the parts under the panel checked; the U.FL end is at the left
-edge outside the panel (a first note that it sat under the glass used a y-up rotation and was
-withdrawn). Hand edits by `tools/touchup.py` on the routed board: a fifth thermal via in the
-BQ24074 pad (the first free spot of centre / +-0.59 mm; on the 90 x 60 board at +0.59 mm y),
-vias at the inner corners of the WROVER ground land (0.5/0.3 mm since 2026-10-16, were 0.4/0.2) (two of four on the 90 x 60 board:
-an RXD0 track on In2.Cu passes the other two; the land still has the module's GND pads and the
-pour), the charge-LED labels as "C" (CHG, red D202) and "P" (PWR, green D203) left of the LEDs (the
-words did not fit off the USB-C body). DRC again: 0 errors, 0 unconnected, 0 parity issues.
-That review was of the 80 x 60 board with the bare panel; the 90 x 60 board with the module is
-reviewed in round 6 (`claude-bevindingen.md`, `grok-bevindingen.md`): no layout change, documents
-and comments aligned.
+Review history: Rev B (80 x 60 with the bare panel, then 90 x 60 with the module) was reviewed by
+Grok and Claude in rounds 4-6 (`grok-bevindingen.md`, `claude-bevindingen.md`); the Rev C layout is
+new (round 7).
 
 Still to do on the layout (before ordering):
-- **RCA (cinch) outputs L and R, requested by the owner 2026-10-16** (the PCM5102A module in use
-  has them next to its 3.5 mm jack): two RCA jacks in parallel with J5 on the DAC outputs (after
-  the 470R / 2.2 nF filters) and GND. A right-angle dual jack (white/red) is ~20-22 mm wide and
-  ~12-15 mm deep, THT; LCSC candidates e.g. CAX AV-210-WR / AV-209-WR (check the drawing).
-  Does not fit next to J5 on the left edge: the board grows or the edge plan changes, so the
-  layout is regenerated. Owner to say: keep the 3.5 mm jack as well, and which edge.
-- a last look at the routing in KiCad (autorouted; accepted in the review, detours included);
+- RCA jack J8 (CAX AV-210-WR): the footprint and 3D model come from EasyEDA; white = L on pads 1/2,
+  red = R on pads 3/4 (3D model colours). The large front pads 1/3 are taken as the sleeves (GND)
+  and the small rear pads 2/4 as the centre contacts: **check with a meter on the delivered part
+  before soldering** (no datasheet drawing was found);
+- a last look at the routing in KiCad (autorouted);
 - display module: check on the delivered module that CN1 pin 1 (GND) is at the top right as in
   the datasheet drawing, and whether it comes with pin headers (the LCSC photo shows none: then
   order two 1x10 2.54 mm male headers with it and solder them on, short side through the module);
@@ -147,16 +153,13 @@ Still to do on the layout (before ordering):
   and GPIO26 (pin 8) switches the backlight (the datasheet's application sketch numbers them
   differently from its drawing; if swapped, exchange pins 7 and 8);
 - SW1: with the module ~11 mm above the board plus its glass, the front panel lies ~15 mm up; pick
-  the EC11 shaft length for that height (D16 assumed a recessed knob next to a low panel);
+  the EC11 shaft length for that height (the owner can use the EC11 from the breadboard);
 - SW203: which slide position is ON (silk says "ON/OFF ?");
-- silkscreen warnings come from the footprints' own outlines (JLCPCB clips silk on pads);
+- silkscreen: only connectors, ICs, switches, diodes, transistors and the test pads carry a
+  reference; the assembly drawing `jlcpcb/esp-iradio_assembly.pdf` shows every reference;
 - 3D models: this PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D folders (install
   them or use the LCSC models) before exporting the STEP for the case; the WROVER-IE model is the
-  EasyEDA one and shows a PCB antenna;
-- JLCPCB files: done 2026-10-16 (`jlcpcb/`, made by `tools/jlcfab.py`), placement preview checked
-  with the owner (six part types corrected); still to do: SW1's part. Quote 2026-10-16: $207.39
-  for 5 assembled boards before shipping and VAT; **open decision** on how much JLCPCB assembles
-  (full, hybrid or self-assembly), see `jlcpcb/README.md`, "Quote".
+  EasyEDA one and shows a PCB antenna.
 
 ## Schematic (Rev B, integrated board)
 

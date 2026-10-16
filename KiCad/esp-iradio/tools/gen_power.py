@@ -17,9 +17,10 @@ s = Sheet(libs, ROOT_UUID, 'esp-iradio', 'A3', sheet_uuid=POWER_SHEET_UUID, uuid
 W = s.wire
 P = s.P
 
-FR = 'Resistor_SMD:R_0603_1608Metric'
-FC6 = 'Capacitor_SMD:C_0603_1608Metric'
-FC8 = 'Capacitor_SMD:C_0805_2012Metric'
+# Rev C: every R/C in 1206 (hand assembly with paste and hot air, 2026-10-16); FC6/FC8 kept as names
+FR = 'Resistor_SMD:R_1206_3216Metric'
+FC6 = 'Capacitor_SMD:C_1206_3216Metric'
+FC8 = 'Capacitor_SMD:C_1206_3216Metric'
 FTP = 'TestPoint:TestPoint_Pad_D1.5mm'
 SOT23 = 'Package_TO_SOT_SMD:SOT-23'
 
@@ -259,7 +260,7 @@ for pn, net in (('~{PGOOD}', 'PGOOD_N'), ('~{CHG}', 'CHG_N')):
     s.label(net, (193.04, p[1]))
 # TS: NTC on the board next to the cell
 ts = P('U201', 'TS')
-s.add('Elektuur:R-nonlin', 'RT201', 213.36, ts[1] + 5.08, 0, 'NTC 10k', FR, extra={'LCSC': 'C13564'},
+s.add('Elektuur:R-nonlin', 'RT201', 213.36, ts[1] + 5.08, 0, 'NTC 10k', 'Resistor_SMD:R_0805_2012Metric', extra={'LCSC': 'C2889056'},
       fields={'ref': (215.9, ts[1] + 3.81, 0, 'left'), 'val': (215.9, ts[1] + 6.35, 0, 'left')})
 W(ts, (213.36, ts[1]), P('RT201', 1))
 gnd(P('RT201', 2))
@@ -271,10 +272,10 @@ for i, (nm, led, col, rl, d, rp, glab, ly) in enumerate((
     R(rl, 175.26, ly, '1k', 90)
     up('VSYS', (170.18, ly), i == 0)
     W((170.18, ly), P(rl, 1))
-    s.add('Elektuur:D-LED', led, 185.42, ly, 90, 'LED ' + col, 'LED_SMD:LED_0603_1608Metric',
-          extra={'LCSC': 'C2286' if col == 'red' else 'C12624'}, fields=horiz(185.42, ly))
+    s.add('Elektuur:D-LED', led, 185.42, ly, 90, 'LED ' + col, 'LED_SMD:LED_1206_3216Metric',
+          extra={'LCSC': 'C965822' if col == 'red' else 'C965825'}, fields=horiz(185.42, ly))
     W(P(rl, 2), P(led, 2))
-    s.add('Elektuur:D-Schottky', d, 203.2, ly, 270, 'BAT54WS', 'Diode_SMD:D_SOD-323', extra={'LCSC': 'C7502694'},
+    s.add('Elektuur:D-Schottky', d, 203.2, ly, 270, 'BAT54W', 'Diode_SMD:D_SOD-123', extra={'LCSC': 'C7502705'},
           fields=horiz(203.2, ly))
     W(P(led, 1), P(d, 1))
     s.label(nm, (193.04, ly))

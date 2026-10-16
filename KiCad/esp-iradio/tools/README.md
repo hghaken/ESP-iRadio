@@ -27,16 +27,16 @@ python intcheck.py board.net
 Expected: ERC 1 warning (the MAX98357A exposed pad, pin type unspecified, on GND) and `OK` from
 `intcheck.py`. Close the schematic in KiCad first.
 
-## Board (Rev B draft, 90 x 60 mm)
+## Board (Rev C, 122 x 72 mm)
 
 | File | Purpose |
 |---|---|
 | `pcbrules.py` | design rules and net classes into `../esp-iradio.kicad_pro` (JLCPCB 4-layer: 0.2/0.15 mm default, Power 0.5 mm, Supply 0.3 mm, vias 0.55/0.3, edge 0.3 mm), plus `../esp-iradio.kicad_dru` (one custom rule: the display module's standoff holes may touch its sockets) |
 | `placement.py` | the floor plan: position and rotation of every part (comments explain the zones) |
-| `mkpcb.py` | builds the board from the netlist: empty file, 4 layers (In1.Cu = GND plane, layer type power), outline 90 x 60 mm, outlines of the display module (PCB, glass, active area) on User.Drawings, footprints with fields and schematic links, nets, placement, GND plane, 0.6 mm track/via keep-out along the edges. `--check` only reports overlaps (courtyard plus pads) |
+| `mkpcb.py` | builds the board from the netlist: empty file, 4 layers (In1.Cu = GND plane, layer type power), outline from `placement.W/H` (122 x 72 mm), outlines of the display module (PCB, glass, active area) on User.Drawings, footprints with fields and schematic links, nets, placement, GND plane, 0.6 mm track/via keep-out along the edges. `--check` only reports overlaps (courtyard plus pads) |
 | `route.py` | Specctra DSN export, Freerouting, SES import, GND pours on F.Cu/B.Cu (SMD pads solid, THT pads thermal), zone fill. `--keep` routes only what is still open |
 | `stitch.py` | GND stitching vias on a 2.5 mm grid where the outer pours have room, a via (or a short track) for every pour island |
-| `silk.py` | silkscreen: references only on connectors, ICs, switches, LEDs and transistors; fields hidden; polarity and function markings, title |
+| `silk.py` | silkscreen: references only on connectors, ICs, switches, LEDs and transistors; fields hidden; polarity and function markings (+/-, CELL/SPK, 5V, ON/OFF, RCA L/R, recovery pad names), title at `placement.TITLE` |
 | `touchup.py` | hand edits on the routed board (review round 5): fifth BQ24074 thermal via, vias in the WROVER ground land, charge-LED labels "C"/"P"; no hole below 0.3 mm (the QFN thermal-via pads get a 0.3 mm drill, its vias are 0.5/0.3 and older smaller ones are resized); checks every via against other-net copper and holes; idempotent |
 | `bridge.py` | joins a pad the router left unconnected: `bridge.py REF PAD`, straight/L track on F.Cu or a stub + new via + B.Cu/In2.Cu to a via of the net, every candidate checked against other-net copper and holes (not needed on the current board) |
 | `jlcfab.py` | JLCPCB order files in `../jlcpcb/`: BOM (LCSC field, else the basic part for plain R/C from its table), CPL (pad centre, Y up, the JLCPCB Tools plugin's rotation corrections for KiCad footprints, none for the EasyEDA `lcsc` ones) and a Gerber + drill zip made with kicad-cli |

@@ -396,7 +396,7 @@ Hardware:
   netlist check `intcheck.py`; stop regenerating once the board is edited by hand); project
   libraries in `lib/` incl. `lcsc` parts made with easyeda2kicad (STEP models git-ignored);
   status, decisions and open checks in its `NOTES.md`; Rev A, the carrier board for the Olimex
-  module, is in git history; layout of Rev B: 90 x 60 mm since 2026-10-16 (was 80 x 60), 4 layers,
+  module, is in git history; layout Rev C since 2026-10-16: 122 x 72 mm for hand assembly (Rev B was 80 x 60, then 90 x 60), 4 layers,
   generated and autorouted by the scripts in `tools/` (Freerouting), hand edits by
   `tools/touchup.py`, DRC clean, renders in `renders/`; the 80 x 60 version was reviewed by Grok
   and Claude) and the design input: `README.md` (overview, phase 1
@@ -982,17 +982,17 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   charger runs in ILIM mode, which has no input-voltage regulation for weak PC ports). First
   layout done the same night (80 x 60 mm), reviewed by Grok and Claude. 2026-10-16: display
   changed to the HS20S010B module on sockets (one JLCPCB/LCSC order for everything), board 90 x
-  60 mm, DRC 0 errors / 0 unconnected / 0 parity issues; review round 6 done (no layout change). Still open
-  (`KiCad/esp-iradio/NOTES.md`, "Layout"): a last look at the routing by the owner,
-  PJ-320D pin order and MSK12C02 ON position on samples, the EC11 shaft length for a front panel
-  ~15 mm above the board, the module's pin 1 and pin headers, and STEP/DXF for the case. JLCPCB
-  order files in `KiCad/esp-iradio/jlcpcb/` (made by `tools/jlcfab.py`), placement preview
-  checked 2026-10-16. Quote that day: $207.39 for 5 assembled boards before shipping and VAT;
-  the owner finds that expensive and is deciding between full assembly, a hybrid (JLCPCB places
-  only the WROVER, the two QFNs, the DAC and the USB-C; the owner solders the rest) and
-  self-assembly - options and estimates in `KiCad/esp-iradio/jlcpcb/README.md`. Nothing ordered.
-  Also requested 2026-10-16: RCA outputs L and R next to the 3.5 mm jack (NOTES.md, "Still to do
-  on the layout"); not drawn yet. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
+  60 mm, reviewed in round 6. The JLCPCB assembly quote that day ($207.39 for 5 boards) made the
+  owner switch to **hand assembly** (paste, stencil, heat gun): **Rev C** (2026-10-16), 1206
+  passives, RCA outputs L/R (J8) next to the 3.5 mm jack, a 122 x 72 mm board with display,
+  encoder and connectors from top to bottom (parts left and right of the encoder); DRC 0 errors /
+  0 unconnected / 0 parity issues; review round 7 pending. Order files in
+  `KiCad/esp-iradio/jlcpcb/` (made by `tools/jlcfab.py`): Gerber zip (PCBs + stencil at JLCPCB),
+  `esp-iradio_lcsc_order.csv` (parts for 2 boards at LCSC, ~$60 with the display), assembly
+  drawing PDF. Nothing ordered yet. Still open (`KiCad/esp-iradio/NOTES.md`, "Layout"): the RCA
+  jack's pinout on the part, a last look at the routing by the owner, PJ-320D pin order and
+  MSK12C02 ON position on samples, the EC11 shaft length for a front panel ~15 mm above the board,
+  the module's pin 1 and pin headers, and STEP/DXF for the case. The firmware needs a few changes for that board (`PWR_CAL_PERMILLE` ~2500,
   charge state on GPIO34/36, backlight PWM >= 20 kHz, the 320 x 240 display, a 16 MB partition
   table); pins stay.
 - 1.69" ST7789: judge the normal layout near the rounded corners on the real panel (photo);

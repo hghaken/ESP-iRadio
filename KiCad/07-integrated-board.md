@@ -1,7 +1,7 @@
 # 07 - Integrated board (phase 2, chosen 2026-10-15)
 
-The owner wants everything on one board: no Olimex dev board, no breakouts, **every part
-assembled by JLCPCB from stock** (D17) and everything in one JLCPCB/LCSC order. The display is
+The owner wants everything on one board: no Olimex dev board, no breakouts, every part from the
+JLCPCB/LCSC stock in one order; since 2026-10-16 (Rev C) the owner **assembles the boards** (D17). The display is
 the one exception to "one board": a 2.0" module from the LCSC catalogue plugged into sockets on
 the board (D8, changed 2026-10-16). This replaces the phase 1 carrier board
 (the A3 schematic of 2026-10-12/15 stays in git as the reference for every function that is
@@ -23,7 +23,10 @@ source of at least 1.5 A). First layout (Rev B draft, 80 x 60 mm, 4 layers) done
 JLCPCB/LCSC), board now 90 x 60 mm with the encoder beside the module; DRC 0 errors, 0
 unconnected, 0 schematic parity issues (`esp-iradio/NOTES.md`, "Layout"). Next: the open checks
 there (module pin 1 and headers, encoder shaft length, switch ON side), a review of the routing in
-KiCad, then the JLCPCB files.
+KiCad, then the JLCPCB files. 2026-10-16, after the JLCPCB assembly quote ($207 for 5 boards):
+**Rev C for hand assembly** (paste, stencil, heat gun): 1206 passives, RCA outputs L/R, a
+122 x 72 mm board with display, encoder and connectors from top to bottom; DRC clean
+(`esp-iradio/NOTES.md`, "Layout").
 
 ## Owner decisions (2026-10-15)
 
@@ -36,9 +39,9 @@ KiCad, then the JLCPCB files.
 | D12 | On/off switch | **slide switch on the 3.3 V LDO's enable**: off = the radio is off, also on USB; the cell still charges on USB. (The BQ24075/79 have a SYSOFF pin that would also stop charging; the BQ24074 has none.) |
 | D13 | Display position | on the front of the board, top left, plugged into the sockets (~11 mm above the board) and held by four M2.5 standoffs; the encoder beside it (2026-10-16) |
 | D14 | Charge LEDs | red on CHG (charging), green on PGOOD (USB power); they light also while the radio is off |
-| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board. 90 x 60 mm since the 2.0" module (63.2 x 36.2 mm) with the encoder beside it |
+| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board. 90 x 60 mm since the 2.0" module (63.2 x 36.2 mm) with the encoder beside it; **122 x 72 mm since Rev C** (owner 2026-10-16: display, encoder, connectors from top to bottom, parts left and right of the encoder; the board may be wider than the display) |
 | D16 | Encoder | **recessed**: nothing sticks out of the front panel. EC11 with push switch, a low knob (~15-18 mm across, ~6 mm high) in a round pocket (~22 mm) of the front panel, its top flush with the panel. With the module on sockets the front panel lies ~15 mm above the board (module ~11 mm up plus its own PCB and glass), so the shaft length is chosen for that height (open) |
-| D17 | Assembly | (under review 2026-10-16: the quote of $207 for 5 boards made the owner consider JLCPCB placing only the hard parts, see `esp-iradio/jlcpcb/README.md`) **every part from the JLCPCB stock**, the whole board assembled by JLCPCB (SMT and THT, the display sockets included). Not assembled: the display module (LCSC part in the same order, plugged in; its two pin headers soldered by the owner if it comes without), the cell, the speaker and the antenna |
+| D17 | Assembly | **Hand assembly by the owner** (2026-10-16, after the JLCPCB assembly quote of $207 for 5 boards): bare PCBs and a stencil from JLCPCB, all parts from LCSC (`esp-iradio/jlcpcb/esp-iradio_lcsc_order.csv`), soldered with paste and a heat gun. Hence **1206 passives** (the largest common size), 1206 LEDs, SOD-123 diodes; the ICs keep their packages (the BQ24074 and MAX98357A exist only as QFN). Was: the whole board assembled by JLCPCB |
 | D18 | Battery protection | **on the board**: DW01A + FS8205A (over-discharge, over-current, short) and a P-MOSFET against a reversed cell; works also with a pack that has its own protection |
 
 Earlier decisions that stay: one mono speaker 4-8 Ohm (D4), USB-C 5 V without PD (D5), JLCPCB with
@@ -151,7 +154,7 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   same pads and outline as the WROVER-E). No PCB antenna, so no antenna keep-out at a board edge:
   a 2.4 GHz antenna with an IPEX/U.FL pigtail (bought separately, not assembled) plugs into the
   module and goes to the case wall. Keep the U.FL connector reachable (no tall parts next to it,
-  room for the plug); never transmit without an antenna connected. On the 90 x 60 board the U.FL
+  room for the plug); never transmit without an antenna connected. On the 90 x 60 and the 122 x 72 boards the U.FL
   lies under the display module: the module does not shield the antenna (that is on the cable),
   but the plug is only reachable with the module unplugged, and the coax runs in the
   ~11 mm gap under the module and comes out below its bottom edge (past y 36.9; the module
@@ -259,8 +262,8 @@ encoder stay.
 | DW01A | C351410 | 117507 | cell protection |
 | FS8205A | C2830320 | 55880 | protection FETs |
 | DMG2305UX-7 | C5261054 | 9017 | reverse-cell P-FET |
-| BAT54WS (SOD-323) | C7502694 | 405154 | preferred; 2x, CHG/PGOOD isolation |
-| LED red / green 0603 | C2286 / C12624 | 3941052 / 354847 | red basic, green extended |
+| BAT54W (SOD-123) | C7502705 | 154678 | 2x, CHG/PGOOD isolation (Rev C; was BAT54WS SOD-323 C7502694) |
+| LED red / green 1206 (XL-3216SURC / XL-3216UGC) | C965822 / C965825 | 533261 / 229141 | Rev C (were 0603 C2286 / C12624); the green one has Vf ~3.4 V: ~1 mA from VSYS 4.4 V through 1k, dim but visible |
 | polyfuse 1206L200/16NR (2 A hold, 16 V) | C22374899 | 34396 | VBUS, before the TVS |
 | HS20S010B display module 2.0" 320x240 | C5329586 | 113 | loose part in the same order, plugged in (D8) |
 | socket 1x10 2.54 mm, 8.5 mm (PM254-1-10-Z-8.5) | C2897373 | 17742 | 2x, J3/J7, assembled |
@@ -269,7 +272,7 @@ encoder stay.
 | MMBT3904 | C7420353 | 5024877 | preferred; auto-reset |
 | USBLC6-2SC6 | C2827654 | 105627 | USB ESD |
 | SMAJ5.0A | C113952 | 602831 | VBUS TVS |
-| NTC 10k B3435 0603 (NCP18XH103F03RB) | C13564 | 206858 | TS |
+| NTC 10k B3435 0805 (CMFB 103F3435) | C2889056 | 15721 | TS (Rev C; no 1206 NTC at LCSC; was 0603 C13564) |
 | TYPE-C-31-M-12 | C165948 | 90528 | USB-C 16 pins; KiCad footprint `USB_C_Receptacle_HRO_TYPE-C-31-M-12` |
 | microSD push-push (TF-01A) | C91145 | 205737 | footprint to match |
 | EC11E with switch | footprint now: Alps EC11E 20 mm shaft | | THT; the shaft length is picked once the case thickness is known, so the knob sits just at the case front (glass ~14 mm up). C470754 (EC11E15244B2, 24.5 mm overall) is not the choice for this height |
@@ -277,7 +280,8 @@ encoder stay.
 | TS-1187A-B-A-B | C318884 | 498821 | basic; RESET, BOOT |
 | JST S2B-PH-K-S (side) / B2B-PH-K-S (top) | C173752 / C131337 | 193749 / 87147 | cell, speaker |
 | PJ-320D 3.5 mm jack (SMD) | C431535 | 60364 | line out |
-| R/C | basic parts | | LCSC numbers from JLCPCB Tools when the BOM is made |
+| dual RCA jack white/red, right angle (CAX AV-210-WR) | C53431212 | 256 | line out L/R in parallel with the jack (Rev C); pinout to check on the part |
+| R/C 1206 | see `tools/jlcfab.py` (`PASSIVES`) | | mostly JLCPCB basic parts; 2.2 nF is a 1 kV X7R (the common 1206 part) |
 
 Stock is a snapshot; JLCPCB Tools checks it again when the BOM is made. Not assembled: the display
 module (plugged in), the cell, the speaker, the antenna. Stock database of 2026-10-11; the
