@@ -132,8 +132,11 @@ Floor plan (front view, origin top left; `tools/placement.py`):
   footprint origin) is flush with the board edge (origin at y 72.35), the shell tabs stay 1.1 mm
   inside; the cell connector J202 moved from the bottom edge to the right edge (the cell sits inside
   the case): (119.0, 27.5), rotation 270, pin 1 (+) on top, "+" above and "-"/"CELL" below it, next
-  to the protection U204/U205/Q203 (short cell path); R216 one mm left (113.0) for room. Board
-  re-routed, DRC 0 errors, 0 unconnected, 0 parity issues.
+  to the protection U204/U205/Q203 (short cell path); R216 one mm left (113.0) for room. Then the
+  speaker connector J6 (86.5) and the switch SW203 (96.0) moved left into J202's old place; J6 stays
+  between the USB-C and the switch, so a USB plug does not cover the switch (round 7); the charge
+  LEDs D202/D203 stay where they were, now above and right of the switch. Board re-routed, DRC 0
+  errors, 0 unconnected, 0 parity issues.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal

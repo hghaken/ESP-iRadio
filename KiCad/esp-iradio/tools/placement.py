@@ -66,7 +66,10 @@ P = {
     # bottom edge connectors; the switch right of the JST connectors (a USB plug covered it, round 7)
     'J8': (23.7, H - 8.2, 0), 'J5': (42.5, H - 9.5, 90), 'J4': (W / 2, H - 9.6, 0),
     # USB-C: the receptacle front (F.Fab 3.65 mm below the origin) flush with the board edge (owner)
-    'J201': (77.0, H - 3.65, 0), 'J6': (95.5, H - 3.8, 0), 'SW203': (105.0, H - 3.38, 0),
+    'J201': (77.0, H - 3.65, 0),
+    # speaker and switch moved left into the cell connector's old place (owner); J6 stays between the
+    # USB-C and the switch, so a USB plug does not cover the switch (round 7)
+    'J6': (86.5, H - 3.8, 0), 'SW203': (96.0, H - 3.38, 0),
     # cell connector on the right edge (owner: the cell is inside the case), pin 1 (+) on top, beside
     # the protection U204/U205/Q203
     'J202': (119.0, 27.5, 270),
