@@ -13,7 +13,9 @@ Floor plan, top to bottom (owner's wish): display, encoder, connectors.
   RC filters, right of it USB/CH340 with auto-reset, the amplifier and the charge LEDs; the microSD
   pull-ups between the encoder and the card socket;
 - bottom edge from left: RCA L/R (J8), 3.5 mm jack (J5), microSD (J4, under the encoder), USB-C
-  (J201), cell (J202), speaker (J6), on/off switch (SW203); M3 holes in the four corners."""
+  (J201, its front flush with the edge), speaker (J6), on/off switch (SW203); M3 holes in the four
+  corners;
+- right edge: the cell connector J202 (the cell sits inside the case), next to the cell protection."""
 
 W, H = 122.0, 76.0               # 76 since 2026-10-16: room between the parts for hand soldering
 MOD_X, MOD_Y = (W - 63.2) / 2, 1.0             # display module PCB top-left corner on the board
@@ -63,7 +65,11 @@ P = {
     'R4': (55.0, 56.5, 0), 'R5': (61.3, 56.5, 0), 'R6': (67.6, 56.5, 0), 'R7': (73.9, 56.5, 0),
     # bottom edge connectors; the switch right of the JST connectors (a USB plug covered it, round 7)
     'J8': (23.7, H - 8.2, 0), 'J5': (42.5, H - 9.5, 90), 'J4': (W / 2, H - 9.6, 0),
-    'J201': (77.0, H - 4.1, 0), 'J202': (86.5, H - 3.8, 0), 'J6': (95.5, H - 3.8, 0), 'SW203': (105.0, H - 3.38, 0),
+    # USB-C: the receptacle front (F.Fab 3.65 mm below the origin) flush with the board edge (owner)
+    'J201': (77.0, H - 3.65, 0), 'J6': (95.5, H - 3.8, 0), 'SW203': (105.0, H - 3.38, 0),
+    # cell connector on the right edge (owner: the cell is inside the case), pin 1 (+) on top, beside
+    # the protection U204/U205/Q203
+    'J202': (119.0, 27.5, 270),
     # USB input, ESD, CC, USB sense, CH340C and auto-reset right of the encoder
     'D201': (81.5, 53.3, 0), 'F201': (80.5, 58.0, 0), 'U202': (74.5, 62.0, 0), 'TP201': (88.0, 57.0, 0),
     'R201': (84.5, 62.5, 90), 'R202': (88.5, 62.5, 90),
@@ -85,6 +91,6 @@ P = {
     'C201': (100.0, 11.0, 90), 'C202': (112.0, 11.0, 90), 'C203': (112.0, 17.3, 90),
     'D204': (118.0, 9.5, 0), 'D205': (118.0, 13.5, 0), 'R213': (118.0, 17.5, 0), 'R215': (118.0, 21.5, 0),
     'RT201': (106.0, 23.0, 90),
-    'U204': (97.5, 30.5, 0), 'U205': (103.0, 30.5, 0), 'Q203': (108.5, 30.5, 0), 'R216': (114.0, 30.5, 90),
+    'U204': (97.5, 30.5, 0), 'U205': (103.0, 30.5, 0), 'Q203': (108.5, 30.5, 0), 'R216': (113.0, 30.5, 90),
     'R219': (96.0, 35.5, 0), 'C206': (102.3, 35.5, 0), 'R220': (108.6, 35.5, 0),
 }

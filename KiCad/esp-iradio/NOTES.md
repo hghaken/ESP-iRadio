@@ -126,8 +126,14 @@ Floor plan (front view, origin top left; `tools/placement.py`):
 - bottom edge from left: RCA L/R J8 (the barrels stick out ~7.6 mm past the edge), 3.5 mm jack J5
   (rotation 90: its nose with the plug opening, local x -9.4..-7.4, lands at y 73.9-75.9, on the
   edge; checked on the board data in round 7), microSD J4 (card from the bottom, under the
-  encoder), USB-C J201, cell J202, speaker J6, on/off switch SW203 (round 7: moved away from the
-  USB-C, a plug covered it); M3 holes H8/H2/H3/H4 in the four corners.
+  encoder), USB-C J201, speaker J6, on/off switch SW203 (round 7: moved away from the USB-C, a plug
+  covered it); M3 holes H8/H2/H3/H4 in the four corners;
+- owner, 2026-10-16: USB-C J201 as far to the edge as it goes: its front (F.Fab, 3.65 mm below the
+  footprint origin) is flush with the board edge (origin at y 72.35), the shell tabs stay 1.1 mm
+  inside; the cell connector J202 moved from the bottom edge to the right edge (the cell sits inside
+  the case): (119.0, 27.5), rotation 270, pin 1 (+) on top, "+" above and "-"/"CELL" below it, next
+  to the protection U204/U205/Q203 (short cell path); R216 one mm left (113.0) for room. Board
+  re-routed, DRC 0 errors, 0 unconnected, 0 parity issues.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal
