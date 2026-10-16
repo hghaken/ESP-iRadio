@@ -25,7 +25,7 @@ unconnected, 0 schematic parity issues (`esp-iradio/NOTES.md`, "Layout"). Next: 
 there (module pin 1 and headers, encoder shaft length, switch ON side), a review of the routing in
 KiCad, then the JLCPCB files. 2026-10-16, after the JLCPCB assembly quote ($207 for 5 boards):
 **Rev C for hand assembly** (paste, stencil, heat gun): 1206 passives, RCA outputs L/R, a
-122 x 72 mm board with display, encoder and connectors from top to bottom; DRC clean
+122 x 76 mm board with display, encoder and connectors from top to bottom; DRC clean
 (`esp-iradio/NOTES.md`, "Layout").
 
 ## Owner decisions (2026-10-15)
@@ -39,7 +39,7 @@ KiCad, then the JLCPCB files. 2026-10-16, after the JLCPCB assembly quote ($207 
 | D12 | On/off switch | **slide switch on the 3.3 V LDO's enable**: off = the radio is off, also on USB; the cell still charges on USB. (The BQ24075/79 have a SYSOFF pin that would also stop charging; the BQ24074 has none.) |
 | D13 | Display position | on the front of the board, top left, plugged into the sockets (~11 mm above the board) and held by four M2.5 standoffs; the encoder beside it (2026-10-16) |
 | D14 | Charge LEDs | red on CHG (charging), green on PGOOD (USB power); they light also while the radio is off |
-| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board. 90 x 60 mm since the 2.0" module (63.2 x 36.2 mm) with the encoder beside it; **122 x 72 mm since Rev C** (owner 2026-10-16: display, encoder, connectors from top to bottom, parts left and right of the encoder; the board may be wider than the display) |
+| D15 | Board size | as small as reasonable, about 60 x 80 mm; the case is designed around the board. 90 x 60 mm since the 2.0" module (63.2 x 36.2 mm) with the encoder beside it; **122 x 76 mm since Rev C** (owner 2026-10-16: display, encoder, connectors from top to bottom, parts left and right of the encoder; the board may be wider than the display) |
 | D16 | Encoder | **recessed**: nothing sticks out of the front panel. EC11 with push switch, a low knob (~15-18 mm across, ~6 mm high) in a round pocket (~22 mm) of the front panel, its top flush with the panel. With the module on sockets the front panel lies ~15 mm above the board (module ~11 mm up plus its own PCB and glass), so the shaft length is chosen for that height (open) |
 | D17 | Assembly | **Hand assembly by the owner** (2026-10-16, after the JLCPCB assembly quote of $207 for 5 boards): bare PCBs and a stencil from JLCPCB, all parts from LCSC (`esp-iradio/jlcpcb/esp-iradio_lcsc_order.csv`), soldered with paste and a heat gun. Hence **1206 passives** (the largest common size), 1206 LEDs, SOD-123 diodes; the ICs keep their packages (the BQ24074 and MAX98357A exist only as QFN). Was: the whole board assembled by JLCPCB |
 | D18 | Battery protection | **on the board**: DW01A + FS8205A (over-discharge, over-current, short) and a P-MOSFET against a reversed cell; works also with a pack that has its own protection |
@@ -154,7 +154,7 @@ USB-C --+-- CC1, CC2: 5.1k each (sink)
   same pads and outline as the WROVER-E). No PCB antenna, so no antenna keep-out at a board edge:
   a 2.4 GHz antenna with an IPEX/U.FL pigtail (bought separately, not assembled) plugs into the
   module and goes to the case wall. Keep the U.FL connector reachable (no tall parts next to it,
-  room for the plug); never transmit without an antenna connected. On the 90 x 60 and the 122 x 72 boards the U.FL
+  room for the plug); never transmit without an antenna connected. On the 90 x 60 and the 122 x 76 boards the U.FL
   lies under the display module: the module does not shield the antenna (that is on the cable),
   but the plug is only reachable with the module unplugged, and the coax runs in the
   ~11 mm gap under the module and comes out below its bottom edge (past y 36.9; the module

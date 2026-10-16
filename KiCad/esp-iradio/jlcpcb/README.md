@@ -1,8 +1,8 @@
-# Order files (Rev C, 122 x 72 mm, hand assembly)
+# Order files (Rev C, 122 x 76 mm, hand assembly)
 
 **Since 2026-10-16 the owner assembles the boards** (solder paste, stencil, heat gun; see
 `../NOTES.md`, "Layout"). What to order:
-- **JLCPCB**: bare PCBs from `esp-iradio_gerbers.zip` (4 layers, 1.6 mm, 122 x 72 mm, min via hole
+- **JLCPCB**: bare PCBs from `esp-iradio_gerbers.zip` (4 layers, 1.6 mm, 122 x 76 mm, min via hole
   0.3 mm: leave the default) **plus a stencil** (top side only; the Gerber zip has F.Paste).
 - **LCSC**: `esp-iradio_lcsc_order.csv` (BOM upload: LCSC part number + quantity; made for 2 boards
   with spares: R/C ~20 % extra, one spare of every IC except the WROVER; run `BOARDS=5 ...jlcfab.py`

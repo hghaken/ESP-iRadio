@@ -24,11 +24,12 @@ Layout:
 - [x] 2026-10-16: board 90 x 60 mm for the HS20S010B module on sockets, encoder beside it, U2
       turned 180 degrees; DRC 0 errors, 0 unconnected, 0 parity issues.
 - [x] Review of the 90 x 60 board by Grok and Claude (round 6): no layout change.
-- [x] 2026-10-16: **Rev C for hand assembly**: 1206 passives, RCA L/R (J8), H8, 122 x 72 mm with
+- [x] 2026-10-16: **Rev C for hand assembly**: 1206 passives, RCA L/R (J8), H8, 122 x 76 mm with
       display / encoder / connectors from top to bottom; DRC 0 errors, 0 unconnected, 0 parity.
 - [x] Review of the Rev C board by Grok and Claude (round 7): switch moved off the USB-C, two
       1206 pairs opened, F201 nudged, RCA pinout confirmed from the maker's drawing; DRC clean.
 - [ ] RCA J8 pinout (1/3 = shell/GND, 2/4 = centre) checked with a meter on the delivered part.
+- [x] Parts spread for hand soldering (>= 1.0 mm between courtyards, board 122 x 76 mm); DRC clean.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:

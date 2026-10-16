@@ -4,6 +4,16 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## After round 7: parts spread for hand soldering
+
+Owner's request: more room between the parts. Board 122 x 72 -> 122 x 76 mm; rotated 1206 columns
+on a 4.0 mm pitch, rows on 6.3 mm; at least 1.0 mm between courtyards everywhere except J7 next to
+the WROVER (0.85 mm, both fixed by the module); before, ~80 pairs were under 1.0 mm. Battery
+divider R217/R218/C207 and TP2/TP202 moved right of the auto-reset. Order of the bottom edge
+unchanged (J8, J5, J4, J201, J202, J6, SW203). Regenerated, DRC with schematic parity 0 errors, 0
+unconnected, 0 parity issues, 31 warnings. Two WROVER ground-land vias this time (route-dependent;
+round 7 said two are enough).
+
 ## Round 7: Grok's reply - outcome
 
 | # | Grok | Outcome |

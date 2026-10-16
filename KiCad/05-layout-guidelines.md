@@ -5,7 +5,7 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
 
 ## Board and mechanics
 
-- **122 x 72 mm** (Rev C, D15: display, encoder and connectors from top to bottom; 90 x 60 mm in
+- **122 x 76 mm** (Rev C, D15: display, encoder and connectors from top to bottom; 90 x 60 mm in
   Rev B), **4 layers**, 1.6 mm FR-4: layer 2 a solid GND plane, layer 3
   power (VSYS, +3V3) and some signals, top and bottom signals. Stitch GND vias along the edge and
   next to signal vias that change layer.
@@ -18,7 +18,7 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
   (`tools/placement.py`); the module outline, glass and active area are drawn on User.Drawings.
 - **ESP32-WROVER-IE**: no PCB antenna, so no keep-out at a board edge. Keep its **U.FL connector
   reachable** (no tall parts within ~5 mm, room for the plug and the pigtail to the case wall). On
-  the 90 x 60 and 122 x 72 boards it lies under the display module: plug the antenna in before
+  the 90 x 60 and 122 x 76 boards it lies under the display module: plug the antenna in before
   the module.
   The ground land is the Espressif 3 x 3 array (datasheet figure 15): add the **thermal vias
   between the squares** and do not flood it with one paste opening.

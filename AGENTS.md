@@ -396,7 +396,7 @@ Hardware:
   netlist check `intcheck.py`; stop regenerating once the board is edited by hand); project
   libraries in `lib/` incl. `lcsc` parts made with easyeda2kicad (STEP models git-ignored);
   status, decisions and open checks in its `NOTES.md`; Rev A, the carrier board for the Olimex
-  module, is in git history; layout Rev C since 2026-10-16: 122 x 72 mm for hand assembly (Rev B was 80 x 60, then 90 x 60), 4 layers,
+  module, is in git history; layout Rev C since 2026-10-16: 122 x 76 mm for hand assembly (Rev B was 80 x 60, then 90 x 60), 4 layers,
   generated and autorouted by the scripts in `tools/` (Freerouting), hand edits by
   `tools/touchup.py`, DRC clean, renders in `renders/`; the 80 x 60 version was reviewed by Grok
   and Claude) and the design input: `README.md` (overview, phase 1
@@ -984,7 +984,7 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   changed to the HS20S010B module on sockets (one JLCPCB/LCSC order for everything), board 90 x
   60 mm, reviewed in round 6. The JLCPCB assembly quote that day ($207.39 for 5 boards) made the
   owner switch to **hand assembly** (paste, stencil, heat gun): **Rev C** (2026-10-16), 1206
-  passives, RCA outputs L/R (J8) next to the 3.5 mm jack, a 122 x 72 mm board with display,
+  passives, RCA outputs L/R (J8) next to the 3.5 mm jack, a 122 x 76 mm board with display,
   encoder and connectors from top to bottom (parts left and right of the encoder); DRC 0 errors /
   0 unconnected / 0 parity issues; review round 7 pending. Order files in
   `KiCad/esp-iradio/jlcpcb/` (made by `tools/jlcfab.py`): Gerber zip (PCBs + stencil at JLCPCB),

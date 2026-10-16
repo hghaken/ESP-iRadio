@@ -77,7 +77,7 @@ the revision history of the actual KiCad project.
   nets). Board: DRC 0 errors, 0 unconnected, 0 parity issues (40 silkscreen warnings).
 - 2026-10-16: **Rev C for hand assembly** (owner's decision after the JLCPCB quote): 1206 passives,
   RCA outputs L/R (J8, LCSC C53431212), H8, new floor plan display / encoder / connectors on a
-  122 x 72 mm board (see "Layout"). Schematic: ERC 1 known warning, `intcheck.py` OK (122 parts,
+  122 x 72 mm board, spread to 122 x 76 mm the same day for hand soldering (see "Layout"). Schematic: ERC 1 known warning, `intcheck.py` OK (122 parts,
   117 nets). Board: DRC 0 errors, 0 unconnected, 0 parity issues.
 
 ## Layout (Rev C, 2026-10-16: hand assembly)
@@ -90,7 +90,7 @@ TSSOP-20; the owner kept the tested MAX98357A over an SOP-8 NS4168). New: RCA ou
 to the 3.5 mm jack, a fourth M3 hole (H8). New floor plan, top to bottom: display, encoder,
 connectors.
 
-Board 122 x 72 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
+Board 122 x 76 mm, 4 layers (F.Cu signals and GND pour, In1.Cu solid GND plane, In2.Cu signals and
 power, B.Cu signals and GND pour), 1.6 mm, every part on the top side. Rules: 0.2 mm tracks with
 0.15 mm clearance, Power class 0.5 mm (VSYS, VIN, VBUS, VBAT, BATN, cell +, +3V3, GND), Supply
 class 0.3 mm (+3V3A, speaker outputs), vias 0.55/0.3 mm (0.5/0.3 where a pour island or a land had
@@ -124,7 +124,7 @@ Floor plan (front view, origin top left; `tools/placement.py`):
   the charge LEDs D202/D203 at the right edge; the microSD pull-ups R4-R7 in a row between the
   encoder and the card socket;
 - bottom edge from left: RCA L/R J8 (the barrels stick out ~7.6 mm past the edge), 3.5 mm jack J5
-  (rotation 90: its nose with the plug opening, local x -9.4..-7.4, lands at y 69.9-71.9, on the
+  (rotation 90: its nose with the plug opening, local x -9.4..-7.4, lands at y 73.9-75.9, on the
   edge; checked on the board data in round 7), microSD J4 (card from the bottom, under the
   encoder), USB-C J201, cell J202, speaker J6, on/off switch SW203 (round 7: moved away from the
   USB-C, a plug covered it); M3 holes H8/H2/H3/H4 in the four corners.
@@ -132,9 +132,16 @@ Floor plan (front view, origin top left; `tools/placement.py`):
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal
 reliefs. The USB pair is routed like any other signal (short, full speed). `tools/touchup.py`: the
-QFN thermal vias to 0.3 mm, a fifth BQ24074 thermal via (in the centre on this board), all four
-WROVER ground-land vias (after the round 7 re-route), the charge-LED labels "C"/"P". DRC with
-schematic parity 2026-10-16 (after round 7): 0 errors, 0 unconnected, 0 parity issues; 34
+QFN thermal vias to 0.3 mm, a fifth BQ24074 thermal via (in the centre on this board), WROVER
+ground-land vias where they fit (two or four, depending on the route: a microSD DAT0 track on
+In2.Cu may pass the inner pair; two are enough, round 7), the charge-LED labels "C"/"P".
+
+Spacing (owner, 2026-10-16: hand soldering is easier with room): the board grew from 122 x 72 to
+122 x 76 mm and the parts were spread: rotated 1206 columns on a 4.0 mm pitch, rows on 6.3 mm,
+~1.5 mm between courtyards where possible and at least 1.0 mm everywhere except the fixed socket
+J7 next to the WROVER (0.85 mm; it was often 0.3-0.5 mm before). The battery divider R217/R218/C207
+and TP2/TP202 moved from the right strip to the free area right of the auto-reset. DRC with
+schematic parity 2026-10-16 after the spread: 0 errors, 0 unconnected, 0 parity issues; 31
 warnings (silkscreen, and the two expected footprint mismatches).
 
 Review history: Rev B (80 x 60 with the bare panel, then 90 x 60 with the module) was reviewed by
