@@ -12541,7 +12541,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x10_P2.54mm_Vertical"
+	(footprint "esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B"
 		(layer "F.Cu")
 		(uuid "7e4ca3e2-27bd-4d26-b0a7-f39cee1c079f")
 		(at 190.6 107.67)
@@ -12863,6 +12863,17 @@
 		)
 		(embedded_fonts no)
 		(model "${KICAD9_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x10_P2.54mm_Vertical.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+		(model "${KIPRJMOD}/lib/esp-iradio.3dshapes/HS20S010B_on_sockets.wrl"
 			(offset
 				(xyz 0 0 0)
 			)

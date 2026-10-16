@@ -136,7 +136,7 @@ s.text('CONTROLS: EC11 encoder (recessed knob)', (20.32, 99.06), 1.8, True)
 # the other side (CN2 has its own pin order, not CN1's: all pins stay open). FSO/FCS belong to the optional font chip:
 # not fitted, left open (datasheet). BLK switches the module's own backlight transistor: high = on.
 s.add('Connector_Generic:Conn_01x10', 'J3', 345.44, 63.5, 0, 'Display HS20S010B CN1',
-      'Connector_PinSocket_2.54mm:PinSocket_1x10_P2.54mm_Vertical', extra={'LCSC': 'C2897373'},
+      'esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B', extra={'LCSC': 'C2897373'},
       fields={'ref': (335.28, 45.72, 0, 'left'), 'val': (335.28, 48.26, 0, 'left')})
 # J3 (CN1): 1 GND, 2 VCC, 3 CLK, 4 SDA, 5 RES, 6 DC, 7 CS, 8 BLK, 9 FSO, 10 FCS
 gnd(P('J3', 1), 'left')

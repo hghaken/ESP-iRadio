@@ -35,3 +35,24 @@ for lib, name, model, off, rot in PARTS:
     out = os.path.join(LIB, 'esp-iradio.pretty', name + '.kicad_mod')
     open(out, 'w', encoding='utf-8', newline='\n').write(s)
     print('written', os.path.relpath(out, LIB))
+
+# J3 (display CN1 socket): KiCad's socket model plus the display module (tools/display3d.py), so the
+# 3D view shows the module where it will sit; J7 keeps the plain KiCad socket.
+name = 'PinSocket_1x10_P2.54mm_Vertical'
+s = open(os.path.join(KICAD_FP, 'Connector_PinSocket_2.54mm.pretty', name + '.kicad_mod'), encoding='utf-8').read()
+j = s.rindex(')')
+s = (s[:j] + '\t(model "${KIPRJMOD}/lib/esp-iradio.3dshapes/HS20S010B_on_sockets.wrl"\n\t\t(offset\n\t\t\t(xyz 0 0 0)\n'
+     '\t\t)\n\t\t(scale\n\t\t\t(xyz 1 1 1)\n\t\t)\n\t\t(rotate\n\t\t\t(xyz 0 0 0)\n\t\t)\n\t)\n' + s[j:])
+s = s.replace('(footprint "%s"' % name, '(footprint "%s_HS20S010B"' % name, 1)
+s = re.sub(r'\(descr "', '(descr "Project copy with the HS20S010B display module model (tools/fp3d.py). ', s, count=1)
+out = os.path.join(LIB, 'esp-iradio.pretty', name + '_HS20S010B.kicad_mod')
+open(out, 'w', encoding='utf-8', newline='\n').write(s)
+print('written', os.path.relpath(out, LIB))
+
+# the EasyEDA model of the PJ-320D jack came with every material fully transparent (transparency 1.0):
+# make it solid (the other EasyEDA models have 0.0)
+p = os.path.join(LIB, 'lcsc.3dshapes', 'AUDIO-SMD_PJ-320D-1.wrl')
+w = open(p, encoding='utf-8').read()
+if 'transparency 1.0' in w:
+    open(p, 'w', encoding='utf-8', newline='\n').write(w.replace('transparency 1.0', 'transparency 0.0'))
+    print('PJ-320D model made solid')

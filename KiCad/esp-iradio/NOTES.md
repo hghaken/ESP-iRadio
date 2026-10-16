@@ -175,8 +175,12 @@ Still to do on the layout (before ordering):
   folders, so J201 and SW1 use project copies of the KiCad footprints (`esp-iradio:` library, same
   pads, made by `tools/fp3d.py`) with the EasyEDA models from `lib/lcsc.3dshapes`, aligned on the
   pads; checked in a front render (`renders/front.png`: USB-C opening and 3.5 mm jack at the edge,
-  encoder upright). The WROVER-IE model is the EasyEDA one and shows a PCB antenna; the display
-  module is not in the 3D view (loose part).
+  encoder upright). The display module has a simple own model (`tools/display3d.py`: PCB, LCD
+  body, active area, header spacers, ~11 mm up) hung on J3's project footprint
+  `esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B`, so the 3D view shows it in place (it
+  shows the 20 mm EC11 shaft ending about at the glass front). The EasyEDA model of the PJ-320D
+  jack came with every material fully transparent; `fp3d.py` makes it solid. The WROVER-IE model
+  is the EasyEDA one and shows a PCB antenna.
 
 ## Schematic (Rev B, integrated board)
 
