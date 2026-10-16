@@ -4,6 +4,48 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 9: changes since round 8 - please review
+
+Commit `e6b5f01` (changes since `f7bd61e`, the round 8 close). The board was re-routed twice
+(Freerouting, every track new); the bottom edge keeps its order. Placement frame as before
+(origin top left, y down, 122 x 76 mm; +90 deg turns local (x, y) into (y, -x)).
+
+What changed:
+1. **C207 at the ADC pin** (`7b0d2c4`, your round 8 suggestion): C207 (100 nF on VBAT_SENSE) at
+   (49.5, 29.5, 0) under the module; its VBAT_SENSE pad is 3.4 mm of track from U3 pin 7 (IO35).
+   R217/R218 stay at (112/116, 41).
+2. **3D models only** (`8c5f9b7`, `a6d1c3f`; no copper change): J201 and SW1 use project copies of
+   the KiCad footprints (`esp-iradio:` library, same pads, `tools/fp3d.py`) with the EasyEDA models
+   aligned on the pads; J3 uses `esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B` (KiCad's
+   socket pads) with an extra simple model of the display module (`tools/display3d.py`); the
+   PJ-320D model's materials were fully transparent and are now solid. Schematic footprint fields
+   follow (parity 0).
+3. **Silkscreen** (`8097ac6`, `e6b5f01`): every part now shows its reference (0.9 mm, 0.15 mm
+   line), placed by `tools/silk.py` `place_refs()` next to the part: no overlap with pads (+0.25),
+   other courtyards, holes or other texts, inside the board (0.5 mm), horizontal or vertical (owner:
+   vertical is fine), and always nearer to its own part than to any other (checked: none
+   ambiguous, none left on a body). The recovery pads keep their signal names.
+4. **Charge LEDs moved** (`8097ac6`, for the references): D202 (104.3, 66.6) and D203 (110.3, 66.6),
+   side by side above the switch SW203, with "C" and "P" left of each; before they sat stacked in
+   the bottom-right corner by H4.
+
+Checks: DRC with schematic parity 0 errors, 0 unconnected, 0 parity issues; 18 warnings (13 silk
+near the edge from connector outlines, the CELL/SPK labels on the JST outlines, the two expected
+QFN via mismatches). Courtyard gaps all >= 1.0 mm except U3/J7 (0.85, fixed) and C214/D202
+(0.64 mm, corner to corner). WROVER ground-land vias: route-dependent again.
+
+Please check:
+1. C207: the track from its pad to IO35, and that nothing noisy (LCD_BL, SPI) runs alongside that
+   last 3.4 mm.
+2. The new LED position: LED tracks and resistors R212/R214, readability of "C"/"P", and whether
+   C214/D202 at 0.64 mm is a soldering problem.
+3. The silkscreen: any reference that sits on copper that JLCPCB would clip, under a part body, or
+   reads as belonging to the wrong part; the vertical ones in the DAC, encoder and auto-reset
+   columns.
+4. The 3D additions: anything in the project footprints that differs from KiCad's (pads should be
+   identical), and whether the display model height (PCB from z 11.0, glass front ~13.9) matches
+   your reading of the drawing.
+
 ## Round 8 closed
 
 Grok measured `8ca50ea`: nothing has to move before an order. Spacing confirmed (only U3/J7
