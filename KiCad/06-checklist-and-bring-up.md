@@ -32,8 +32,8 @@ Layout:
 - [x] Parts spread for hand soldering (>= 1.0 mm between courtyards, board 122 x 76 mm); DRC clean.
 - [x] Review of the spread board by Grok (round 8): nothing to move; C207 moved to the ADC pin
       (IO35) as suggested, DRC clean.
-- [ ] Review by Grok of the changes since round 8 (round 9: C207, 3D models, references on the
-      silkscreen, LEDs above the switch).
+- [x] Review by Grok of the changes since round 8 (round 9: C207, 3D models, references on the
+      silkscreen, LEDs above the switch): nothing to move; the optional silk nudge is done.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:

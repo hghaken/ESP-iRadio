@@ -108,11 +108,14 @@ def rect_dist(px, py, r):
     return (dx * dx + dy * dy) ** 0.5
 
 
-def place_refs():
+def place_refs(first=()):
     """Move each visible reference next to its part: candidates around the courtyard (above, below,
     left, right, shifted along the side, then turned 90 degrees), nearest valid one wins."""
     fps = list(board.GetFootprints())
-    pads = [(fp.GetReference(), box_of(p, 0.25)) for fp in fps for p in fp.Pads()]
+    pads = [(fp.GetReference(), box_of(p, 0.15)) for fp in fps for p in fp.Pads()]   # JLCPCB: 0.15 mm silk to pad
+    # the parts' own silkscreen outlines and pin-1 marks (some reach past the courtyard)
+    pads += [(fp.GetReference(), box_of(g, 0.1)) for fp in fps for g in fp.GraphicalItems()
+             if g.GetLayer() == pcbnew.F_SilkS and not isinstance(g, pcbnew.PCB_TEXT)]
     crt = {}
     for fp in fps:
         bb = fp.GetCourtyard(pcbnew.F_CrtYd).BBox()
@@ -122,9 +125,9 @@ def place_refs():
     taken = [box_of(d, 0.2) for d in board.GetDrawings() if d.GetLayer() == pcbnew.F_SilkS and isinstance(d, pcbnew.PCB_TEXT)]
     edge = board.GetBoardEdgesBoundingBox()
     lim = (edge.GetLeft() + mm(0.5), edge.GetTop() + mm(0.5), edge.GetRight() - mm(0.5), edge.GetBottom() - mm(0.5))
-    order = sorted(fps, key=lambda f: (crt[f.GetReference()][2] - crt[f.GetReference()][0]) * (crt[f.GetReference()][3] - crt[f.GetReference()][1]))
+    order = sorted(fps, key=lambda f: (f.GetReference() not in first, (crt[f.GetReference()][2] - crt[f.GetReference()][0]) * (crt[f.GetReference()][3] - crt[f.GetReference()][1])))
     onbody = []
-    for fp in order:                         # small parts first: they have the fewest places
+    for fp in order:                         # boxed in last time first, then small parts: fewest places
         ref = fp.GetReference()
         rt = fp.Reference()
         if not rt.IsVisible():
@@ -132,37 +135,47 @@ def place_refs():
         x0, y0, x1, y1 = crt[ref]
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
         best = None
-        for ang in (0, 90):
-            rt.SetTextAngleDegrees(ang)
-            rt.SetPosition(pcbnew.VECTOR2I(int(cx), int(cy)))
-            tb = rt.GetBoundingBox()
-            hw, hh = tb.GetWidth() / 2, tb.GetHeight() / 2
-            for gap in (0.0, 0.15, 0.3, 0.8, 1.5, 2.5, 3.5, 4.5):
-                g = mm(gap)
-                for sh in (0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6):
-                    s_ = mm(sh)
-                    for px, py in ((cx + s_, y0 - g - hh), (cx + s_, y1 + g + hh),
-                                   (x0 - g - hw, cy + s_), (x1 + g + hw, cy + s_)):
-                        b = (px - hw, py - hh, px + hw, py + hh)
-                        if b[0] < lim[0] or b[1] < lim[1] or b[2] > lim[2] or b[3] > lim[3]:
-                            continue
-                        cost = abs(px - cx) + abs(py - cy) + (mm(1) if ang else 0)   # vertical is fine (owner)
-                        # a text nearer to another part than to its own is ambiguous: avoid
-                        own = rect_dist(px, py, crt[ref])
-                        near = min((rect_dist(px, py, cb) for r, cb in crt.items()
-                                    if r != ref and r[0] != 'H'), default=mm(99))
-                        amb = near < own
-                        if amb:
-                            cost += mm(6) + (own - near) * 3
-                        if best and cost >= best[0]:
-                            continue
-                        if any(hit(b, pb) for r, pb in pads):
-                            continue
-                        if any(hit(b, cb) for r, cb in crt.items() if r != ref):
-                            continue
-                        if any(hit(b, tb_) for tb_ in taken):
-                            continue
-                        best = (cost, px, py, ang, b, amb)
+        for size, thick in ((REF_SIZE, REF_THICK), (0.8, 0.12)):   # a smaller font only where tight
+            if best is not None and not best[5]:
+                break
+            best = None
+            rt.SetTextSize(pcbnew.VECTOR2I(mm(size), mm(size)))
+            rt.SetTextThickness(mm(thick))
+            for ang in (0, 90):
+                rt.SetTextAngleDegrees(ang)
+                rt.SetPosition(pcbnew.VECTOR2I(int(cx), int(cy)))
+                # the drawn letters, not GetBoundingBox() (that adds line spacing: 1.58 vs 1.05 mm tall)
+                tb = rt.GetEffectiveTextShape().BBox()
+                hw, hh = tb.GetWidth() / 2, tb.GetHeight() / 2
+                ox, oy = tb.GetCenter().x - cx, tb.GetCenter().y - cy
+                for gap in (0.0, 0.15, 0.3, 0.8, 1.5, 2.5, 3.5, 4.5):
+                    g = mm(gap)
+                    for sh in (0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6):
+                        s_ = mm(sh)
+                        for px, py in ((cx + s_, y0 - g - hh), (cx + s_, y1 + g + hh),
+                                       (x0 - g - hw, cy + s_), (x1 + g + hw, cy + s_)):
+                            b = (px - hw, py - hh, px + hw, py + hh)
+                            if b[0] < lim[0] or b[1] < lim[1] or b[2] > lim[2] or b[3] > lim[3]:
+                                continue
+                            cost = abs(px - cx) + abs(py - cy) + (mm(1) if ang else 0)   # vertical is fine (owner)
+                            # a text nearer to another part than to its own is ambiguous: avoid
+                            own = rect_dist(px, py, crt[ref])
+                            near = min((rect_dist(px, py, cb) for r, cb in crt.items()
+                                        if r != ref and r[0] != 'H'), default=mm(99))
+                            amb = near < own + mm(0.3)          # clearly nearer to its own part (Grok, round 9)
+                            if amb:
+                                cost += mm(6) + (own - near) * 3
+                            else:                       # prefer the outside of a column to a shared gap
+                                cost += max(0, mm(1.5) - (near - own)) * 2
+                            if best and cost >= best[0]:
+                                continue
+                            if any(hit(b, pb) for r, pb in pads):
+                                continue
+                            if any(hit(b, cb) for r, cb in crt.items() if r != ref):
+                                continue
+                            if any(hit(b, tb_) for tb_ in taken):
+                                continue
+                            best = (cost, px - ox, py - oy, ang, b, amb, size, thick)
         if best is None or best[5]:
             # boxed in (no spot clearly nearer to this part than to a neighbour): the reference goes
             # on the part's own body, across it between the two pads (read while placing the part)
@@ -172,14 +185,23 @@ def place_refs():
             rt.SetTextAngleDegrees(0 if (y1 - y0) > (x1 - x0) else 90)
             rt.SetPosition(pcbnew.VECTOR2I(int(cx), int(cy)))
             continue
-        cost, px, py, ang, b, amb = best
+        cost, px, py, ang, b, amb, size, thick = best
+        rt.SetTextSize(pcbnew.VECTOR2I(mm(size), mm(size)))
+        rt.SetTextThickness(mm(thick))
         rt.SetTextAngleDegrees(ang)
         rt.SetPosition(pcbnew.VECTOR2I(int(px), int(py)))
         taken.append((b[0] - mm(0.2), b[1] - mm(0.2), b[2] + mm(0.2), b[3] + mm(0.2)))
-    print('references placed; on the part body (boxed in):', ' '.join(onbody) or 'none')
+    return onbody
 
 
-place_refs()
+# greedy: a part boxed in by its neighbours' texts gets first pick on the next pass
+first = []
+for _ in range(4):
+    onbody = place_refs(first)
+    if not onbody:
+        break
+    first = onbody + [r for r in first if r not in onbody]
+print('references placed; on the part body (boxed in):', ' '.join(onbody) or 'none')
 
 board.Save(PCB)
 print('silkscreen updated')

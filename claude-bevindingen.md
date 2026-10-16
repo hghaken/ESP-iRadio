@@ -4,7 +4,26 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
-## Round 9: changes since round 8 - please review
+## Round 9 closed
+
+Grok measured `e6b5f01`: nothing has to move before an order. C207 sits 3.39 mm of track from IO35
+with no LCD_BL or SPI alongside; the C214/D202 0.64 mm is courtyard corner to corner (pads 3.56 mm
+apart), no soldering problem; "C"/"P" clear the LED pads; the three project footprints have
+KiCad's pads exactly (model only), the encoder model is the 24.5 mm part while the footprint is the
+20 mm shaft (shaft length still open), and the display model's front face matches the drawing.
+**Optional silk nudge done** (`tools/silk.py`, silk only, no copper change): a reference now has to
+be at least 0.3 mm nearer to its own part than to any other, measured on the drawn letters
+(KiCad's text box is 1.58 mm tall for 1.05 mm of letters, which pushed texts into the middle of
+the gaps); a place on the outside of a column wins over a shared gap (C10, R207, R208, R218 and
+others moved out); the texts keep 0.15 mm from pads (JLCPCB) and 0.1 mm from the parts' own silk
+outlines; a part boxed in by its neighbours' texts gets first pick on a next pass. Result: every
+reference 0.9 mm next to its part, none on a body, smallest margin 0.30 mm (D201 against F201),
+the ones still in a gap (C15, R11) 0.64-0.66 mm. DRC 0 errors, 0 unconnected, 0 parity issues;
+18 warnings (13 connector outlines near the edge, CELL/SPK on the JST outlines, J4's own outline on
+copper, the two expected QFN via mismatches). Still on a sample: PJ-320D pin order, TF-01A drawing,
+the ON side of SW203, EC11 shaft length, HS20S010B pin 1/7/8.
+
+## Round 9: changes since round 8 (as sent)
 
 Commit `e6b5f01` (changes since `f7bd61e`, the round 8 close). The board was re-routed twice
 (Freerouting, every track new); the bottom edge keeps its order. Placement frame as before

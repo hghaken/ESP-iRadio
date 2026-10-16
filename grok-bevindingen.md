@@ -1,3 +1,70 @@
+# Grok review, round 9 (C207, charge LEDs, silk, 3D, 2026-10-16)
+
+Measured commit `e6b5f01` (changes since `f7bd61e`) on the placed board with KiCad's pcbnew. The board file was not changed. DRC was not re-run; the recorded result stands (0 errors, 0 unconnected, 0 parity, 18 warnings). The board was re-routed, so the track lengths in round 8 do not describe this copper. This round measured the four checks below.
+
+Nothing has to move before an order. The one optional item is a silk nudge, and it does not need a new route.
+
+## 1. C207 is on the ADC pin
+
+C207 sits at (49.5, 29.5), under the module. Its VBAT_SENSE pad is at (48.03, 29.50) and U3 pin 7 (IO35) is at (49.19, 26.60). The copper between them is two F.Cu segments, both 0.20 mm wide:
+
+- 1.65 mm, (48.03, 29.50) to (49.19, 28.34)
+- 1.74 mm, (49.19, 28.34) to (49.19, 26.60)
+
+That is 3.39 mm. The 100 nF is on the pin side of the incoming run. R217 and R218 stay at (112, 41) and (116, 41). The whole VBAT_SENSE net is now 79 mm (it was 86 mm with the capacitor at the divider).
+
+Same-layer neighbours of those two segments, closer than 2 mm: an encoder RC net at 0.96 mm (`Net-(C6-+)`), CHG at 1.27 mm, and I2S BCK at 1.91 mm. LCD_BL and the SPI nets are not among them. The backlight still passes the long incoming run, at about (58.6, 24.6), before the pin. The capacitor is downstream of that, which is what the move was for.
+
+## 2. Charge LEDs — the 0.64 mm is a courtyard corner
+
+D202 is at (104.30, 66.60) and D203 at (110.30, 66.60), side by side above SW203. They have left the corner by H4. Courtyard gap D202 to D203 is 1.35 mm. Each LED clears SW203 by 3.89 mm.
+
+C214 (100.50, 62.50, rotated 90) meets D202 at 0.64 mm, and that number is the courtyard corners: 0.28 mm in x and 0.59 mm in y. The nearest pads are C214.1 (VBUS_SENSE) and D202.1 (CHG_N), 3.56 mm centre to centre, different nets. The bodies are about 2 mm apart. Hand soldering does not bridge that.
+
+R212 stays at (116.50, 64.00) and R214 at (116.50, 60.00). The anode net of D202 is 13.5 mm (6.6 on F.Cu, 6.8 on In2.Cu). D203's anode net is 13.0 mm, all on F.Cu. CHG_N is 66 mm and PGOOD_N is 61 mm, almost all of it on In2.Cu up to the charger. Both are slow.
+
+"C" and "P" are 0.8 mm text at the LED y, anchored just left of each body. The ink clears D202 pad 1 and D203 pad 1 by 0.20 mm and does not touch either pad, so it is not on copper JLCPCB would clip. CELL and SPK on the JST outlines are the warnings already recorded.
+
+## 3. Silkscreen — references are off the pads, and a few sit in the gap
+
+Footprint references: none on a pad, none left on a body, none within 0.15 mm of the board edge, and none nearer another part than its own by the check in `place_refs()`. Recovery pads still carry signal names.
+
+The vertical references in the 4.0 mm columns are the weak spot. A text whose centre is 1.98 mm to one side of a part on that pitch lands on the midpoint of the gap. The checker still calls it the owner's, by about 0.03 mm (0.79 mm to the own courtyard, 0.82 to 0.86 mm to the neighbour). A person cannot see that.
+
+Measured centres, reference against the part:
+
+| Ref | Part | Reference | Faces |
+|---|---|---|---|
+| C10 | (29.5, 40.5) | (27.52, 40.50), 90 deg | the gap with C9 |
+| C15 | (12.5, 46.8) | (10.52, 46.80), 90 deg | the gap with C16 |
+| R10 | (49.5, 40.5) | (47.54, 40.50), 90 deg | the gap with C6 |
+| R11 | (49.5, 46.8) | (47.54, 46.80), 90 deg | the gap with C7 |
+| R12 | (49.5, 53.1) | (47.54, 53.10), 90 deg | the gap with C8 |
+| R207 | (103.0, 41.0) | (101.04, 41.00), 90 deg | the gap with R205 |
+| R208 | (107.0, 41.0) | (105.04, 41.00), 90 deg | the gap with R207 |
+
+R218 against R217 has the same 0.03 mm margin. Both are 470k. R205, R207 and R208 are all 10k. C15 and C16 are both 2.2 uF. R10, R11 and R12 are 10k next to 100 nF capacitors, and the letter tells them apart.
+
+The pair that matters for hand assembly is C9 and C10. Both are 1206. C9 is 100 nF and C10 is 10 uF, and "C10" sits between them. C9's own reference is on the outside, at (23.29, 40.50), horizontal. Nudging the gap texts to the outside of each column is silk only.
+
+## 4. 3D — pads match KiCad, the encoder picture is the 24.5 mm part
+
+The three project footprints differ from KiCad in the model only. Pad count, number, type, shape, position, size, drill and layers match:
+
+- J201, the HRO USB-C receptacle, 22 pads. Model is the EasyEDA WRL, offset (0, +1.40, 0), turned 180 deg about z.
+- SW1, the Alps EC11E H20 footprint, 7 pads. Model is `SW-TH_EC11XXXXXXXX-L11.7-W12.0-H24.5-P2.5-LS14.5.wrl`, offset (7.5, -2.5, 0), turned -90 deg about z, scale 1.
+- J3, the 1x10 socket, 10 pads. It keeps KiCad's socket model and adds `HS20S010B_on_sockets.wrl`.
+
+These EasyEDA models are in the usual 0.1 inch units (a USB-C body in the same library spans 8.9 x 7.9 x 4.1 mm once multiplied by 2.54, at scale 1). The encoder's highest vertex is 9.6457, which is 24.50 mm above the board. That is the 24.5 mm overall part. The footprint is the 20 mm shaft, and `07-integrated-board.md` already says the 24.5 mm part is not the choice. Shaft length for the case is still open. The pads are the same for those heights, so the copper is unchanged.
+
+The display model puts the module PCB at z 11.0 and the glass front at 13.9 (1.6 mm PCB plus a 1.3 mm body). The drawing says the module PCB is about 11 mm up and the glass front about 14 mm, with the module 2.5 mm thick. The script calls the model a picture, not a fit check. The front face matches the drawing.
+
+## Before the order
+
+No placement change and no new route. Optional, silk only: move the vertical references in the table above out of the shared gap, C10 first. Still on a sample, unchanged: PJ-320D pin order, TF-01A drawing, which side of SW203 is ON, EC11 shaft length, and the HS20S010B pin-1 / pin-7 / pin-8 check. J5 stays mouth-out.
+
+---
+
 # Grok review, round 8 (parts spread, 122 x 76 mm, 2026-10-16)
 
 Measured commit `8ca50ea` on the placed board with KiCad's pcbnew (pad positions, courtyards, tracks, zones). The board file was not changed. DRC was not re-run; the recorded result stands (0 errors, 0 unconnected, 0 parity, 31 warnings).

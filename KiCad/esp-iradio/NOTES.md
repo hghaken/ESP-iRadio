@@ -173,7 +173,10 @@ Still to do on the layout (before ordering):
   next to the part where it touches no pad, no other courtyard, no hole and no other text, and is
   nearer to its own part than to any other; horizontal or vertical along the part (owner: vertical
   is fine), right against the part's courtyard where needed (a part boxed in would otherwise get it
-  on its own body; none does now). The recovery pads
+  on its own body; none does now). Since Grok round 9 the text must be at least 0.3 mm nearer to its
+  own part than to any other (measured on the drawn letters, not KiCad's taller text box), a spot on
+  the outside of a column wins over a shared gap, it keeps 0.15 mm from pads and 0.1 mm from the
+  parts' own silk outlines, and a part left boxed in gets first pick on a next pass. The recovery pads
   show EN/IO0/TX/RX/GND. The charge LEDs D202 (C) / D203 (P) moved side by side above the switch
   for room. `renders/top_refs.png` is a top view without the display module; the assembly
   drawing `jlcpcb/esp-iradio_assembly.pdf` also shows every reference;
