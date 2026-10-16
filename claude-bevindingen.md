@@ -4,6 +4,17 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 8 closed
+
+Grok measured `8ca50ea`: nothing has to move before an order. Spacing confirmed (only U3/J7
+under 1.0 mm, fixed); the hole courtyards near J8, D202/D203, C10 and C5 are larger than the
+real heads and standoffs, which clear. Decoupling distances fine (100 nF on the pins, bulk one
+pitch further). Power widths held on the new route, analog stays left of x 39 and 5.7 mm from I2S
+at the closest, USB full speed fine. Battery divider: the charge path stays short; the only
+suggestion is optional - move C207 (100 nF on VBAT_SENSE) from the divider to the ADC pin (U3 pin 7)
+so the 86 mm high-impedance run past LCD_BL is filtered at the pin. Not done yet: owner's call.
+Grok also confirmed the J5 orientation (mouth at the edge) and withdrew the round 7 flip.
+
 ## Round 8: parts spread for hand soldering - please review
 
 Commit `8ca50ea`. Only the placement changed (`tools/placement.py`); schematic, rules and tools are

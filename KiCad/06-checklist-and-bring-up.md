@@ -30,7 +30,7 @@ Layout:
       1206 pairs opened, F201 nudged, RCA pinout confirmed from the maker's drawing; DRC clean.
 - [ ] RCA J8 pinout (1/3 = shell/GND, 2/4 = centre) checked with a meter on the delivered part.
 - [x] Parts spread for hand soldering (>= 1.0 mm between courtyards, board 122 x 76 mm); DRC clean.
-- [ ] Review of the spread board by Grok (round 8).
+- [x] Review of the spread board by Grok (round 8): nothing to move; optional: C207 to the ADC pin.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:
