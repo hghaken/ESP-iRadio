@@ -137,7 +137,7 @@ def place_refs():
             rt.SetPosition(pcbnew.VECTOR2I(int(cx), int(cy)))
             tb = rt.GetBoundingBox()
             hw, hh = tb.GetWidth() / 2, tb.GetHeight() / 2
-            for gap in (0.3, 0.8, 1.5, 2.5, 3.5, 4.5):
+            for gap in (0.0, 0.15, 0.3, 0.8, 1.5, 2.5, 3.5, 4.5):
                 g = mm(gap)
                 for sh in (0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6):
                     s_ = mm(sh)
@@ -146,7 +146,7 @@ def place_refs():
                         b = (px - hw, py - hh, px + hw, py + hh)
                         if b[0] < lim[0] or b[1] < lim[1] or b[2] > lim[2] or b[3] > lim[3]:
                             continue
-                        cost = abs(px - cx) + abs(py - cy) + (mm(3) if ang else 0)
+                        cost = abs(px - cx) + abs(py - cy) + (mm(1) if ang else 0)   # vertical is fine (owner)
                         # a text nearer to another part than to its own is ambiguous: avoid
                         own = rect_dist(px, py, crt[ref])
                         near = min((rect_dist(px, py, cb) for r, cb in crt.items()
