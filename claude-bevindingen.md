@@ -4,7 +4,11 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
-## After round 7: parts spread for hand soldering
+## Round 8: parts spread for hand soldering - please review
+
+Commit `8ca50ea`. Only the placement changed (`tools/placement.py`); schematic, rules and tools are
+as in round 7. The board was regenerated from scratch (mkpcb, Freerouting, stitch, silk, touchup),
+so every track is new.
 
 Owner's request: more room between the parts. Board 122 x 72 -> 122 x 76 mm; rotated 1206 columns
 on a 4.0 mm pitch, rows on 6.3 mm; at least 1.0 mm between courtyards everywhere except J7 next to
@@ -12,7 +16,21 @@ the WROVER (0.85 mm, both fixed by the module); before, ~80 pairs were under 1.0
 divider R217/R218/C207 and TP2/TP202 moved right of the auto-reset. Order of the bottom edge
 unchanged (J8, J5, J4, J201, J202, J6, SW203). Regenerated, DRC with schematic parity 0 errors, 0
 unconnected, 0 parity issues, 31 warnings. Two WROVER ground-land vias this time (route-dependent;
-round 7 said two are enough).
+round 7 said two are enough). Coordinates: placement frame, origin top left, y down, H = 76 (the
+bottom-edge connectors moved down 4 mm with the edge). A footprint at +90 deg in this file turns
+local (x, y) into (y, -x) (rounds 5 and 7).
+
+Please check:
+1. Spacing for paste and a heat gun: any pair that is still awkward to solder or rework (we found
+   none under 1.0 mm courtyard to courtyard except J7/U3, 0.85 mm, fixed by the module), and
+   anything now too far from its pin (decoupling: C210/C211 at the WROVER 3V3 pin, C9-C14 at U1,
+   C22/C23 at U2, C201-C203 at U201, C204 at U203).
+2. The new route: power widths (VSYS, VBAT/BATN, +3V3), the analog outputs to J5/J8 against I2S
+   and the speaker lines, the USB pair.
+3. The moved battery divider R217/R218/C207 and TP2/TP202 (now right of the auto-reset, around
+   x 112-120, y 41-47): long VBAT run to the divider, and whether the ADC line to IO35 picks up
+   noise.
+4. Anything in the bottom-edge row (J8, J5, J4, J201, J202, J6, SW203) that changed with H = 76.
 
 ## Round 7: Grok's reply - outcome
 
