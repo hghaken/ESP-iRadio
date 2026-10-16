@@ -13,7 +13,7 @@ Floor plan, top to bottom (owner's wish): display, encoder, connectors.
   RC filters, right of it USB/CH340 with auto-reset, the amplifier and the charge LEDs; the microSD
   pull-ups between the encoder and the card socket;
 - bottom edge from left: RCA L/R (J8), 3.5 mm jack (J5), microSD (J4, under the encoder), USB-C
-  (J201), on/off switch (SW203), cell (J202), speaker (J6); M3 holes in the four corners."""
+  (J201), cell (J202), speaker (J6), on/off switch (SW203); M3 holes in the four corners."""
 
 W, H = 122.0, 72.0
 MOD_X, MOD_Y = (W - 63.2) / 2, 1.0             # display module PCB top-left corner on the board
@@ -61,17 +61,18 @@ P = {
     'R4': (55.0, 54.75, 0), 'R5': (60.2, 54.75, 0), 'R6': (65.4, 54.75, 0), 'R7': (70.6, 54.75, 0),
     # bottom edge connectors
     'J8': (23.7, H - 8.2, 0), 'J5': (42.5, H - 9.5, 90), 'J4': (W / 2, H - 9.6, 0),
-    'J201': (75.35, H - 4.1, 0), 'SW203': (85.8, H - 3.38, 0), 'J202': (93.5, H - 3.8, 0), 'J6': (102.5, H - 3.8, 0),
+    # round 7: the switch moved right of the JST connectors (a USB plug covered it), more room after the card
+    'J201': (77.0, H - 4.1, 0), 'J202': (86.5, H - 3.8, 0), 'J6': (95.5, H - 3.8, 0), 'SW203': (105.0, H - 3.38, 0),
     # USB input, ESD, CC, USB sense, CH340C and auto-reset right of the encoder
-    'TP201': (72.5, 49.0, 0), 'D201': (79.5, 52.0, 0), 'F201': (79.0, 56.3, 0), 'U202': (74.5, 59.5, 0),
+    'TP201': (72.5, 49.0, 0), 'D201': (79.5, 52.0, 0), 'F201': (79.0, 55.8, 0), 'U202': (74.5, 59.5, 0),
     'R201': (81.5, 60.0, 90), 'R202': (84.5, 60.0, 90),
     'R203': (88.0, 60.0, 90), 'R204': (91.0, 60.0, 90), 'C214': (94.0, 60.0, 90),
     'U203': (80.0, 44.0, 0), 'C204': (86.5, 40.0, 90),
-    'Q201': (91.0, 41.0, 0), 'Q202': (91.0, 46.0, 0), 'R205': (96.0, 41.0, 90), 'R206': (96.0, 46.0, 90),
-    'R207': (99.5, 41.0, 90), 'C205': (99.5, 46.0, 90), 'R208': (102.5, 41.0, 90),
+    'Q201': (91.0, 41.0, 0), 'Q202': (91.0, 46.0, 0), 'R205': (96.0, 41.0, 90), 'R206': (96.0, 46.3, 90),
+    'R207': (99.5, 41.0, 90), 'C205': (99.5, 46.3, 90), 'R208': (102.5, 41.0, 90),
     # amplifier next to the speaker connector, charge LEDs at the right edge
     'U2': (104.0, 58.0, 180), 'C22': (100.0, 58.0, 90), 'C23': (108.5, 58.0, 90), 'R21': (111.5, 58.0, 90),
-    'D202': (110.5, 65.9, 0), 'D203': (110.5, 69.4, 0), 'R212': (116.0, 59.5, 90), 'R214': (119.0, 59.5, 90),
+    'D202': (112.0, 65.9, 0), 'D203': (112.0, 69.4, 0), 'R212': (116.0, 59.5, 90), 'R214': (119.0, 59.5, 90),
     # right strip: charger and cell path
     'U201': (104.0, 18.0, 0),
     'R209': (95.5, 13.0, 90), 'R210': (95.5, 18.3, 90), 'R211': (95.5, 23.6, 90),

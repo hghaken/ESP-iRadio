@@ -124,26 +124,30 @@ Floor plan (front view, origin top left; `tools/placement.py`):
   the charge LEDs D202/D203 at the right edge; the microSD pull-ups R4-R7 in a row between the
   encoder and the card socket;
 - bottom edge from left: RCA L/R J8 (the barrels stick out ~7.6 mm past the edge), 3.5 mm jack J5
-  (mouth at the edge), microSD J4 (card from the bottom, under the encoder), USB-C J201, on/off
-  switch SW203, cell J202, speaker J6; M3 holes H8/H2/H3/H4 in the four corners.
+  (rotation 90: its nose with the plug opening, local x -9.4..-7.4, lands at y 69.9-71.9, on the
+  edge; checked on the board data in round 7), microSD J4 (card from the bottom, under the
+  encoder), USB-C J201, cell J202, speaker J6, on/off switch SW203 (round 7: moved away from the
+  USB-C, a plug covered it); M3 holes H8/H2/H3/H4 in the four corners.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal
 reliefs. The USB pair is routed like any other signal (short, full speed). `tools/touchup.py`: the
-QFN thermal vias to 0.3 mm, a fifth BQ24074 thermal via (in the centre on this board), two of the
-four WROVER ground-land vias (a microSD DAT0 track on In2.Cu passes the other two), the charge-LED
-labels "C"/"P". DRC with schematic parity 2026-10-16: 0 errors, 0 unconnected, 0 parity issues;
-36 warnings (silkscreen, and the two expected footprint mismatches).
+QFN thermal vias to 0.3 mm, a fifth BQ24074 thermal via (in the centre on this board), all four
+WROVER ground-land vias (after the round 7 re-route), the charge-LED labels "C"/"P". DRC with
+schematic parity 2026-10-16 (after round 7): 0 errors, 0 unconnected, 0 parity issues; 34
+warnings (silkscreen, and the two expected footprint mismatches).
 
 Review history: Rev B (80 x 60 with the bare panel, then 90 x 60 with the module) was reviewed by
-Grok and Claude in rounds 4-6 (`grok-bevindingen.md`, `claude-bevindingen.md`); the Rev C layout is
-new (round 7).
+Grok and Claude in rounds 4-6 (`grok-bevindingen.md`, `claude-bevindingen.md`); Rev C in round 7:
+RCA pinout confirmed from the maker's drawing, the switch moved off the USB-C, two tight 1206
+pairs opened to 5.3 mm, F201 nudged; the J5 orientation was questioned and is right as placed.
 
 Still to do on the layout (before ordering):
-- RCA jack J8 (CAX AV-210-WR): the footprint and 3D model come from EasyEDA; white = L on pads 1/2,
-  red = R on pads 3/4 (3D model colours). The large front pads 1/3 are taken as the sleeves (GND)
-  and the small rear pads 2/4 as the centre contacts: **check with a meter on the delivered part
-  before soldering** (no datasheet drawing was found);
+- RCA jack J8 (CAX AV-210-WR): footprint and 3D model from EasyEDA; the maker's drawing (Zhejiang
+  Chuangdu "RCA PIN JACK", linked from the EasyEDA part, found by Grok in round 7) confirms pins
+  1/3 (large holes, 2.1 mm) = shell/GND, 2/4 (small holes, 1.3 mm) = centre contacts, barrel A =
+  white = L (pads 1/2), barrel B = red = R (pads 3/4). A meter check on the delivered part is still
+  sensible;
 - a last look at the routing in KiCad (autorouted);
 - display module: check on the delivered module that CN1 pin 1 (GND) is at the top right as in
   the datasheet drawing, and whether it comes with pin headers (the LCSC photo shows none: then

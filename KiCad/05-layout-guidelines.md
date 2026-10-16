@@ -23,7 +23,8 @@ board's version (Olimex outline, PCB-antenna keep-out, 2 layers) is in git histo
   The ground land is the Espressif 3 x 3 array (datasheet figure 15): add the **thermal vias
   between the squares** and do not flood it with one paste opening.
 - **Edge connectors** (Rev C: all along the bottom edge): RCA L/R (J8), 3.5 mm jack (J5), microSD
-  (J4, card from the bottom), USB-C (J201), slide switch (SW203), cell (J202), speaker (J6).
+  (J4, card from the bottom), USB-C (J201), cell (J202), speaker (J6), slide switch (SW203; not
+  next to the USB-C, a plug would cover it).
 - RESET/BOOT buttons and the recovery pads (TP203-TP207, TP4) reachable with the case open.
 - The NTC (RT201) next to where the cell lies (it measures the cell temperature).
 - 4 board mounting holes (M3, H2-H4, H8) in the corners. 1 mm keep-out around the heads.

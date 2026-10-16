@@ -4,6 +4,21 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 7: Grok's reply - outcome
+
+| # | Grok | Outcome |
+|---|---|---|
+| 1 | RCA J8 pinout confirmed by the Chuangdu drawing (1/3 shell, 2/4 centre, A white, B red) | No change. `NOTES.md` now cites the drawing; the `silk.py` comment fixed ("white = L barrel at x -9, pads 1/2"). |
+| 2 | **J5 faces the wrong way** (bore toward the encoder; C3/C4 under the body) | **Not the case, no change.** In this file a footprint at +90 deg turns local (x, y) into (y, -x), not (-y, x) (the same point as the U.FL in round 5). Measured on the board: J5 at (42.5, 62.5), rotation 90; its locating hole at local x -5.7 sits at (42.5, 68.2), the one at +1.3 at (42.5, 61.2); the narrow nose (local x -9.4..-7.4, 5 mm wide: the plug opening) is drawn at y 69.9-71.9, on the edge; the body silk runs y 57.8-71.9, so C3/C4 (courtyards down to y 55.85) are clear. A crop of `renders/top.png` shows the nose at the edge. |
+| 3 | SW203 sits under a USB plug; no room for a bezel wall between J4 and J201 | **Done**: bottom row now J8, J5, J4, J201, J202, J6, SW203; J201 moved 1.65 mm right (2.3 mm from J4), the switch right of J6 (LEDs moved to x 112). |
+| 4 | Two 1206 pairs on a 5.0 mm pitch (R205/R206, R207/C205); F201/R201 close | **Done**: R206 and C205 to y 46.3 (5.3 mm pitch), F201 0.5 mm up. |
+| 5 | Audio routing, filter cap, QFNs, WROVER, encoder fine | No change. |
+
+Board regenerated (`mkpcb.py` to `touchup.py`; nothing had been edited by hand): DRC with
+schematic parity 0 errors, 0 unconnected, 0 parity issues, 34 warnings (silkscreen and the two
+expected QFN via mismatches); all four WROVER ground-land vias fit now. Order files, assembly
+drawing and renders regenerated.
+
 ## Round 7: Rev C for hand assembly - please review
 
 After the JLCPCB assembly quote ($207 for 5 boards) the owner decided to assemble the boards by
