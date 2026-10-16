@@ -95,7 +95,8 @@ def build(netfile, check_only=False):
     refs = sorted(boxes)
     for i, a in enumerate(refs):
         ax0, ay0, ax1, ay1 = boxes[a]
-        if a[0] != 'H' and (ax0 < -0.6 or ay0 < -0.6 or ax1 > placement.W + 0.6 or ay1 > placement.H + 0.6):
+        m = 0.6 + (1.0 if a == 'J201' else 0.0)     # the USB-C sticks out 0.5 mm on purpose (owner)
+        if a[0] != 'H' and (ax0 < -m or ay0 < -m or ax1 > placement.W + m or ay1 > placement.H + m):
             print('OUTSIDE %-6s %s' % (a, ['%.1f' % v for v in boxes[a]]))
             bad += 1
         for b in refs[i + 1:]:

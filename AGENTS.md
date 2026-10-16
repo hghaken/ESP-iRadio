@@ -985,7 +985,7 @@ battery: the whole night + day (~14 h) until the 2500 mAh cell was empty; with t
   60 mm, reviewed in round 6. The JLCPCB assembly quote that day ($207.39 for 5 boards) made the
   owner switch to **hand assembly** (paste, stencil, heat gun): **Rev C** (2026-10-16), 1206
   passives, RCA outputs L/R (J8) next to the 3.5 mm jack, a 122 x 76 mm board with display,
-  encoder and connectors from top to bottom (parts left and right of the encoder; USB-C flush with
+  encoder and connectors from top to bottom (parts left and right of the encoder; USB-C 0.5 mm past
   the bottom edge, the cell connector on the right edge); DRC 0 errors /
   0 unconnected / 0 parity issues; review round 7 pending. Order files in
   `KiCad/esp-iradio/jlcpcb/` (made by `tools/jlcfab.py`): Gerber zip (PCBs + stencil at JLCPCB),

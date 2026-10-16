@@ -129,8 +129,9 @@ Floor plan (front view, origin top left; `tools/placement.py`):
   encoder), USB-C J201, speaker J6, on/off switch SW203 (round 7: moved away from the USB-C, a plug
   covered it); M3 holes H8/H2/H3/H4 in the four corners;
 - owner, 2026-10-16: USB-C J201 as far to the edge as it goes: its front (F.Fab, 3.65 mm below the
-  footprint origin) is flush with the board edge (origin at y 72.35), the shell tabs stay 1.1 mm
-  inside; the cell connector J202 moved from the bottom edge to the right edge (the cell sits inside
+  footprint origin) sticks out 0.5 mm past the board edge (origin at y 72.85; owner: flush with
+  the case wall), the front shell-tab pads stay 1.05 mm inside the edge (`mkpcb.py` allows J201's
+  courtyard past the edge); the cell connector J202 moved from the bottom edge to the right edge (the cell sits inside
   the case): (119.0, 27.5), rotation 270, pin 1 (+) on top, "+" above and "-"/"CELL" below it, next
   to the protection U204/U205/Q203 (short cell path); R216 one mm left (113.0) for room. Then the
   speaker connector J6 (86.5) and the switch SW203 (96.0) moved left into J202's old place; J6 stays
@@ -195,7 +196,7 @@ Still to do on the layout (before ordering):
   pads; checked in a front render (`renders/front.png`: USB-C opening and 3.5 mm jack at the edge,
   encoder upright). The USB-C model was first aligned on the EasyEDA footprint's pegs and sat
   2.2 mm behind the real part (seen by the owner in the top view); since 2026-10-16 it is aligned on
-  the pegs inside the model (offset y -0.80): its front on F.Fab, flush with the board edge. The display module has a simple own model (`tools/display3d.py`: PCB, LCD
+  the pegs inside the model (offset y -0.80): its front on F.Fab, 0.5 mm past the board edge. The display module has a simple own model (`tools/display3d.py`: PCB, LCD
   body, active area, header spacers, ~11 mm up) hung on J3's project footprint
   `esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B`, so the 3D view shows it in place (it
   shows the 20 mm EC11 shaft ending about at the glass front). The EasyEDA model of the PJ-320D
