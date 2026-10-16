@@ -139,10 +139,13 @@ In2.Cu may pass the inner pair; two are enough, round 7), the charge-LED labels 
 Spacing (owner, 2026-10-16: hand soldering is easier with room): the board grew from 122 x 72 to
 122 x 76 mm and the parts were spread: rotated 1206 columns on a 4.0 mm pitch, rows on 6.3 mm,
 ~1.5 mm between courtyards where possible and at least 1.0 mm everywhere except the fixed socket
-J7 next to the WROVER (0.85 mm; it was often 0.3-0.5 mm before). The battery divider R217/R218/C207
-and TP2/TP202 moved from the right strip to the free area right of the auto-reset. DRC with
-schematic parity 2026-10-16 after the spread: 0 errors, 0 unconnected, 0 parity issues; 31
-warnings (silkscreen, and the two expected footprint mismatches).
+J7 next to the WROVER (0.85 mm; it was often 0.3-0.5 mm before). The battery divider R217/R218
+and TP2/TP202 moved from the right strip to the free area right of the auto-reset; its filter
+capacitor C207 (100 nF on VBAT_SENSE) sits at the ADC pin instead (U3 pin 7, IO35; 3.4 mm of
+track), so the ~80 mm high-impedance run past LCD_BL is filtered at the ESP32 (Grok, round 8). DRC with
+schematic parity 2026-10-16 after the spread and the C207 move: 0 errors, 0 unconnected, 0 parity
+issues; 31 warnings (silkscreen, and the two expected footprint mismatches). A Freerouting run
+now and then leaves a GND pour island unconnected (DRC reports it): route again.
 
 Review history: Rev B (80 x 60 with the bare panel, then 90 x 60 with the module) was reviewed by
 Grok and Claude in rounds 4-6 (`grok-bevindingen.md`, `claude-bevindingen.md`); Rev C in round 7:

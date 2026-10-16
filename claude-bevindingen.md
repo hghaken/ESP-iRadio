@@ -12,7 +12,9 @@ real heads and standoffs, which clear. Decoupling distances fine (100 nF on the 
 pitch further). Power widths held on the new route, analog stays left of x 39 and 5.7 mm from I2S
 at the closest, USB full speed fine. Battery divider: the charge path stays short; the only
 suggestion is optional - move C207 (100 nF on VBAT_SENSE) from the divider to the ADC pin (U3 pin 7)
-so the 86 mm high-impedance run past LCD_BL is filtered at the pin. Not done yet: owner's call.
+so the 86 mm high-impedance run past LCD_BL is filtered at the pin. **Done** (owner's go): C207 at
+(49.5, 29.5) under the module, its VBAT_SENSE pad 3.4 mm of track from U3 pin 7; board regenerated,
+DRC 0 errors, 0 unconnected, 0 parity issues, 31 warnings; three of four WROVER ground-land vias.
 Grok also confirmed the J5 orientation (mouth at the edge) and withdrew the round 7 flip.
 
 ## Round 8: parts spread for hand soldering - please review
