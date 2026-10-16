@@ -169,8 +169,13 @@ Still to do on the layout (before ordering):
 - SW1: with the module ~11 mm above the board plus its glass, the front panel lies ~15 mm up; pick
   the EC11 shaft length for that height (the owner can use the EC11 from the breadboard);
 - SW203: which slide position is ON (silk says "ON/OFF ?");
-- silkscreen: only connectors, ICs, switches, diodes, transistors and the test pads carry a
-  reference; the assembly drawing `jlcpcb/esp-iradio_assembly.pdf` shows every reference;
+- silkscreen (2026-10-16): every part carries its reference (0.9 mm), placed by `tools/silk.py`
+  next to the part where it touches no pad, no other courtyard, no hole and no other text, and is
+  nearer to its own part than to any other; five parts boxed in by their neighbours (R11, R205,
+  R207, C15, C7) have it on their own body, across the part between the pads. The recovery pads
+  show EN/IO0/TX/RX/GND. The charge LEDs D202 (C) / D203 (P) moved side by side above the switch
+  for room. `renders/top_refs.png` is a top view without the display module; the assembly
+  drawing `jlcpcb/esp-iradio_assembly.pdf` also shows every reference;
 - 3D models: done 2026-10-16. This PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D
   folders, so J201 and SW1 use project copies of the KiCad footprints (`esp-iradio:` library, same
   pads, made by `tools/fp3d.py`) with the EasyEDA models from `lib/lcsc.3dshapes`, aligned on the

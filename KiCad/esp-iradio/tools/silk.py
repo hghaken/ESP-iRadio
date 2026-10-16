@@ -1,7 +1,9 @@
-"""Silkscreen of esp-iradio.kicad_pcb (KiCad's Python): small reference texts only where they help
-(connectors, ICs, switches, LEDs, transistors, test pads); hidden on the dense 0603 passives (the
-F.Fab assembly layer keeps every reference); board markings (title, cell/speaker polarity, LED
-meaning, recovery pad names, USB). Saves the board."""
+"""Silkscreen of esp-iradio.kicad_pcb (KiCad's Python): board markings (title, cell/speaker polarity,
+LED meaning, recovery pad names, USB, switch, RCA L/R) and, since 2026-10-16 (hand assembly), the
+reference of every part, each moved next to its part where it touches no pad, no other part's
+courtyard, no hole, no other text and stays on the board (`place_refs()`; the recovery pads carry
+their signal name instead; a part boxed in by its neighbours gets its reference on its own body,
+across it between the pads). Saves the board."""
 import os
 import pcbnew
 import placement
@@ -12,14 +14,14 @@ mm = pcbnew.FromMM
 OX, OY = 100.0, 100.0
 
 board = pcbnew.LoadBoard(PCB)
-SHOW = ('J', 'U', 'SW', 'D', 'Q')             # test pads carry their net name instead
+NAMED = ('TP203', 'TP204', 'TP205', 'TP206', 'TP207')    # recovery pads: signal names instead
+REF_SIZE, REF_THICK = 0.9, 0.15
 for fp in board.GetFootprints():
     ref = fp.GetReference()
     rt = fp.Reference()
-    show = ref.startswith(SHOW)
-    rt.SetVisible(show)
-    rt.SetTextSize(pcbnew.VECTOR2I(mm(0.8), mm(0.8)))
-    rt.SetTextThickness(mm(0.12))
+    rt.SetVisible(not ref.startswith('H') and ref not in NAMED)
+    rt.SetTextSize(pcbnew.VECTOR2I(mm(REF_SIZE), mm(REF_SIZE)))
+    rt.SetTextThickness(mm(REF_THICK))
     rt.SetKeepUpright(True)
     fp.Value().SetVisible(False)             # values live on F.Fab / in the BOM
     for f in fp.GetFields():                 # LCSC and other fields: data only, never silkscreen
@@ -69,10 +71,11 @@ text('CELL', x + 1.0, y + 2.9, 0.8)
 x, y = pad_xy('J6', '1')
 text('SPK', x + 1.0, y + 2.9, 0.8)
 # charge LEDs, USB, switch
-x, y = pad_xy('D202', '1')
-text('CHG', x - 2.6, y, 0.8, 0, pcbnew.GR_TEXT_H_ALIGN_RIGHT)
-x, y = pad_xy('D203', '1')
-text('PWR', x - 2.6, y, 0.8, 0, pcbnew.GR_TEXT_H_ALIGN_RIGHT)
+for ref, lab in (('D202', 'C'), ('D203', 'P')):   # CHG (red) and PWR (green): letters left of the LED
+    led = board.FindFootprintByReference(ref)
+    p1 = [p for p in led.Pads() if p.GetNumber() == '1'][0]
+    x, y = pad_xy(ref, '1')
+    text(lab, x - pcbnew.ToMM(p1.GetSize().x) / 2 - 0.2, y, 0.8, 0, pcbnew.GR_TEXT_H_ALIGN_RIGHT)
 x, y = fp_xy('J201')
 text('5V', x, y - 6.6, 0.8)
 x, y = fp_xy('SW203')
@@ -87,6 +90,96 @@ for ref, name in (('TP203', 'EN'), ('TP204', 'IO0'), ('TP205', 'TX'), ('TP206', 
     text(name, x, y + 1.9, 0.8)
 # title
 text('ESP iRadio Rev C', placement.TITLE[0], placement.TITLE[1], 0.9)
+
+
+def box_of(item, grow=0.0):
+    bb = item.GetBoundingBox()
+    g = mm(grow)
+    return (bb.GetLeft() - g, bb.GetTop() - g, bb.GetRight() + g, bb.GetBottom() + g)
+
+
+def hit(a, b):
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+def rect_dist(px, py, r):
+    dx = max(r[0] - px, 0, px - r[2])
+    dy = max(r[1] - py, 0, py - r[3])
+    return (dx * dx + dy * dy) ** 0.5
+
+
+def place_refs():
+    """Move each visible reference next to its part: candidates around the courtyard (above, below,
+    left, right, shifted along the side, then turned 90 degrees), nearest valid one wins."""
+    fps = list(board.GetFootprints())
+    pads = [(fp.GetReference(), box_of(p, 0.25)) for fp in fps for p in fp.Pads()]
+    crt = {}
+    for fp in fps:
+        bb = fp.GetCourtyard(pcbnew.F_CrtYd).BBox()
+        if bb.GetWidth() == 0:
+            bb = fp.GetBoundingBox(False)
+        crt[fp.GetReference()] = (bb.GetLeft(), bb.GetTop(), bb.GetRight(), bb.GetBottom())
+    taken = [box_of(d, 0.2) for d in board.GetDrawings() if d.GetLayer() == pcbnew.F_SilkS and isinstance(d, pcbnew.PCB_TEXT)]
+    edge = board.GetBoardEdgesBoundingBox()
+    lim = (edge.GetLeft() + mm(0.5), edge.GetTop() + mm(0.5), edge.GetRight() - mm(0.5), edge.GetBottom() - mm(0.5))
+    order = sorted(fps, key=lambda f: (crt[f.GetReference()][2] - crt[f.GetReference()][0]) * (crt[f.GetReference()][3] - crt[f.GetReference()][1]))
+    onbody = []
+    for fp in order:                         # small parts first: they have the fewest places
+        ref = fp.GetReference()
+        rt = fp.Reference()
+        if not rt.IsVisible():
+            continue
+        x0, y0, x1, y1 = crt[ref]
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        best = None
+        for ang in (0, 90):
+            rt.SetTextAngleDegrees(ang)
+            rt.SetPosition(pcbnew.VECTOR2I(int(cx), int(cy)))
+            tb = rt.GetBoundingBox()
+            hw, hh = tb.GetWidth() / 2, tb.GetHeight() / 2
+            for gap in (0.3, 0.8, 1.5, 2.5, 3.5, 4.5):
+                g = mm(gap)
+                for sh in (0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6):
+                    s_ = mm(sh)
+                    for px, py in ((cx + s_, y0 - g - hh), (cx + s_, y1 + g + hh),
+                                   (x0 - g - hw, cy + s_), (x1 + g + hw, cy + s_)):
+                        b = (px - hw, py - hh, px + hw, py + hh)
+                        if b[0] < lim[0] or b[1] < lim[1] or b[2] > lim[2] or b[3] > lim[3]:
+                            continue
+                        cost = abs(px - cx) + abs(py - cy) + (mm(3) if ang else 0)
+                        # a text nearer to another part than to its own is ambiguous: avoid
+                        own = rect_dist(px, py, crt[ref])
+                        near = min((rect_dist(px, py, cb) for r, cb in crt.items()
+                                    if r != ref and r[0] != 'H'), default=mm(99))
+                        amb = near < own
+                        if amb:
+                            cost += mm(6) + (own - near) * 3
+                        if best and cost >= best[0]:
+                            continue
+                        if any(hit(b, pb) for r, pb in pads):
+                            continue
+                        if any(hit(b, cb) for r, cb in crt.items() if r != ref):
+                            continue
+                        if any(hit(b, tb_) for tb_ in taken):
+                            continue
+                        best = (cost, px, py, ang, b, amb)
+        if best is None or best[5]:
+            # boxed in (no spot clearly nearer to this part than to a neighbour): the reference goes
+            # on the part's own body, across it between the two pads (read while placing the part)
+            onbody.append(ref)
+            rt.SetTextSize(pcbnew.VECTOR2I(mm(0.8), mm(0.8)))
+            rt.SetTextThickness(mm(0.12))
+            rt.SetTextAngleDegrees(0 if (y1 - y0) > (x1 - x0) else 90)
+            rt.SetPosition(pcbnew.VECTOR2I(int(cx), int(cy)))
+            continue
+        cost, px, py, ang, b, amb = best
+        rt.SetTextAngleDegrees(ang)
+        rt.SetPosition(pcbnew.VECTOR2I(int(px), int(py)))
+        taken.append((b[0] - mm(0.2), b[1] - mm(0.2), b[2] + mm(0.2), b[3] + mm(0.2)))
+    print('references placed; on the part body (boxed in):', ' '.join(onbody) or 'none')
+
+
+place_refs()
 
 board.Save(PCB)
 print('silkscreen updated')
