@@ -40,6 +40,7 @@ Expected: ERC 1 warning (the MAX98357A exposed pad, pin type unspecified, on GND
 | `touchup.py` | hand edits on the routed board (review round 5): fifth BQ24074 thermal via, vias in the WROVER ground land, charge-LED labels "C"/"P"; no hole below 0.3 mm (the QFN thermal-via pads get a 0.3 mm drill, its vias are 0.5/0.3 and older smaller ones are resized); checks every via against other-net copper and holes; idempotent |
 | `bridge.py` | joins a pad the router left unconnected: `bridge.py REF PAD`, straight/L track on F.Cu or a stub + new via + B.Cu/In2.Cu to a via of the net, every candidate checked against other-net copper and holes (not needed on the current board) |
 | `jlcfab.py` | JLCPCB order files in `../jlcpcb/`: BOM (LCSC field, else the basic part for plain R/C from its table), CPL (pad centre, Y up, the JLCPCB Tools plugin's rotation corrections for KiCad footprints, none for the EasyEDA `lcsc` ones) and a Gerber + drill zip made with kicad-cli |
+| `fp3d.py` | project copies of the KiCad USB-C (HRO TYPE-C-31-M-12) and EC11E encoder footprints with the EasyEDA 3D models aligned on the pads (KiCad's own 3D folders for them are missing on the owner's PC); writes `../lib/esp-iradio.pretty/` |
 | `relink.py` | points every footprint at its schematic symbol again (path from the netlist) without touching the layout |
 | `fplib.py`, `netparse.py` | footprint loading and netlist reading for the board scripts |
 

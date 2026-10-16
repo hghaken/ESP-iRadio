@@ -108,7 +108,7 @@ s.text('cell protection, 3.3 V LDO, +3V3A for the DAC', (22.86, 50.8), 1.5, Fals
 # encoder rows
 ROWA, ROWB, ROWS = 106.68, L(8)[1], 152.4
 s.add('Device:RotaryEncoder_Switch', 'SW1', 40.64, 129.54, 0, 'EC11 with switch',
-      'Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm', mirror='y',
+      'esp-iradio:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm', mirror='y',
       fields={'ref': (40.64, 119.38, 0, None), 'val': (40.64, 116.84, 0, None)})
 # SW1 mirrored: A (48.26,127.0)  C (48.26,129.54)  B (48.26,132.08)  S1 (33.02,127.0)  S2 (33.02,132.08)
 W(L(7), (172.72, L(7)[1]), (172.72, ROWA), (58.42, ROWA), (58.42, 127.0), P('SW1', 'A'))

@@ -78,7 +78,7 @@ JX, JY = 26.67, 68.58
 # KiCad's USB 2.0 receptacle symbol with the matching KiCad footprint of the HRO TYPE-C-31-M-12
 # (the EasyEDA footprint had VBUS pads 0.1 mm from the next pad); stacked GND and VBUS pins
 s.add('Connector:USB_C_Receptacle_USB2.0_16P', 'J201', JX, JY, 0, 'USB-C TYPE-C-31-M-12',
-      'Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12', extra={'LCSC': 'C165948'},
+      'esp-iradio:USB_C_Receptacle_HRO_TYPE-C-31-M-12', extra={'LCSC': 'C165948'},
       fields={'ref': (JX - 11.43, JY - 24.13, 0, 'left'), 'val': (JX - 11.43, JY - 26.67, 0, 'left')})
 W(P('J201', 'S1'), P('J201', 'A1'))
 gnd(P('J201', 'A1'))

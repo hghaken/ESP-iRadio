@@ -171,9 +171,12 @@ Still to do on the layout (before ordering):
 - SW203: which slide position is ON (silk says "ON/OFF ?");
 - silkscreen: only connectors, ICs, switches, diodes, transistors and the test pads carry a
   reference; the assembly drawing `jlcpcb/esp-iradio_assembly.pdf` shows every reference;
-- 3D models: this PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D folders (install
-  them or use the LCSC models) before exporting the STEP for the case; the WROVER-IE model is the
-  EasyEDA one and shows a PCB antenna.
+- 3D models: done 2026-10-16. This PC's KiCad has no `Connector_USB` and `Rotary_Encoder` 3D
+  folders, so J201 and SW1 use project copies of the KiCad footprints (`esp-iradio:` library, same
+  pads, made by `tools/fp3d.py`) with the EasyEDA models from `lib/lcsc.3dshapes`, aligned on the
+  pads; checked in a front render (`renders/front.png`: USB-C opening and 3.5 mm jack at the edge,
+  encoder upright). The WROVER-IE model is the EasyEDA one and shows a PCB antenna; the display
+  module is not in the 3D view (loose part).
 
 ## Schematic (Rev B, integrated board)
 

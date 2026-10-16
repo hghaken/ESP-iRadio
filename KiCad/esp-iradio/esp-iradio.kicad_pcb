@@ -5126,7 +5126,7 @@
 			)
 		)
 	)
-	(footprint "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+	(footprint "esp-iradio:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
 		(layer "F.Cu")
 		(uuid "3c514c12-5fe3-4b84-a1b8-d6a3690a667d")
 		(at 177 171.9)
@@ -5509,15 +5509,15 @@
 			(uuid "c667304e-52f9-4310-ba0a-78ceb78ec01c")
 		)
 		(embedded_fonts no)
-		(model "${KICAD9_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_HRO_TYPE-C-31-M-12.step"
+		(model "${KIPRJMOD}/lib/lcsc.3dshapes/USB-C_SMD-TYPE-C-31-M-12_1.wrl"
 			(offset
-				(xyz 0 0 0)
+				(xyz 0 1.4 0)
 			)
 			(scale
 				(xyz 1 1 1)
 			)
 			(rotate
-				(xyz 0 0 0)
+				(xyz 0 0 180)
 			)
 		)
 	)
@@ -11617,7 +11617,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(footprint "Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm"
+	(footprint "esp-iradio:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm"
 		(layer "F.Cu")
 		(uuid "78b6ddf4-0dba-4f48-bff3-75abf7de539c")
 		(at 153.5 142.5)
@@ -12012,15 +12012,15 @@
 			(uuid "4866e8c9-c1e7-46f3-890b-30a0c2712b05")
 		)
 		(embedded_fonts no)
-		(model "${KICAD9_3DMODEL_DIR}/Rotary_Encoder.3dshapes/RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm.step"
+		(model "${KIPRJMOD}/lib/lcsc.3dshapes/SW-TH_EC11XXXXXXXX-L11.7-W12.0-H24.5-P2.5-LS14.5.wrl"
 			(offset
-				(xyz 0 0 0)
+				(xyz 7.5 -2.5 0)
 			)
 			(scale
 				(xyz 1 1 1)
 			)
 			(rotate
-				(xyz 0 0 0)
+				(xyz 0 0 -90)
 			)
 		)
 	)
