@@ -193,7 +193,9 @@ Still to do on the layout (before ordering):
   folders, so J201 and SW1 use project copies of the KiCad footprints (`esp-iradio:` library, same
   pads, made by `tools/fp3d.py`) with the EasyEDA models from `lib/lcsc.3dshapes`, aligned on the
   pads; checked in a front render (`renders/front.png`: USB-C opening and 3.5 mm jack at the edge,
-  encoder upright). The display module has a simple own model (`tools/display3d.py`: PCB, LCD
+  encoder upright). The USB-C model was first aligned on the EasyEDA footprint's pegs and sat
+  2.2 mm behind the real part (seen by the owner in the top view); since 2026-10-16 it is aligned on
+  the pegs inside the model (offset y -0.80): its front on F.Fab, flush with the board edge. The display module has a simple own model (`tools/display3d.py`: PCB, LCD
   body, active area, header spacers, ~11 mm up) hung on J3's project footprint
   `esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B`, so the 3D view shows it in place (it
   shows the 20 mm EC11 shaft ending about at the glass front). The EasyEDA model of the PJ-320D

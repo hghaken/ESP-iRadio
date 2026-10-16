@@ -4,10 +4,11 @@ the EasyEDA one already in lib/lcsc.3dshapes, aligned on the pads (2026-10-16). 
 Python 3; writes lib/esp-iradio.pretty/<name>.kicad_mod.
 
 Alignment, measured on the pads of both footprints (tools: fplib + pcbnew):
-- USB-C HRO TYPE-C-31-M-12: the EasyEDA footprint (lcsc:USB-C_SMD-TYPE-C-31-M-12_1) has its pegs and
-  shell tabs 1.40 mm lower than KiCad's (pegs y -1.21 vs -2.60, tabs -1.71 vs -3.13), same x, same
-  orientation: the model moves 1.40 mm up (3D offset y +1.40; 3D Y points up), its own 180 degree z
-  turn stays.
+- USB-C HRO TYPE-C-31-M-12: aligned on the pegs inside the model itself (2026-10-16, corrected):
+  after its own 180 degree z turn the model's pegs sit 3.40 mm below its origin, KiCad's holes 2.60
+  mm, so the model moves 0.80 mm down (3D offset y -0.80; 3D Y points up). Its front then lands on
+  KiCad's F.Fab front (y +3.65) and its tab legs on the shell pads. (Aligning on the EasyEDA
+  footprint's pegs, +1.40, left the model 2.2 mm behind the real part.)
 - EC11E encoder: the EasyEDA footprint (lcsc:SW-TH_EC11XXXXXXXX) has A/C/B in a row at the bottom
   (y +7.25) and the shaft at its origin; KiCad's has A/C/B in a column on the left and the shaft at
   (7.5, 2.5): the model turns -90 degrees about z and moves to (7.5, 2.5) (3D offset y -2.5)."""
@@ -19,7 +20,7 @@ LIB = os.path.join(os.path.dirname(HERE), 'lib')
 KICAD_FP = 'C:/Program Files/KiCad/9.0/share/kicad/footprints'
 
 PARTS = [
-    ('Connector_USB', 'USB_C_Receptacle_HRO_TYPE-C-31-M-12', 'USB-C_SMD-TYPE-C-31-M-12_1.wrl', (0, 1.40, 0), (0, 0, 180)),
+    ('Connector_USB', 'USB_C_Receptacle_HRO_TYPE-C-31-M-12', 'USB-C_SMD-TYPE-C-31-M-12_1.wrl', (0, -0.80, 0), (0, 0, 180)),
     ('Rotary_Encoder', 'RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm',
      'SW-TH_EC11XXXXXXXX-L11.7-W12.0-H24.5-P2.5-LS14.5.wrl', (7.5, -2.5, 0), (0, 0, -90)),
 ]

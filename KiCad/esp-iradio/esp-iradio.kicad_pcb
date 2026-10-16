@@ -15326,7 +15326,7 @@
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/lib/lcsc.3dshapes/USB-C_SMD-TYPE-C-31-M-12_1.wrl"
 			(offset
-				(xyz 0 1.4 0)
+				(xyz 0 -0.8 0)
 			)
 			(scale
 				(xyz 1 1 1)
