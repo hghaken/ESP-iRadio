@@ -64,23 +64,23 @@ P = {
     'U207': (35.5, 46.8, 0), 'C212': (35.5, 40.5, 0), 'C213': (35.5, 53.1, 0),
     'TP6': (41.0, 41.0, 0), 'TP7': (41.0, 45.0, 0), 'TP8': (41.0, 49.0, 0),
     # microSD: decoupling left of the socket, pull-ups in a row between the encoder and the socket
-    'C3': (50.5, 64.5, 90), 'C4': (50.5, 71.0, 90),
+    'C3': (54.2, 64.5, 90), 'C4': (54.2, 71.0, 90),
     'R4': (55.0, 56.5, 0), 'R5': (61.3, 56.5, 0), 'R6': (67.6, 56.5, 0), 'R7': (73.9, 56.5, 0),
-    # bottom edge connectors; the switch right of the JST connectors (a USB plug covered it, round 7)
-    'J8': (23.7, H - 8.2, 0), 'J5': (42.5, H - 9.5, 90), 'J4': (W / 2, H - 9.6, 0),
+    # bottom edge connectors, spread over the width (owner, 2026-10-17): courtyards from H3 to H4 with
+    # equal gaps of 2.6 mm, pads included (J8 | J5 | C3/C4 + J4 | J201 | J6 | SW203); the switch stays away from the
+    # USB-C (a plug covered it, round 7)
+    'J8': (25.75, H - 8.2, 0), 'J5': (45.35, H - 9.5, 90), 'J4': (65.35, H - 9.6, 0),
     # USB-C: the receptacle front (F.Fab 3.65 mm below the origin) 0.5 mm past the board edge (owner,
     # flush with the case wall); the front shell-tab pads stay 1.05 mm inside the edge
-    'J201': (77.0, H - 3.65 + 0.5, 0),
-    # speaker and switch moved left into the cell connector's old place (owner); J6 stays between the
-    # USB-C and the switch, so a USB plug does not cover the switch (round 7)
-    # J6 a 2-pole 5.0 mm screw terminal since 2026-10-17 (owner): turned 180 so the wire openings face
-    # into the board (the case wall is at the edge), pin 1 (+) on the right; the switch moved right for it
-    'J6': (92.0, H - 5.0, 180), 'SW203': (100.5, H - 3.38, 0),
+    'J201': (81.75, H - 3.65 + 0.5, 0),
+    # J6: 2-pole 5.0 mm screw terminal (owner, 2026-10-17), wire openings at the edge, its front (F.Fab
+    # 3.8 mm in front of the pins) flush with the edge; pin 1 (+) on the left
+    'J6': (93.2, H - 3.8, 0), 'SW203': (108.15, H - 3.38, 0),
     # cell connector on the right edge (owner: the cell is inside the case), pin 1 (+) on top, beside
     # the protection U204/U205/Q203
     'J202': (119.0, 27.5, 270),
     # USB input, ESD, CC, USB sense, CH340C and auto-reset right of the encoder
-    'D201': (81.5, 53.3, 0), 'F201': (80.5, 58.0, 0), 'U202': (74.5, 62.0, 0), 'TP201': (88.0, 57.0, 0),
+    'D201': (81.5, 53.3, 0), 'F201': (80.5, 58.0, 0), 'U202': (79.25, 62.0, 0), 'TP201': (88.0, 57.0, 0),
     'R201': (84.5, 62.5, 90), 'R202': (88.5, 62.5, 90),
     'R203': (92.5, 62.5, 90), 'R204': (96.5, 62.5, 90), 'C214': (100.5, 62.5, 90),
     'U203': (82.0, 45.0, 0), 'C204': (88.5, 41.0, 90),
@@ -93,7 +93,7 @@ P = {
     # amplifier next to the speaker connector, charge LEDs at the right edge
     'U2': (108.0, 61.5, 180), 'C22': (101.7, 56.5, 0), 'C23': (108.0, 56.5, 0), 'R21': (114.3, 56.5, 0),
     'R214': (116.5, 60.0, 0), 'R212': (116.5, 64.0, 0),
-    'D202': (104.3, H - 9.4, 0), 'D203': (110.3, H - 9.4, 0),      # side by side above the switch
+    'D202': (104.9, H - 10.0, 0), 'D203': (110.7, H - 10.0, 0),    # side by side above the switch
     # right strip: charger and cell path
     'U201': (106.0, 16.0, 0),
     'R209': (96.0, 11.0, 90), 'R210': (96.0, 17.3, 90), 'R211': (96.0, 23.6, 90),

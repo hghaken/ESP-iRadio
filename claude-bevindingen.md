@@ -19,12 +19,15 @@ Owner's changes on the evening of 2026-10-16, each re-routed (Freerouting) with 
    between the USB-C and the switch so a plug does not cover the switch.
 
 4. 2026-10-17: J6 is a 2-pole 5.0 mm screw terminal (WJ126V-5.0-02P, LCSC C8404, MX126 footprint),
-   pins at (92.0 / 87.0, 71.0), rotation 180 (wire openings into the board), SW203 to (100.5,
-   72.62); the 3D models of SW203 (1.55 mm) and SW1 (0.25 mm) moved onto their holes. Board centred
-   in the A4 frame (origin 87.5 / 67.0 instead of 100 / 100).
+   wire openings at the edge, front flush with the edge; the 3D models of SW203 (1.55 mm) and SW1
+   (0.25 mm) moved onto their holes. Board centred in the A4 frame (origin 87.5 / 67.0 instead of
+   100 / 100).
+5. 2026-10-17: the edge connectors spread over the width with equal gaps of 2.6 mm (courtyards plus
+   pads, H3 to H4): J8 x 25.75, J5 45.35, C3/C4 54.2, J4 65.35, J201 81.75 (U202 79.25), J6 pin 1
+   93.2, SW203 108.15; D202/D203 at (104.9 / 110.7, 66.0).
 
 Worth a look: the cell path from J202 to Q203/U204 and BATN, the USB-C tabs against the edge, the
-switch next to J6, and the screw terminal's orientation (openings into the board).
+switch next to J6, and the USB and microSD routing after the spread.
 
 ## Round 9 closed
 

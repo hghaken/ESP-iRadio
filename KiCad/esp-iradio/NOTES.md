@@ -149,10 +149,13 @@ GND pads of U1 unconnected:
   errors, 0 unconnected, 0 parity issues;
 - owner, 2026-10-17: J6 is a 2-pole 5.0 mm screw terminal (WJ126V-5.0-02P, LCSC C8404, KiCad's
   MaiXu MX126-5.0-02P footprint as a project copy with a simple own 3D model, `tools/terminal3d.py`),
-  pins at (92.0 / 87.0, 71.0), turned 180 degrees so the wire openings face into the board (the case
-  wall is at the edge; turn it back to 0 for openings at the edge), pin 1 (+) on the right; silk
-  "- SPK +" above it. SW203 moved right to (100.5, 72.62) for it. Board re-routed, DRC 0 errors,
-  0 unconnected, 0 parity issues.
+  wire openings at the edge (owner; a first try had them facing into the board), its front (F.Fab,
+  3.8 mm in front of the pins) flush with the edge, pin 1 (+) on the left, silk "+ SPK -" above it;
+- owner, 2026-10-17: the edge connectors spread over the whole width: from H3 to H4, J8 | J5 |
+  C3/C4 + J4 | J201 | J6 | SW203 with equal gaps of 2.6 mm (courtyards plus pads): J8 x 25.75,
+  J5 45.35, C3/C4 54.2, J4 65.35 (no longer centred under the encoder), J201 81.75 (U202 79.25
+  with it), J6 pin 1 at 93.2, SW203 108.15; the charge LEDs D202/D203 at (104.9 / 110.7, 66.0),
+  above the switch. Board re-routed, DRC 0 errors, 0 unconnected, 0 parity issues.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal
