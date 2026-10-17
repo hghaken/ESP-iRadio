@@ -14,11 +14,12 @@ Idempotent: a via already at the spot is not added twice."""
 import math
 import os
 import pcbnew
+import placement
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PCB = os.path.join(os.path.dirname(HERE), 'esp-iradio.kicad_pcb')
 mm, tomm = pcbnew.FromMM, pcbnew.ToMM
-OX, OY = 100.0, 100.0
+OX, OY = placement.OX, placement.OY
 CLR, HOLE_GAP = 0.2, 0.25
 MIN_DRILL = 0.3
 

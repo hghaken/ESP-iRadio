@@ -15,7 +15,7 @@ import placement
 
 PRJ = os.path.dirname(HERE)
 PCB = os.path.join(PRJ, 'esp-iradio.kicad_pcb')
-OX, OY = 100.0, 100.0            # board origin in KiCad coordinates (mm)
+OX, OY = placement.OX, placement.OY   # board origin in KiCad coordinates (mm)
 mm = pcbnew.FromMM
 
 

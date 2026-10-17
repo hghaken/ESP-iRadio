@@ -108,7 +108,11 @@ copper >= 0.6 mm from the edge (keep-out ring). Custom rule `esp-iradio.kicad_dr
 J3/J7 (by design); every other courtyard overlap still is an error. Renders in `renders/` (the
 module itself is not in the 3D view: it is a loose part).
 
-Floor plan (front view, origin top left; `tools/placement.py`):
+Floor plan (front view, origin top left; `tools/placement.py`). On the A4 page the outline's top-left
+corner sits at (87.5, 67.0) (`placement.OX/OY`, used by every tool), so the board is centred in the
+drawing frame (owner, 2026-10-17; it was at 100 / 100). Moving it means a full rebuild and re-route
+(the pipeline in `tools/README.md`), not a move in KiCad: a zone refill after a plain move left five
+GND pads of U1 unconnected:
 - display module HS20S010B centred at the top (320 px axis horizontal): module PCB over x 29.4-92.6,
   y 1.0-37.2 (outlines of the PCB, glass and active area on User.Drawings), plugged into J7 (CN2,
   x 31.4, pin 1 at the bottom) and J3 (CN1, x 90.6, pin 1 at the top); its four M2.5 holes on

@@ -11,7 +11,7 @@ import placement
 HERE = os.path.dirname(os.path.abspath(__file__))
 PCB = os.path.join(os.path.dirname(HERE), 'esp-iradio.kicad_pcb')
 mm = pcbnew.FromMM
-OX, OY = 100.0, 100.0
+OX, OY = placement.OX, placement.OY
 
 board = pcbnew.LoadBoard(PCB)
 NAMED = ('TP203', 'TP204', 'TP205', 'TP206', 'TP207')    # recovery pads: signal names instead

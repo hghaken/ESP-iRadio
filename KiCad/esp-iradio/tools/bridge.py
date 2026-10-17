@@ -8,11 +8,12 @@ import math
 import os
 import sys
 import pcbnew
+import placement
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PCB = os.path.join(os.path.dirname(HERE), 'esp-iradio.kicad_pcb')
 mm, tomm = pcbnew.FromMM, pcbnew.ToMM
-OX, OY = 100.0, 100.0
+OX, OY = placement.OX, placement.OY
 CLR, HOLE_GAP, EDGE = 0.2, 0.25, 0.7
 HW = mm(0.15)                       # half width of the bridge tracks (0.3 mm)
 VIA_D, VIA_DRILL = 0.55, 0.3

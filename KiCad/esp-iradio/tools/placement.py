@@ -18,6 +18,9 @@ Floor plan, top to bottom (owner's wish): display, encoder, connectors.
 - right edge: the cell connector J202 (the cell sits inside the case), next to the cell protection."""
 
 W, H = 122.0, 76.0               # 76 since 2026-10-16: room between the parts for hand soldering
+# top-left corner of the outline in KiCad's page coordinates: the board centred in the A4 drawing
+# frame (10 mm margins, frame centre 148.5 / 105; owner, 2026-10-17; was 100 / 100)
+OX, OY = 148.5 - W / 2, 105.0 - H / 2
 MOD_X, MOD_Y = (W - 63.2) / 2, 1.0             # display module PCB top-left corner on the board
 # outlines drawn on User.Drawings: module PCB, glass, active area (datasheet HS20S010B, mechanical drawing)
 OUTLINES = [
