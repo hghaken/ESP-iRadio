@@ -146,7 +146,13 @@ GND pads of U1 unconnected:
   speaker connector J6 (86.5) and the switch SW203 (96.0) moved left into J202's old place; J6 stays
   between the USB-C and the switch, so a USB plug does not cover the switch (round 7); the charge
   LEDs D202/D203 stay where they were, now above and right of the switch. Board re-routed, DRC 0
-  errors, 0 unconnected, 0 parity issues.
+  errors, 0 unconnected, 0 parity issues;
+- owner, 2026-10-17: J6 is a 2-pole 5.0 mm screw terminal (WJ126V-5.0-02P, LCSC C8404, KiCad's
+  MaiXu MX126-5.0-02P footprint as a project copy with a simple own 3D model, `tools/terminal3d.py`),
+  pins at (92.0 / 87.0, 71.0), turned 180 degrees so the wire openings face into the board (the case
+  wall is at the edge; turn it back to 0 for openings at the edge), pin 1 (+) on the right; silk
+  "- SPK +" above it. SW203 moved right to (100.5, 72.62) for it. Board re-routed, DRC 0 errors,
+  0 unconnected, 0 parity issues.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal
@@ -208,7 +214,11 @@ Still to do on the layout (before ordering):
   pads; checked in a front render (`renders/front.png`: USB-C opening and 3.5 mm jack at the edge,
   encoder upright). The USB-C model was first aligned on the EasyEDA footprint's pegs and sat
   2.2 mm behind the real part (seen by the owner in the top view); since 2026-10-16 it is aligned on
-  the pegs inside the model (offset y -0.80): its front on F.Fab, 0.5 mm past the board edge. The display module has a simple own model (`tools/display3d.py`: PCB, LCD
+  the pegs inside the model (offset y -0.80): its front on F.Fab, 0.5 mm past the board edge.
+  2026-10-17: every EasyEDA model checked by its pins/pegs against the holes; the slide switch
+  SW203 sat 1.55 mm behind its pegs (owner saw it; `lib/lcsc.pretty/SW-TH_MSK12C02` offset y -1.55,
+  set by `fp3d.py`) and the encoder 0.25 mm to the side (x 7.25); the rest line up. The RCA model
+  J8 shows two more legs at its outer ends than the footprint has holes: check on the part. The display module has a simple own model (`tools/display3d.py`: PCB, LCD
   body, active area, header spacers, ~11 mm up) hung on J3's project footprint
   `esp-iradio:PinSocket_1x10_P2.54mm_Vertical_HS20S010B`, so the 3D view shows it in place (it
   shows the 20 mm EC11 shaft ending about at the glass front). The EasyEDA model of the PJ-320D

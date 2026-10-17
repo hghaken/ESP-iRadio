@@ -299,7 +299,8 @@ up('VSYS', P('U2', 'VDD'))
 gnd(P('U2', 'GND'))
 gnd(P('U2', 'PAD'))
 s.add('Connector_Generic:Conn_01x02', 'J6', 345.44, 167.64, 0, 'Speaker 4-8 Ohm',
-      'Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical', extra={'LCSC': 'C131337'},
+      # 2-pole 5.0 mm screw terminal (owner, 2026-10-17; was a JST-PH): WJ126V-5.0-02P, 126 form factor
+      'esp-iradio:TerminalBlock_MaiXu_MX126-5.0-02P_1x02_P5.00mm', extra={'LCSC': 'C8404'},
       fields={'ref': (349.25, 165.1, 0, 'left'), 'val': (349.25, 172.72, 0, 'left')})
 W(P('U2', 'OUTP'), P('J6', 1))
 W(P('U2', 'OUTN'), P('J6', 2))

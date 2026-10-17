@@ -218,7 +218,7 @@ uses CN2, all pins open, to hold the module. Never tie the two sockets pin for p
 - PCM5102APWR line out (I2S BCK GPIO27, LRCK GPIO14, DATA GPIO13; SCK to GND, XSMT pull-up, FMT/
   FLT/DEMP low; 470R + 2.2 nF per output; 3.5 mm jack), AVDD now from the LP5907 (`+3V3A`).
 - MAX98357A speaker amplifier on the same I2S nets; SD_MODE = `AMP_SD` GPIO2 with 1M to +3V3,
-  GAIN open (9 dB); speaker on a JST-PH 2.
+  GAIN open (9 dB); speaker on a 2-pole 5.0 mm screw terminal (J6, since 2026-10-17; was a JST-PH 2).
 - microSD socket (CS GPIO4, MISO GPIO19, shared SCK/MOSI), pull-ups, 10 uF + 100 nF.
 - EC11 encoder: A GPIO32, B GPIO33, switch GPIO25, each 10k pull-up + 100 nF (tested smooth).
 
@@ -278,7 +278,8 @@ encoder stay.
 | EC11E with switch | footprint now: Alps EC11E 20 mm shaft | | THT; the shaft length is picked once the case thickness is known, so the knob sits just at the case front (glass ~14 mm up). C470754 (EC11E15244B2, 24.5 mm overall) is not the choice for this height |
 | MSK12C02 slide switch | C431540 | 166028 | on/off |
 | TS-1187A-B-A-B | C318884 | 498821 | basic; RESET, BOOT |
-| JST S2B-PH-K-S (side) / B2B-PH-K-S (top) | C173752 / C131337 | 193749 / 87147 | cell, speaker |
+| JST S2B-PH-K-S (side) / B2B-PH-K-S (top) | C173752 / C131337 | 193749 / 87147 | cell |
+| screw terminal 2P 5.0 mm, WJ126V-5.0-02P (Ningbo Kangnex) | C8404 | 78185 | speaker (2026-10-17) |
 | PJ-320D 3.5 mm jack (SMD) | C431535 | 60364 | line out |
 | dual RCA jack white/red, right angle (CAX AV-210-WR) | C53431212 | 256 | line out L/R in parallel with the jack (Rev C); pinout to check on the part |
 | R/C 1206 | see `tools/jlcfab.py` (`PASSIVES`) | | mostly JLCPCB basic parts; 2.2 nF is a 1 kV X7R (the common 1206 part) |

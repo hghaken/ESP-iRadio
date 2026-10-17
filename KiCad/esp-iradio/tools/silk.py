@@ -60,19 +60,20 @@ def fp_xy(ref):
     return pcbnew.ToMM(q.x) - OX, pcbnew.ToMM(q.y) - OY
 
 
-# cell and speaker polarity (pin 1 = +)
+# cell and speaker polarity (pin 1 = +); J6 is a screw terminal: "+", "SPK" and "-" in a row above it
+cb = board.FindFootprintByReference('J6').GetCourtyard(pcbnew.F_CrtYd).BBox()
 x1, y1 = pad_xy('J6', '1')
 x2, y2 = pad_xy('J6', '2')
-text('+', x1, y1 - 2.6, 1.4)
-text('-', x2, y2 - 2.6, 1.4)
+ty = pcbnew.ToMM(cb.GetTop()) - OY - 0.9
+text('+', x1, ty, 1.2)
+text('-', x2, ty, 1.2)
+text('SPK', (x1 + x2) / 2, ty, 0.8)
 # J202 stands on the right edge, pin 1 on top: + above, - and CELL below the connector
 cb = board.FindFootprintByReference('J202').GetCourtyard(pcbnew.F_CrtYd).BBox()
 x1, y1 = pad_xy('J202', '1')
 text('+', x1, pcbnew.ToMM(cb.GetTop()) - OY - 1.0, 1.4)
 text('-', x1, pcbnew.ToMM(cb.GetBottom()) - OY + 1.0, 1.4)
 text('CELL', x1, pcbnew.ToMM(cb.GetBottom()) - OY + 2.6, 0.8)
-x, y = pad_xy('J6', '1')
-text('SPK', x + 1.0, y + 2.9, 0.8)
 # charge LEDs, USB, switch
 for ref, lab in (('D202', 'C'), ('D203', 'P')):   # CHG (red) and PWR (green): letters left of the LED
     led = board.FindFootprintByReference(ref)

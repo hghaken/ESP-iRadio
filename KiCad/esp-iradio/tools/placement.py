@@ -73,7 +73,9 @@ P = {
     'J201': (77.0, H - 3.65 + 0.5, 0),
     # speaker and switch moved left into the cell connector's old place (owner); J6 stays between the
     # USB-C and the switch, so a USB plug does not cover the switch (round 7)
-    'J6': (86.5, H - 3.8, 0), 'SW203': (96.0, H - 3.38, 0),
+    # J6 a 2-pole 5.0 mm screw terminal since 2026-10-17 (owner): turned 180 so the wire openings face
+    # into the board (the case wall is at the edge), pin 1 (+) on the right; the switch moved right for it
+    'J6': (92.0, H - 5.0, 180), 'SW203': (100.5, H - 3.38, 0),
     # cell connector on the right edge (owner: the cell is inside the case), pin 1 (+) on top, beside
     # the protection U204/U205/Q203
     'J202': (119.0, 27.5, 270),

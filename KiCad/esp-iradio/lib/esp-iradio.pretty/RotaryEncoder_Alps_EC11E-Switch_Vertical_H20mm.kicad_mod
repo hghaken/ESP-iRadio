@@ -386,7 +386,7 @@
 	(embedded_fonts no)
 	(model "${KIPRJMOD}/lib/lcsc.3dshapes/SW-TH_EC11XXXXXXXX-L11.7-W12.0-H24.5-P2.5-LS14.5.wrl"
 		(offset
-			(xyz 7.5 -2.5 0)
+			(xyz 7.25 -2.5 0)
 		)
 		(scale
 			(xyz 1 1 1)

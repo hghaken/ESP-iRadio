@@ -18,8 +18,13 @@ Owner's changes on the evening of 2026-10-16, each re-routed (Freerouting) with 
 3. Speaker J6 to (86.5, 72.2) and switch SW203 to (96.0, 72.62), into J202's old place; J6 stays
    between the USB-C and the switch so a plug does not cover the switch.
 
-Worth a look: the cell path from J202 to Q203/U204 and BATN, the USB-C tabs against the edge, and
-the switch next to J6.
+4. 2026-10-17: J6 is a 2-pole 5.0 mm screw terminal (WJ126V-5.0-02P, LCSC C8404, MX126 footprint),
+   pins at (92.0 / 87.0, 71.0), rotation 180 (wire openings into the board), SW203 to (100.5,
+   72.62); the 3D models of SW203 (1.55 mm) and SW1 (0.25 mm) moved onto their holes. Board centred
+   in the A4 frame (origin 87.5 / 67.0 instead of 100 / 100).
+
+Worth a look: the cell path from J202 to Q203/U204 and BATN, the USB-C tabs against the edge, the
+switch next to J6, and the screw terminal's orientation (openings into the board).
 
 ## Round 9 closed
 
