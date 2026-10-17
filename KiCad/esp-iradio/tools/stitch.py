@@ -69,11 +69,15 @@ for fp in board.GetFootprints():
 
 
 EDGE = board.GetBoardEdgesBoundingBox()
+# rule areas that forbid vias (e.g. under the USB-C shell, Grok round 10)
+NO_VIA = [z.Outline() for z in board.Zones() if z.GetIsRuleArea() and z.GetDoNotAllowVias()]
 
 
 def ok(x, y, via_d=VIA_D, drill=VIA_DRILL, clr=CLR):
     r = mm(via_d / 2)
     if min(x - EDGE.GetLeft(), EDGE.GetRight() - x, y - EDGE.GetTop(), EDGE.GetBottom() - y) < mm(1.0):
+        return False
+    if any(o.Collide(pcbnew.VECTOR2I(int(x), int(y)), int(r)) for o in NO_VIA):
         return False
     if not (inside_fill(pcbnew.F_Cu, x, y, r) and inside_fill(pcbnew.B_Cu, x, y, r)):
         return False

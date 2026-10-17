@@ -1,3 +1,122 @@
+# Grok review, round 10 (edge spread, 2026-10-17)
+
+Measured commit `6b0a565` on the placed board with KiCad's pcbnew, and re-ran DRC with schematic parity. The board file was not changed. Outline 122.000 x 76.000 mm, origin (87.5, 67.0), 122 footprints. In1.Cu has no signal tracks. The schematic is unchanged.
+
+DRC: 0 errors, 0 unconnected, 0 schematic-parity issues, 20 warnings. Seventeen are silkscreen clipped by the board edge, on the connectors that sit on the outline: SW203 x2, J8 x4, J6 x2, J4 x4, J201 x2, J5 x3. Two are the expected QFN thermal-via library mismatches (U201 VQFN, U2 TQFN; the drills stay 0.3 mm). One is J4's own outline on copper. The round 9 warnings for CELL and SPK on a JST outline are gone.
+
+One thing to fix before an order. It is copper under the USB-C shell. No part has to move.
+
+## 1. USB-C — vias under the shell
+
+J201 is at (81.75, 72.85), rotation 0. The opening faces the bottom edge. The front render from the same minute as this commit shows that opening, and the two wire holes of the green screw terminal, toward the viewer.
+
+There is no keep-out on the shell. Freerouting and `stitch.py` both treat that rectangle as empty board: the stitch only skips other copper, holes, and a 1 mm margin from the edge, on a 2.5 mm grid. Ten vias sit inside the F.Fab rectangle. The board tents vias on both sides.
+
+In the silk gap the footprint leaves for the mid-mount shell (local y 0.1 to 2.0), three GND stitch vias:
+
+| Via | Board | Local |
+|---|---|---|
+| GND | (78.95, 73.95) | (−2.80, +1.10) |
+| GND | (81.45, 73.95) | (−0.30, +1.10) |
+| GND | (83.95, 73.95) | (+2.20, +1.10) |
+
+Each is 0.55 / 0.30 mm. That row is where the shell has to sit on the board. A via there can hold the shell off the tabs.
+
+Further back, still inside the body, three signal vias and four more GND vias:
+
+| Net | Board | Local |
+|---|---|---|
+| USB_D− | (79.92, 70.08) | (−1.83, −2.77) |
+| CC1 | (80.93, 70.34) | (−0.82, −2.51) |
+| CC2 | (83.47, 69.99) | (+1.72, −2.86) |
+| GND | (78.95, 71.45), (81.45, 71.45), (83.95, 71.45) | y −1.40 |
+| GND | (78.43, 69.39), width 0.50 | (−3.32, −3.46), on the rear fab edge |
+
+D+ does not do this. It leaves the pads at y 68.81 and runs to U202 pin 1 entirely on F.Cu: 12.4 mm, 0.20 mm, no via. D− is 13.7 mm, also 0.20 mm, and about 7 mm of that is on B.Cu after the via under the body. A worn tent on D− or either CC pin shorts that pin to the shell. A GND via shorted to the shell is only a mechanical bump.
+
+Fix, local, no new placement: a keep-out on the shell outline, so the next stitch and the next route stay out; drop the vias inside it; bring D− and both CC back behind the body the way D+ already leaves. The SMT pads are at y 68.81, 6.47 mm inside the edge, so the escape has room.
+
+## 2. The overhang and the 1.05 mm note
+
+The front of the fab outline is at y 76.50, so 0.50 mm past the edge. That is the owner's flush-with-the-wall choice. The HRO page did not return a drawing (HTTP 403), so nothing measured here contradicts the 0.5 mm. A case wall thicker than that lip needs a notch around the face. That is a case cut, not a board move.
+
+The front shell tabs are the S1 pads at (77.43, 73.90) and (86.07, 73.90), 1.00 x 1.60 mm, drill 0.60 x 1.20. Their copper ends at y 74.70, which is 1.30 mm inside the edge. The "1.05 mm inside" in the notes is the pad centre's local Y, measured from the footprint origin, not from the board edge. The copper is further inside than that sentence says, and well clear of the 0.3 mm copper-to-edge rule. Do not push the connector out to "fix" the 1.05.
+
+The rear shell pegs are at y 70.25. U202 is at (79.25, 62.00): pins 1 and 3 are the connector-side USB nets, pins 6 and 4 are UD+ and UD− toward the CH340, pin 5 is VIN. Two net names on one USBLC6 line is the chip. Same-layer distance from the USB nets to the microSD nets is 4.95 mm (DAT2 on F.Cu). Nothing of the speaker nets comes within 15 mm of them on the same layer.
+
+## 3. Cell path
+
+J202 is at (119.00, 27.50). KiCad reports the rotation as −90°, which is placement 270. Pin 1, `Net-(J202-Pin_1)`, is at (119.00, 27.50). Pin 2, BATN, is at (119.00, 29.50). Pin 1 is on top.
+
+The housing's right edge is at x 120.70, so 1.30 mm of board remains. The courtyard ends at x 121.25, 0.75 mm inside the edge. The socket is vertical and fully on the board. Pad copper is 2.12 mm from the right edge.
+
+Silk: "+" at (119.00, 24.00), above pin 1; "−" at (119.00, 33.00), below pin 2; "CELL" at (119.00, 34.59). The reference "J202" sits to the left of the plus, at (115.47, 24.52).
+
+Cell positive is 38.8 mm, all 0.50 mm. On F.Cu it runs (119.0, 27.5) to (116.0, 30.5) to Q203's pad at (109.44, 30.50), about 11 mm. Q203 is at (108.5, 30.5). A second run of 0.50 mm already exists on B.Cu (26 mm of the 38.8). The F.Cu piece at y 30.5 passes between R216's pads. R216 is at (113.00, 30.50), rotation 90, pads at y 29.04 and y 31.96. The 0.50 mm track clears each pad by 0.65 mm. DRC is clean. That track can stay.
+
+BATN is 33.4 mm, 17 segments, all 0.50 mm, all on F.Cu. It steps out to x 120.32 (copper edge at 120.57, 1.43 mm from the board edge) and comes back along y 26.45 to U205 and U204. Courtyard gap R216 to J202 is 1.48 mm. The cell path is short, wide, and the right polarity.
+
+## 4. Speaker, switch, and the gaps along the edge
+
+J6 pin 1 is at (93.20, 72.20), pin 2 at (98.20, 72.20). Pin 1 is `Net-(J6-Pin_1)`, the "+" silk at the same x. The 2.8 mm pads end at y 73.6, 2.40 mm inside the edge. The fab front is at y 76.00, flush. The model puts the wire holes on that front face at z 2.0 to 5.0, above the 1.6 mm board, and the front render shows the two openings toward the edge. The flush front does not cover the holes. A case wall still needs a slot for the wires.
+
+Pin 1 is 22.1 mm at 0.30 mm (In2.Cu, then F.Cu to U2 pin 9). Pin 2 is 15.1 mm. The long run is 0.30 mm on In2.Cu; two F.Cu pieces of 0.4 mm and 0.1 mm at 0.25 mm sit on U2 pin 10. That is the 0.5 mm-pitch escape. U2 is still at 180°, and pins 9 and 10 are the two speaker nets. Under the terminal body the only extra copper is three GND vias.
+
+SW203 is at (108.15, 72.62). The actuator courtyard reaches y 76.00. The anchor pads at y 74.32 are 1.33 mm inside the edge. Courtyard gap J6 to SW203 is 3.56 mm. USB centre to switch centre is 26.4 mm, so a plug does not cover the slide. J201's fab ends at x 86.22 and J6's fab starts at x 90.20 (3.98 mm). A USB plug about 14 mm wide reaches about x 88.8, roughly 1.5 mm short of the terminal body. Tight for a fat cable, and still a gap. D202 and D203 sit above the switch: D202's courtyard ends at y 67.18, the switch courtyard starts at y 71.66, 4.48 mm between them. Which way the slide is ON is still unknown. The silk still says "ON/OFF ?".
+
+Courtyard gaps along the bottom, H3 to H4:
+
+| Pair | Gap |
+|---|---|
+| H3 to J8 | 2.58 mm |
+| C4 to J4 | 2.53 mm |
+| J4 to J201 | 3.61 mm |
+| J201 to J6 | 2.54 mm |
+| J6 to SW203 | 3.56 mm |
+| SW203 to H4 | 3.51 mm |
+
+J5's footprint returns no courtyard. Its pads are at x 41.85 and 48.85, and J8's courtyard ends at x 37.67, so that gap is about the same size. "Equal 2.6 mm" is 2.5 to 3.6 mm on the board. Nothing along this edge is under 2.5 mm. J6's courtyard reaches y 76.56, inside the 0.6 mm the placement check allows past the edge.
+
+The tightest soldered pair on the whole board is still C214 against D202, now 0.88 mm of courtyard in x (round 9 was a 0.64 mm corner). D202 to D203 is 1.15 mm. DRC is clean. No move.
+
+The vertical reference "SW203" is at (113.56, 72.84), 0.9 mm, 90°. Its text box runs x 112.77 to 114.35. The switch courtyard ends at x 111.50 and H4's starts at x 115.01, so the ink clears the switch by 1.27 mm and the hole by 0.66 mm. The centre is nearer the hole than the switch. H4 has no reference, so the label is not ambiguous. Leave it unless a silk pass runs anyway.
+
+## 5. USB, microSD, power, and the ADC pin
+
+Connector to the USBLC6: D+ 12.4 mm on F.Cu, D− 13.7 mm with the via in section 1. Skew about 1.3 mm, both 0.20 mm. Full speed. The pair does not need to be routed as a pair.
+
+The microSD socket stayed mouth-out. Its courtyard reaches y 76.01. Shared with the display: CLK `Net-(J3-Pin_3)` 94.5 mm, CMD `Net-(J3-Pin_4)` 104.5 mm, DAT0 67.8 mm, DAT1 10.0 mm, DAT2 10.2 mm, DAT3/CD 88.7 mm, LCD_BL 37.7 mm all on F.Cu. Line-out to I2S is 8.87 mm on the same layer (round 8 was 5.7 mm). Line-out to the speaker nets, and line-out to the card, have no same-layer approach inside 15 mm. The 0.80 mm between `Net-(J6-Pin_2)` and LRCK is the F.Cu fanout at U2 pin 10. The long speaker run is on In2.Cu.
+
+Power width, whole net:
+
+| Net | Length | Width |
+|---|---|---|
+| +3V3 | 343.4 mm | 0.50 |
+| +3V3A | 55.4 mm | 0.30 (its class) |
+| VSYS | 230.1 mm | 0.50, pad escapes under 0.6 mm at 0.25 |
+| VIN | 92.4 mm | 0.50, same short escapes |
+| VBAT | 42.5 mm | 0.50, one 0.4 mm piece at 0.25 on the charger pad |
+| VBUS | 35.0 mm | 0.50 |
+| BATN | 33.4 mm | 0.50 |
+| cell positive | 38.8 mm | 0.50 |
+| speaker pin 1 / pin 2 | 22.1 / 15.1 mm | 0.30, and the 0.25 mm pieces on pin 2 are the QFN escape |
+
+No power run is both under 0.45 mm and longer than 0.6 mm, apart from +3V3A, which is a 0.30 mm class.
+
+C207 is still at (49.50, 29.50), its VBAT_SENSE pad at (48.03, 29.50), U3 pin 7 at (49.19, 26.60). The pin-end copper is 1.65 mm plus 1.73 mm, 3.38 mm at 0.20 mm (round 9 was 3.39). The whole net is 77.3 mm (was 79). The long part is on B.Cu. Same-layer neighbours of the pin stub, inside 3 mm: the encoder RC `Net-(C6-+)` at 0.53 mm (round 9 was 0.96 mm) and CHG at 1.27 mm. LCD_BL and the SPI nets are not among them. The 100 nF is on the pin, the read is averaged, and the nearer neighbour is a slow encoder edge.
+
+Four 0.30 mm ground vias sit in the gaps of the WROVER pad-39 land, at (48.68, 18.39), (48.68, 19.79), (50.08, 18.39) and (50.08, 19.79). Round 7 said two are enough. J5 was not rotated. Its mouth stays toward the edge.
+
+`renders/bottom.png` is from 2026-10-16 14:43, before this spread. The front, iso and top renders are from 13:03–13:04, the same minute as `6b0a565`.
+
+## Before the order
+
+One copper change: a keep-out on the J201 shell, and D− / CC1 / CC2 brought out behind the body, with the stitch vias inside the shell removed. No placement change and no full re-route.
+
+Still on a sample, unchanged: PJ-320D pin order, TF-01A drawing, which side of SW203 is ON, EC11 shaft length, and the HS20S010B pin-1 / pin-7 / pin-8 check.
+
+---
+
 # Grok review, round 9 (C207, charge LEDs, silk, 3D, 2026-10-16)
 
 Measured commit `e6b5f01` (changes since `f7bd61e`) on the placed board with KiCad's pcbnew. The board file was not changed. DRC was not re-run; the recorded result stands (0 errors, 0 unconnected, 0 parity, 18 warnings). The board was re-routed, so the track lengths in round 8 do not describe this copper. This round measured the four checks below.

@@ -174,6 +174,31 @@ def build(netfile, check_only=False):
             o.Append(mm(OX + x), mm(OY + y))
         board.Add(k)
 
+    # no vias (any layer) and no F.Cu tracks under the USB-C shell: it sits on the board, and a worn
+    # via tent under it would short that net to the shell (Grok, round 10). The F.Fab body from just in
+    # front of the signal pads (local y -3.35; pads end at -3.47) to the front; pads and pour allowed.
+    for ref, (lx0, ly0, lx1, ly1) in (('J201', (-4.47, -3.35, 4.47, 3.65)),):
+        px, py, rot = placement.P[ref]
+        assert rot == 0, 'shell keep-out expects rotation 0'
+        for lays, tracks in (((pcbnew.F_Cu,), True), ((pcbnew.In1_Cu, pcbnew.In2_Cu, pcbnew.B_Cu), False)):
+            k = pcbnew.ZONE(board)
+            k.SetIsRuleArea(True)
+            k.SetDoNotAllowTracks(tracks)
+            k.SetDoNotAllowVias(True)
+            k.SetDoNotAllowPads(False)
+            k.SetDoNotAllowCopperPour(False)
+            k.SetDoNotAllowFootprints(False)
+            k.SetZoneName('%s shell' % ref)
+            ls = pcbnew.LSET()
+            for lay in lays:
+                ls.AddLayer(lay)
+            k.SetLayerSet(ls)
+            o = k.Outline()
+            o.NewOutline()
+            for x, y in ((lx0, ly0), (lx1, ly0), (lx1, ly1), (lx0, ly1)):
+                o.Append(mm(OX + px + x), mm(OY + py + y))
+            board.Add(k)
+
     board.Save(PCB)
     print('written', PCB)
     return board

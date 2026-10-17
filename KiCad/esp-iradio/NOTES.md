@@ -139,7 +139,8 @@ GND pads of U1 unconnected:
   covered it); M3 holes H8/H2/H3/H4 in the four corners;
 - owner, 2026-10-16: USB-C J201 as far to the edge as it goes: its front (F.Fab, 3.65 mm below the
   footprint origin) sticks out 0.5 mm past the board edge (origin at y 72.85; owner: flush with
-  the case wall), the front shell-tab pads stay 1.05 mm inside the edge (`mkpcb.py` allows J201's
+  the case wall), the front shell-tab pad copper ends 1.30 mm inside the edge (Grok, round 10; 1.05 was the pad
+  centre's local y) (`mkpcb.py` allows J201's
   courtyard past the edge); the cell connector J202 moved from the bottom edge to the right edge (the cell sits inside
   the case): (119.0, 27.5), rotation 270, pin 1 (+) on top, "+" above and "-"/"CELL" below it, next
   to the protection U204/U205/Q203 (short cell path); R216 one mm left (113.0) for room. Then the
@@ -155,7 +156,13 @@ GND pads of U1 unconnected:
   C3/C4 + J4 | J201 | J6 | SW203 with equal gaps of 2.6 mm (courtyards plus pads): J8 x 25.75,
   J5 45.35, C3/C4 54.2, J4 65.35 (no longer centred under the encoder), J201 81.75 (U202 79.25
   with it), J6 pin 1 at 93.2, SW203 108.15; the charge LEDs D202/D203 at (104.9 / 110.7, 66.0),
-  above the switch. Board re-routed, DRC 0 errors, 0 unconnected, 0 parity issues.
+  above the switch. Board re-routed, DRC 0 errors, 0 unconnected, 0 parity issues;
+- Grok round 10 (2026-10-17): ten vias sat under the USB-C shell, three on signal nets (D-, CC1,
+  CC2): a worn tent there shorts the pin to the shell. `mkpcb.py` now adds a rule area over J201's
+  body (F.Fab, from just in front of the signal pads to the front): no vias on any layer, no F.Cu
+  tracks (pads and the GND pour allowed); `stitch.py` skips every rule area that forbids vias.
+  Re-routed: no via and no F.Cu track under the shell, D-, CC1 and CC2 without vias; DRC 0 errors,
+  0 unconnected, 0 parity issues.
 
 Routing: Freerouting 1.9.0 (DSN/SES), In1.Cu marked as a power layer so the router keeps signals off
 the GND plane; ~710 GND stitching vias; SMD pads join the outer pours solid, THT pads with thermal

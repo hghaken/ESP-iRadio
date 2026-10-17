@@ -34,8 +34,8 @@ Layout:
       (IO35) as suggested, DRC clean.
 - [x] Review by Grok of the changes since round 8 (round 9: C207, 3D models, references on the
       silkscreen, LEDs above the switch): nothing to move; the optional silk nudge is done.
-- [ ] Optional: review by Grok of the connector moves (2026-10-16 evening: USB-C J201 0.5 mm past
-      the edge, cell J202 on the right edge, J6/SW203 moved left; board re-routed, DRC clean).
+- [x] Review by Grok of the connector moves and the edge spread (round 10, 2026-10-17): one fix,
+      done: a keep-out under the USB-C shell, no vias or F.Cu tracks there; DRC clean.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:

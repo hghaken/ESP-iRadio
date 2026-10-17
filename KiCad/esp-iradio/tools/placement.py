@@ -71,7 +71,7 @@ P = {
     # USB-C (a plug covered it, round 7)
     'J8': (25.75, H - 8.2, 0), 'J5': (45.35, H - 9.5, 90), 'J4': (65.35, H - 9.6, 0),
     # USB-C: the receptacle front (F.Fab 3.65 mm below the origin) 0.5 mm past the board edge (owner,
-    # flush with the case wall); the front shell-tab pads stay 1.05 mm inside the edge
+    # flush with the case wall); the front shell-tab pad copper ends 1.30 mm inside the edge (Grok, round 10)
     'J201': (81.75, H - 3.65 + 0.5, 0),
     # J6: 2-pole 5.0 mm screw terminal (owner, 2026-10-17), wire openings at the edge, its front (F.Fab
     # 3.8 mm in front of the pins) flush with the edge; pin 1 (+) on the left

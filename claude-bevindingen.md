@@ -4,13 +4,26 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
-## Since round 9 (not reviewed yet)
+## Round 10 closed
+
+Grok measured `6b0a565` (the connector moves and the edge spread below): one fix before an order,
+done. Ten vias sat under the USB-C shell (three on D-, CC1, CC2; a worn tent shorts the pin to the
+shell). `tools/mkpcb.py` now puts a rule area over J201's body (no vias on any layer, no F.Cu tracks;
+pads and pour allowed) and `tools/stitch.py` skips rule areas that forbid vias; after the re-route no
+via and no F.Cu track sits under the shell and D-, CC1 and CC2 have no vias. Grok's note that the
+front shell-tab copper ends 1.30 mm inside the edge (the "1.05" was the pad centre's local y) is
+taken into the notes. Everything else confirmed: overhang 0.5 mm (a thicker case wall needs a notch),
+cell path short and 0.5 mm wide, J202 fully on the board, J6 openings at the edge, gaps along the
+edge 2.5-3.6 mm, power widths held, C207 on the ADC pin. `renders/bottom.png` is current again.
+DRC 0 errors, 0 unconnected, 0 parity issues.
+
+## Changes after round 9 (reviewed in round 10)
 
 Owner's changes on the evening of 2026-10-16, each re-routed (Freerouting) with DRC 0 errors,
 0 unconnected, 0 parity issues; schematic unchanged:
 1. USB-C J201 at (77.0, 72.85): the receptacle front (F.Fab, 3.65 mm below the origin) 0.5 mm
-   past the bottom edge, to sit flush with the case wall; the front shell-tab pads end 1.05 mm
-   inside the edge. Its 3D model was 2.2 mm behind the part (aligned on the EasyEDA footprint's
+   past the bottom edge, to sit flush with the case wall; the front shell-tab pad copper ends
+   1.30 mm inside the edge. Its 3D model was 2.2 mm behind the part (aligned on the EasyEDA footprint's
    pegs); it is now aligned on the pegs inside the model (offset y -0.80, `tools/fp3d.py`).
 2. Cell connector J202 (JST-PH vertical) from the bottom edge to the right edge: (119.0, 27.5),
    rotation 270, pin 1 (+) on top, beside U204/U205/Q203 (the cell path is much shorter); R216 to
