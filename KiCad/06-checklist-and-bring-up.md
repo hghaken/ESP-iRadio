@@ -36,6 +36,7 @@ Layout:
       silkscreen, LEDs above the switch): nothing to move; the optional silk nudge is done.
 - [x] Review by Grok of the connector moves and the edge spread (round 10, 2026-10-17): one fix,
       done: a keep-out under the USB-C shell, no vias or F.Cu tracks there; DRC clean.
+- [x] Review by Grok of the shell keep-out (round 11, 2026-10-17): holds, nothing to move.
 - [ ] A last look at the routing in KiCad by the owner.
 
 Before ordering:

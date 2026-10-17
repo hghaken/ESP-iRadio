@@ -1,3 +1,86 @@
+# Grok review, round 11 (USB-C shell keep-out, 2026-10-17)
+
+Measured commit `57402f8` on the placed board with KiCad's pcbnew, and re-ran DRC with schematic parity. The board file was not changed. The whole route is new (Freerouting). Placement is not: J201 is still (81.75, 72.85) at rotation 0, J202, J6, U202 and C207 are on the same coordinates as round 10. In1.Cu still has no signal tracks. 122 footprints.
+
+DRC: 0 errors, 0 unconnected, 0 schematic-parity issues, 20 warnings. The list is the same as round 10: seventeen silkscreen clips on the edge connectors (J6 x2, J8 x4, J201 x2, J5 x3, J4 x4, SW203 x2), the two expected QFN thermal-via library mismatches (U201, U2), and J4's own outline on copper.
+
+The round 10 fix is in the copper. Nothing further has to move before an order.
+
+## 1. The shell keep-out holds
+
+Two rule areas, both named `J201 shell`, cover the same rectangle: board (77.28, 69.50) to (86.22, 76.50), which is local (−4.47, −3.35) to (+4.47, +3.65) on J201. That is the F.Fab body from just in front of the signal pads to the front face.
+
+| Area | Layers | Tracks | Vias | Pads | Pour |
+|---|---|---|---|---|---|
+| J201 shell | F.Cu | forbidden | forbidden | allowed | allowed |
+| J201 shell | In1, In2, B.Cu | allowed | forbidden | allowed | allowed |
+
+`stitch.py` skips every rule area that forbids vias, and it tests the via's copper radius, not only the centre.
+
+No via on the board has copper that meets this rectangle, the full fab rectangle (rear edge at local y −3.65), or the silk band where the shell sits (local y +0.10 to +2.00). The 0.30 mm strip of fab behind the keep-out is empty too. A 0.55 mm via cannot sit in that strip without its copper entering the area, and the stitch rejects that.
+
+No F.Cu track enters the keep-out, including a half-width margin. D−, CC1 and CC2 have no vias anywhere on the net. Each leaves the pads at y 68.81 toward the inside of the board, on F.Cu only:
+
+| Net | Length | Layers | Vias |
+|---|---|---|---|
+| USB_D− | 21.0 mm | F 21 | 0 |
+| CC1 | 7.0 mm | F 7 | 0 |
+| CC2 | 7.6 mm | F 8 | 0 |
+| USB_D+ | 24.5 mm | F 21, B 3 | 2 |
+| UD+ (USBLC6 to CH340) | 17.4 mm | F 17 | 0 |
+| UD− | 18.8 mm | F 9, In2 9 | 2 |
+
+D+ is the one USB net that still changes layer. Its two vias are at (83.28, 65.92) and (86.15, 64.72), 3.6 mm and 4.8 mm behind the keep-out, on the way to U202. The bottom hop is the 3 mm between them. Skew against D− is about 3.5 mm. Full speed. The CH340-side vias on UD− are not under the shell.
+
+One track does cross the shell, and the rule allows it. `EN_3V3` runs on In2.Cu from (75.60, 72.54) to (89.20, 72.54), so 8.9 mm of that segment is inside the rectangle, at local y −0.31. In1.Cu, the GND plane, lies between that track and the shell. The net is the LDO enable from SW203. Its vias are at x 28, 33 and 108, all outside the shell. It does not hold the shell up and it cannot short to it.
+
+The front shell-tab copper is unchanged from round 10: the pads and the placement did not move, so the copper still ends 1.30 mm inside the edge.
+
+## 2. The new route — power, cell, speaker
+
+Widths held on the long runs.
+
+| Net | Length | Width |
+|---|---|---|
+| +3V3 | 325.9 mm | 0.50 |
+| +3V3A | 48.5 mm | 0.30 (its class) |
+| VSYS | 222.7 mm | 0.50, except two 0.75 mm pieces at 0.25 |
+| VIN | 87.6 mm | 0.50, pad escapes under 0.6 mm at 0.25 |
+| VBAT | 45.7 mm | 0.50, pad escapes under 0.6 mm at 0.25 |
+| VBUS | 31.2 mm | 0.50 |
+| BATN | 28.5 mm | 0.50 |
+| cell positive | 40.1 mm | 0.50 |
+| speaker pin 1 / pin 2 | 20.0 / 16.9 mm | 0.30 |
+
+The two 0.75 mm pieces on VSYS are at the charger QFN: (105.22, 18.24) to (105.22, 17.49), and (108.24, 16.22) to (107.49, 16.22). That is the pad escape. DRC's minimum track is 0.15 mm, and the added resistance is about a milliohm.
+
+Cell positive still has the direct F.Cu run (119.00, 27.50) to (116.00, 30.50) to Q203's pad at (109.44, 30.50), the same segments as round 10, plus an In2.Cu continuation. One via, at the pin end of that inner run. BATN leaves pin 2 on B.Cu, 10.5 mm at 0.50 mm, then back to F.Cu at the protection parts. One via. Both nets stayed on their class for every segment.
+
+Same-layer approaches after the new route:
+
+- USB to the card: 5.16 mm (D+ to DAT2 on F.Cu). Round 10 was 4.95 mm.
+- Speaker to USB: 14.1 mm.
+- Line out to I2S: 7.56 mm (OUTR to BCK on F.Cu). Round 10 was 8.87 mm.
+- Speaker pin 2 to LRCK: 1.52 mm on In2.Cu, alongside for about 3.4 mm, at x 102–104 beside U2. The rest of that pair is the fanout at the amp. A digital input next to its own class-D pin, for 3 mm at 1.5 mm, does not need a shove.
+
+Four 0.30 mm ground vias are still in the gaps of the WROVER pad-39 land, at (48.68, 18.39), (48.68, 19.79), (50.08, 18.39) and (50.08, 19.79). A fifth sits in the centre land at (48.95, 18.95).
+
+## 3. C207 is still on the pin; the incoming run now passes DIN
+
+C207 is at (49.50, 29.50). The via that brings VBAT_SENSE onto the capacitor is at (49.39, 29.07). From there the pin is 2.8 mm of F.Cu: 1.25 mm straight up from (49.19, 26.60), then 0.38, 0.48 and 0.66 mm to the via. The 100 nF is on the pin side of the long run. The whole net is 77.8 mm (round 10 was 77.3).
+
+On that F.Cu hop the nearest neighbours are the encoder RC `Net-(C6-+)` at 0.71 mm and CHG at 1.27 mm. LCD_BL is not among them.
+
+The new part is on the bottom. The incoming run (49.47, 28.99) to (54.72, 28.99), 5.2 mm, passes I2S DIN at 0.41 mm centre to centre for about 5 mm, and the following segment picks up another 1.4 mm of that DIN track. DRC did not flag a clearance error. The coupled stretch ends at the capacitor via. GPIO35 is averaged, and the divider with 100 nF sits at about 7 Hz, so a data edge there does not move the percentage. Leave it. If that corner is edited for another reason, slide the sense run off DIN.
+
+## Before the order
+
+No placement change and no further route. The shell keep-out does what round 10 asked: no via under the body, no F.Cu track under it, D− and both CC pins stay on the top layer.
+
+Still on a sample, unchanged: PJ-320D pin order, TF-01A drawing, which side of SW203 is ON, EC11 shaft length, and the HS20S010B pin-1 / pin-7 / pin-8 check.
+
+---
+
 # Grok review, round 10 (edge spread, 2026-10-17)
 
 Measured commit `6b0a565` on the placed board with KiCad's pcbnew, and re-ran DRC with schematic parity. The board file was not changed. Outline 122.000 x 76.000 mm, origin (87.5, 67.0), 122 footprints. In1.Cu has no signal tracks. The schematic is unchanged.

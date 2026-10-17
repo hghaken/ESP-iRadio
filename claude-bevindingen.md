@@ -4,6 +4,18 @@ Review of commit `1b12a25` with Grok (`grok-bevindingen.md`), 2026-10-15; layout
 said go with option a for the USB input. **All agreed changes are done** (this file replaces the
 earlier versions; the history is in the two rounds summarised below).
 
+## Round 11 closed
+
+Grok measured `57402f8`: nothing has to move before an order. The two `J201 shell` rule areas hold:
+no via copper and no F.Cu track under the shell; D-, CC1 and CC2 stay on F.Cu without vias (D+ has two
+vias 3.6-4.8 mm behind the keep-out). One In2.Cu track (EN_3V3) passes under the shell, allowed: the
+GND plane In1.Cu lies between it and the shell. Power widths held on the new route (two 0.75 mm
+pieces at 0.25 mm are the charger QFN escape). Noted, left as is: the incoming VBAT_SENSE run on
+B.Cu passes I2S DIN at 0.41 mm for about 5 mm before C207's via; GPIO35 is averaged and the
+divider with 100 nF sits at ~7 Hz, so it does not move the reading (slide it off DIN if that corner
+is ever edited). Still on a sample: PJ-320D pin order, TF-01A drawing, SW203 ON side, EC11 shaft
+length, HS20S010B pins 1/7/8.
+
 ## Round 10 closed
 
 Grok measured `6b0a565` (the connector moves and the edge spread below): one fix before an order,
