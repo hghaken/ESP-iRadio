@@ -27,7 +27,8 @@ for z in list(board.Zones()):
         board.Remove(z)          # outer GND pours are added again after routing
 assert pcbnew.ExportSpecctraDSN(board, dsn), 'DSN export failed'
 print('DSN written', dsn)
-r = subprocess.run([JAVA, '-jar', FR, '-de', dsn, '-do', ses, '-mp', passes],
+# -dct 0: no "Autorouter is about to start" confirmation dialog with its countdown (owner, 2026-10-17)
+r = subprocess.run([JAVA, '-jar', FR, '-de', dsn, '-do', ses, '-mp', passes, '-dct', '0'],
                    capture_output=True, text=True, cwd=work)
 print(r.stdout[-3000:])
 print(r.stderr[-2000:])
